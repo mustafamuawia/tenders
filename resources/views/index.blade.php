@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <link rel="icon" href="http://192.168.64.2/Tenders/unv.png" />
+  <link rel="icon" href="{{url('unv.png')}}" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#000000" />
   <meta name="description" content="Web site created using create-react-app" />
@@ -12,20 +12,20 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <title>Projects</title>
-  <link href="http://192.168.64.2/Tenders/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{{url('css/bootstrap.min.css')}}" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link href="http://192.168.64.2/Tenders/css/dashboard.css" rel="stylesheet">
+  <link href="{{url('css/dashboard.css')}}" rel="stylesheet">
   <!--[if lt IE 9]>
           <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
           <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
-  <link href="http://192.168.64.2/Tenders/static/css/main.a77ae2ed.chunk.css" rel="stylesheet">
+  <link href="{{url('static/css/main.f855e6bc.css')}}" rel="stylesheet">
 </head>
 
 <body role="document">
   <div id="root"></div>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <script type="text/javascript" src="http://192.168.64.2/Tenders/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="{{url('js/bootstrap.min.js')}}"></script>
   <script>
     ! function(c) {
       function e(e) {
@@ -127,7 +127,7 @@
         return s.d(t, "a", t), t
       }, s.o = function(e, t) {
         return Object.prototype.hasOwnProperty.call(e, t)
-      }, s.p = "http://192.168.64.2/Tenders/", s.oe = function(e) {
+      }, s.p = "{{env('APP_URL')}}", s.oe = function(e) {
         throw console.error(e), e
       };
       var t = window.webpackJsonp = window.webpackJsonp || [],
@@ -138,8 +138,8 @@
       l()
     }([])
   </script>
-  <script src="http://192.168.64.2/Tenders/static/js/2.2711fbbe.chunk.js"></script>
-  <script src="http://192.168.64.2/Tenders/static/js/main.20cdf3ad.chunk.js"></script>
+  {{-- <script src="http://192.168.64.2/Tenders/static/js/2.2711fbbe.chunk.js"></script> --}}
+  <script src="{{url('static/js/main.cf566e7d.js')}}"></script>
 </body>
 
 </html>
