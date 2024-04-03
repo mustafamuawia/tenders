@@ -7,6 +7,9 @@ import Login from './login';
 import Partners from './partners';
 import Profile from './profile';
 import Signup from './signup';
+import Clients from './client';
+import Items from './items';
+
 import { Button, Card, CardBody, Collapse,
   Navbar,
   NavbarToggler,
@@ -120,10 +123,13 @@ return (
           <>
           <li><Link onClick={handleOnClick} to="/partners">Partners</Link></li>
           <li><Link onClick={handleOnClick} to="/users">Users</Link></li>
+
          
           </>
           :null
             }
+            <li><Link className="link link-primary" to="/client">Clients</Link></li>
+            <li><Link className="link link-primary" to="/items">Items</Link></li>
              <li><Link onClick={handleOnClick} to="/profile">Profile</Link></li>
           <li><a className="link link-primary" onClick={handleLogout} >Logout</a></li>
          </ul>
@@ -144,9 +150,13 @@ return (
           <>
            
             <li><Link to="/partners">Partners</Link></li>
-            <li><Link to="/users">Users</Link></li>
+            <li><Link  to="/users">Users</Link></li>
+
                </>
           :null}
+          <li><Link className="link link-primary" to="/client">Clients</Link></li>
+          <li><Link className="link link-primary" to="/items">Items</Link></li>
+        
           <li><Link className="link link-primary" to="/profile">Profile</Link></li>
          
             <li><a className="link link-primary" onClick={handleLogout} >Logout</a></li>
@@ -156,6 +166,9 @@ return (
         <div className="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
         <Routes>
 <Route path="/tenders" exact name="Tenders" element={<Tenders/>} /> 
+<Route path="/client" exact name ="Client" element={<Clients />}/>
+<Route path="/items" exact name ="ITEMS" element={< Items/>}/>
+
             <Route path="/users" exact name="users" element={<Users />} />
          <Route path='/main' exact name="main" element={<Main />} /> 
          <Route path='/partners' exact name="partners" element={<Partners />} /> 

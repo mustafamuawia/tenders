@@ -72,7 +72,7 @@ class UserController extends Controller
     public function getusers(Request $request)
     {
         $token = $request->bearerToken();
-        $user = JWTAuth::User($token);
+        $user = JWTAuth::user();
         
         $users = User::where('id','<>',$user->id)->with("Partner")->get();
         return response()->json(  $users);

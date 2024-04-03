@@ -11,22 +11,40 @@ export default function Tenders() {
   const [oldFilter,setOldFilter]=useState('')
   const [selectedRows, setSelectedRows] = React.useState([]);
 	const [toggleCleared, setToggleCleared] = React.useState(false);
+  const [countries, setCountries] = useState([]);
+
+  useEffect(() => {
+    // Fetch countries data from REST Countries API
+    fetch('https://restcountries.com/v3.1/all')
+      .then((response) => response.json())
+      .then((data) => {
+        // Extract country names from the response
+        const countryNames = data.map((country) => country.name.common);
+        // Set the countries array state
+        setCountries(countryNames);
+      })
+      .catch((error) => {
+        console.error('Error fetching countries:', error);
+      });
+  }, []); // Empty dependency array ensures the effect runs only once on component mount
+
+
 	
   let initFormData= { 
     TenderId:'',
       UserId:0,
-      EndUserCompanyName:'',
-      EndUserContactName:'',
-      EndUserContactEmail:'',
-      EndUserContactPhone:'',
+      ProjectTitle:'',
+      ClientName:'',
+      Country:'',
+      State:'',
       InstallationCity:'',
       InstallationState:'',
       ResellerCompanyName:'',
       ResellerContactName:'',
       ResellerEmail:'',
       DistributorCompanyName:'',
-      DistributorContactName:'',
-      DistributorEmail:'',
+      Address:'',
+      created_by:'',
       TenderCode:'',
       Sector:'Private',
       Summary:'',
@@ -153,10 +171,10 @@ export default function Tenders() {
 			},
       { name: 'ProjectId', selector: row => row.TenderId,wrap	:true,sortable:true	},
       { name: 'Partner', selector: row => row.user.partner.CompanyName,wrap	:true,sortable:true	},
-      { name: 'End User Company Name', selector: row => row.EndUserCompanyName,wrap	:true,sortable:true	},
-      { name: 'EndUser Contact Name', selector: row => row.EndUserContactName,wrap	:true,sortable:true	},
-      { name: 'End User Contact Email', selector: row => row.EndUserContactEmail,wrap	:true,sortable:true	},
-      { name: 'End User Contact Phone', selector: row => row.EndUserContactPhone,wrap	:true,sortable:true	},
+      { name: 'Project Title', selector: row => row.ProjectTitle,wrap	:true,sortable:true	},
+      { name: 'Client Name', selector: row => row.ClientName,wrap	:true,sortable:true	},
+      { name: 'Country', selector: row => row.Country,wrap	:true,sortable:true	},
+      { name: 'State', selector: row => row.State,wrap	:true,sortable:true	},
       { name: 'Installation City', selector: row => row.InstallationCity,wrap	:true,sortable:true	},
       { name: 'Project Status', selector: row => row.Status,wrap	:true,sortable:true	},
       // { name: 'Installation State', selector: row => row.InstallationState,wrap	:true,sortable:true	},
@@ -164,8 +182,8 @@ export default function Tenders() {
       // { name: 'Reseller Contact Name', selector: row => row.ResellerContactName,wrap	:true,sortable:true	},
       // { name: 'Reseller Email', selector: row => row.ResellerEmail,wrap	:true,sortable:true	},
       // { name: 'Distributor Company Name', selector: row => row.DistributorCompanyName,wrap	:true,sortable:true	},
-      // { name: 'Distributor Contact Name', selector: row => row.DistributorContactName,wrap	:true,sortable:true	},
-      { name: 'Distributor Email', selector: row => row.DistributorEmail,wrap	:true,sortable:true	},
+      { name: 'Address', selector: row => row.Address,wrap	:true,sortable:true	},
+      { name: 'Created By', selector: row => row.created_by,wrap	:true,sortable:true	},
       { name: 'Project Code', selector: row => row.TenderCode,wrap	:true,sortable:true	},
       { name: 'Sector', selector: row => row.Sector,wrap	:true,sortable:true	},
       { name: 'Summary', selector: row => row.Summary,wrap	:true,sortable:true	},
@@ -190,7 +208,7 @@ export default function Tenders() {
         {
           const token = localStorage.getItem('access_token')
             
-       await   fetch(process.env['REACT_APP_API_URL']+"/auth/tender/gettenders",{
+       await   fetch(process.env['REACT_APP_API_URL']+"/tender/gettenders",{
            // mode:'cors',
           headers: {
             'Access-Control-Allow-Origin': '*',
@@ -281,7 +299,7 @@ export default function Tenders() {
          {
 
           setfilteredItems(Tenders.filter(
-            	item => item.EndUserCompanyName && item.EndUserCompanyName.toLowerCase().includes(filterText.toLowerCase()),
+            	item => item.ProjectTitle && item.ProjectTitle.toLowerCase().includes(filterText.toLowerCase()),
             	));
          },[filterText])
         //  const contextActions = React.useMemo(() => {
@@ -328,48 +346,58 @@ export default function Tenders() {
                   <Row>
                   <Col lg="4">
                         <div className='form-group'>              
-                        <Label htmlFor="EndUserCompanyName">End User Company Name</Label>
-                          <Input type="text"  onChange={handleChange} value={formData.EndUserCompanyName} name="EndUserCompanyName" placeholder="End User Company Name" autoComplete="EndUserCompanyName" /> 
+                        <Label htmlFor="ProjectTitle">Project Title</Label>
+                          <Input type="text"  onChange={handleChange} value={formData.ProjectTitle} name="ProjectTitle" placeholder="Project Title" autoComplete="Project Title" /> 
                           </div>
                         </Col>
+
+                        <Col lg="4">
+                            <div className='form-group'>  
+                        <Label htmlFor="StartDate"> Start Date </Label>
+                        
+                          <Input type="date" onChange={handleChange} value={formData.StartDate} name="StartDate" autoComplete="StartDate" />
+                            </div>
+                          </Col>
+                          <Col lg="4">
+                            <div className='form-group'>  
+                        <Label htmlFor="FinishDate"> End Date </Label>
+                        
+                          <Input type="date" onChange={handleChange} value={formData.FinishDate} name="FinishDate"  autoComplete="FinishDate" />
+                            </div>
+                          </Col>
+
                         <Col lg="4">
                           <div className='form-group'>  
-                        <Label htmlFor="EndUserContactName">End User Contact Name</Label>
+                        <Label htmlFor="ClientName">Client Name</Label>
                         
-                          <Input type="text" onChange={handleChange} value={formData.EndUserContactName} name="EndUserContactName" placeholder="End User Contact Name" autoComplete="EndUserContactName" />
+                          <Input type="text" onChange={handleChange} value={formData.ClientName} name="ClientName" placeholder="Client Name" autoComplete="ClientName" />
                           
                             </div>
                           </Col>
+
                           <Col lg="4">
-                            <div className='form-group'>  
-                          
-                        <Label htmlFor="EndUserContactPhone">End User Contact Phone</Label>
-                        
-                          <Input type="text" onChange={handleChange} value={formData.EndUserContactPhone} name="EndUserContactPhone" placeholder="End User Contact Phone" autoComplete="EndUserContactPhone" />
-                          
-                            </div>
-                          </Col>
+      <div className='form-group'>
+        <Label htmlFor="Country">Country</Label>
+        <select className='form-control' onChange={handleChange} name="Country" value={formData.Country}>
+          <option value="">Select a country</option>
+          {countries.map((country, index) => (
+            <option key={index} value={country}>
+              {country}
+            </option>
+          ))}
+        </select>
+      </div>
+    </Col>
+
                           </Row>
                           <Row>
-                          <Col lg="4">
-                            <div className='form-group'>  
-                        <Label htmlFor="EndUserContactEmail">End User Contact Email</Label>
-                        
-                          <Input type="text" onChange={handleChange} value={formData.EndUserContactEmail} name="EndUserContactEmail" placeholder="End User Contact Email" autoComplete="EndUserContactEmail" />
-                            </div>
-                          </Col>
+                          
                           <Col lg="4">
 
 <div className='form-group'>  
 
-<Label htmlFor="Sector">Project Status</Label>
-<select className='form-control' onChange={handleChange}  name="Status" value={formData.Status}> 
-<option>Initial</option>
-<option>Under negotiation</option>
-<option>Confirmed</option>
-<option>Lost</option>
-</select>
-
+<Label htmlFor="State">State</Label>
+<Input type="text" onChange={handleChange} value={formData.State} name="State" placeholder="State" autoComplete="State" />
 </div>
 </Col>
                           <Col lg="4">
@@ -409,85 +437,44 @@ export default function Tenders() {
                           </Col> */}
                           <Col lg="4">
                             <div className='form-group'>  
-                        <Label htmlFor="DistributorContactName">Distributor Contact Name</Label>
+                        <Label htmlFor="Address">Address</Label>
                         
-                          <Input type="text" onChange={handleChange} value={formData.DistributorContactName} name="DistributorContactName" placeholder="Distributor Contact Name" autoComplete="DistributorContactName" />
+                          <Input type="text" onChange={handleChange} value={formData.Address} name="Address" placeholder="Address" autoComplete="Address" />
                             </div>
                           </Col>
                           <Col lg="4">
                             <div className='form-group'>  
-                        <Label htmlFor="DistributorEmail">Distributor Email</Label>
-                        
-                          <Input type="text" onChange={handleChange} value={formData.DistributorEmail} name="DistributorEmail" placeholder="Distributor Email" autoComplete="DistributorEmail" />
-                            </div>
-                          </Col>
-                          {/* <Col lg="4">
-                            <div className='form-group'>  
-                        <Label htmlFor="InstallationCity">Installation City</Label>
-                        
-                          <Input type="text" onChange={handleChange} value={formData.InstallationCity} name="InstallationCity" placeholder="Installation City" autoComplete="InstallationCity" />
-                            </div>
-                          </Col> */}
-                          <Col lg="4">
-                            <div className='form-group'>  
-                        <Label htmlFor="InstallationState">Installation State</Label>
-                        
-                          <Input type="text" onChange={handleChange} value={formData.InstallationState} name="InstallationState" placeholder="Installation State" autoComplete="InstallationState" />
-                            </div>
-                          </Col>
-                          <Col lg="4">
-                            <div className='form-group'>  
-                        <Label htmlFor="Revenue"> Estimated Revenue</Label>
-                        
-                          <Input type="text" onChange={handleChange} value={formData.Revenue} name="Revenue" placeholder="Estimated Revenue" autoComplete="EstimatedRevenue" />
-                            </div>
-                          </Col>
-                         
+                            
 
-                      <Col lg="4">
-                          
-                          <div className='form-group'>  
-                      <Label htmlFor="PurchasingDecisionDate">Estimated Business Purchasing Decision Date</Label>
-                      
-                        <Input type="date" onChange={handleChange} value={formData.PurchasingDecisionDate} name="PurchasingDecisionDate" placeholder="Purchasing Decision Date" autoComplete="PurchasingDecisionDate" />
-                          </div>
-                        </Col>
-                          <Col lg="4">
-                            <div className='form-group'>  
-                        <Label htmlFor="StartDate"> Estimated Implementation Start Date</Label>
+                            <Label htmlFor="created_by">Created By</Label>
                         
-                          <Input type="date" onChange={handleChange} value={formData.StartDate} name="StartDate" autoComplete="StartDate" />
-                            </div>
-                          </Col>
-                          <Col lg="4">
-                            <div className='form-group'>  
-                        <Label htmlFor="FinishDate"> Estimated Implementation Finish Date</Label>
-                        
-                          <Input type="date" onChange={handleChange} value={formData.FinishDate} name="FinishDate"  autoComplete="FinishDate" />
+                          <Input type="text" onChange={handleChange} value={formData.created_by} name="created_by" placeholder="Created By" autoComplete="Created By" />
                             </div>
                           </Col>
                           
-                      <Col lg="4">
-
-                            <div className='form-group'>  
-                      
-                    <Label htmlFor="Sector">Sector</Label>
-                      <select className='form-control' onChange={handleChange}  name="Sector" value={formData.Sector}> 
-                        <option>Private</option>
-                        <option>Government</option>
-                      </select>
-                      
-                        </div>
-                      </Col>
                       <Col lg="4">
                         <div className='form-group'>  
                       
-
                     <Label htmlFor="TenderCode">Project Code (Optional)</Label>
                     <Input type="text" onChange={handleChange} value={formData.TenderCode} name="TenderCode" placeholder="Project Code" autoComplete="TenderCode" />
                       
                         </div>
                       </Col>
+
+                      <Col lg="4">
+
+<div className='form-group'>  
+
+<Label htmlFor="Status">Status</Label>
+<select className='form-control' onChange={handleChange}  name="Status" value={formData.Status}> 
+<option>Initial</option>
+<option>Under negotiation</option>
+<option>Confirmed</option>
+<option>Lost</option>
+</select>
+
+</div>
+</Col>
                       <Col lg="4">
 
 <div className='form-group'>  

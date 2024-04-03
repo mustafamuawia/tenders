@@ -30,7 +30,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::group([
 
     'middleware' => 'api',
-    'prefix' => 'auth'
+    'prefix' => ''
 
 ], function ($router) {
     //project
@@ -53,8 +53,8 @@ Route::get('/partner/delete/{id}',[PartnerController::class, 'delete'])->name('d
    //  Route::post('login', 'AuthController@login');
      //Route::post('create', 'AuthController@create');
    
-    
-   
+    // client
+    Route::get('/client/getclients',[]);
     // Route::post('logout', 'AuthController@logout');
     // Route::post('refresh', 'AuthController@refresh');
     // Route::post('me', 'AuthController@me');

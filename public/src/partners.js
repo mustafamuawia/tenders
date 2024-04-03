@@ -30,7 +30,7 @@ User:[],
   const getData = () => {
     const token = localStorage.getItem('access_token')
 
-    fetch(process.env['REACT_APP_API_URL'] + "/auth/partner/getpartners", {
+    fetch(process.env['REACT_APP_API_URL'] + "/partner/getpartners", {
       // mode:'cors',
       headers: {
         'Access-Control-Allow-Origin': '*',

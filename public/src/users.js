@@ -36,7 +36,7 @@ export default function Users() {
   const getData = () => {
     const token = localStorage.getItem('access_token')
 
-    fetch(process.env['REACT_APP_API_URL'] + "/auth/user/getusers", {
+    fetch(process.env['REACT_APP_API_URL'] + "/user/getusers", {
       // mode:'cors',
       headers: {
         'Access-Control-Allow-Origin': '*',
