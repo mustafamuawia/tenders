@@ -19,7 +19,7 @@
           <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
           <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
-  <link href="{{url('static/css/main.f855e6bc.css')}}" rel="stylesheet">
+  <link href="{{url('build/static/css/main.f855e6bc.css')}}" rel="stylesheet">
 </head>
 
 <body role="document">
@@ -72,8 +72,8 @@
             e.push(r[2] = t);
             var n, o = document.getElementsByTagName("head")[0],
               i = document.createElement("script");
-            i.charset = "utf-8", i.timeout = 120, s.nc && i.setAttribute("nonce", s.nc), i.src = s.p + "static/js/" + ({} [u] || u) + "." + {
-              1: "0b5adef5"
+            i.charset = "utf-8", i.timeout = 120, s.nc && i.setAttribute("nonce", s.nc), i.src = s.p + "build/static/js/" + ({} [u] || u) + "." + {
+              1: "a8c43e0b"
             } [u] + ".chunk.js", n = function(e) {
               i.onerror = i.onload = null, clearTimeout(a);
               var t = f[u];
@@ -138,8 +138,8 @@
       l()
     }([])
   </script>
-  {{-- <script src="http://192.168.64.2/Tenders/static/js/2.2711fbbe.chunk.js"></script> --}}
-  <script src="{{url('static/js/main.cf566e7d.js')}}"></script>
+  {{-- <script src="http://192.168.64.2/Tenders/build/static/js/2.2711fbbe.chunk.js"></script> --}}
+  <script src="{{url('build/static/js/main.a8c43e0b.js')}}"></script>
 </body>
 
 </html>
