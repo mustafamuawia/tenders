@@ -25,7 +25,7 @@ class CreateClientsTable extends Migration
                 $table->integer('partner_id')->nullable();
                 $table->softDeletes();
                 $table->timestamps();
-                $table->tinyInteger('status');
+                $table->tinyInteger('status')->default(1);
             });
         }
     }

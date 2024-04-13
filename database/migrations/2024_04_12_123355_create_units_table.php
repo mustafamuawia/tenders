@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUnitGroupsTable extends Migration
+class CreateUnitsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,15 @@ class CreateUnitGroupsTable extends Migration
      */
     public function up()
     {
-        Schema::create('unit_groups', function (Blueprint $table) {
-            $table->increments('id');
-            $table->text('name');
+        Schema::create('units', function (Blueprint $table) {
+            $table->id();
+            $table->text('unit_name');
             $table->text('description')->nullable();
+            $table->decimal('ratio',24,6);
+            $table->integer('unit_group_id');
+            $table->tinyinteger('status')->default(1);
             $table->softDeletes();
             $table->timestamps();
-            $table->tinyInteger('status')->default(1);
         });
     }
 
@@ -30,6 +32,6 @@ class CreateUnitGroupsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('unit_groups');
+        Schema::dropIfExists('units');
     }
 }

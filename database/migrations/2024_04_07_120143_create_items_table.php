@@ -24,7 +24,7 @@ class CreateItemsTable extends Migration
             $table->string('note');
             $table->softDeletes();
             $table->timestamps();
-            $table->tinyInteger('status');
+            $table->tinyInteger('status')->default(1);
         });
         }
     }

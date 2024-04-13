@@ -22,7 +22,7 @@ class CreateRequestForQuotationsTable extends Migration
             $table->unsignedBigInteger('partner_id')->nullable();
             $table->softDeletes();
             $table->timestamps();
-            $table->tinyInteger('status');
+            $table->tinyInteger('status')->default(1);
         });
     }
 

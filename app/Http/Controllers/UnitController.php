@@ -1,41 +1,28 @@
 <?php
-
+ 
 namespace App\Http\Controllers;
-
-use App\Models\Client;
-use Exception;
-use Illuminate\Http\Request;
+ 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
-class ClietController extends Controller
-{
-    /**
-     * @OA\get(
-     *      path="/address",
-     *      operationId="get_all_addresses",
-     *      tags={"Address"},
-     *      summary="Get list of addressess",
-     *      description="show address",
-     *      security={{"bearer_token":{}}},
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation"
-     *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
-     *     )
-     */
+ 
+use Illuminate\Http\Request;
+ 
+use App\Models\Unit;
+use App\Models\Unitgroup;
 
+ 
+class UnitController extends Controller
+{
+    /** 
+    * Display a listing of the resource.
+    *
+    * @return \Illuminate\Http\Response
+    */
    public function index()
    {
-    $clients = Client::where('status',1)->where('partner_id',1)->get();
-    return response()->json(['clients' => $clients], 200);   }
+    $units = Unit::with('unit_group')->get();
+    $unitgroups = Unitgroup::all();
+    return view('units' ,['units' => $units,'unitgroups'=>$unitgroups]);
+   }
    /**
     * Show the form for creating a new resource.
     *
@@ -54,9 +41,11 @@ class ClietController extends Controller
    public function store(Request $request)
    {
     try {
-        $Client=Client::create($request->all());
+        $unit=Unit::create($request->all());
 
         $units = Unit::with('unit_group')->get();
+        $unitgroups = Unitgroup::all();
+
         return view('units' ,['units' => $units,'unitgroups'=>$unitgroups]);
     } catch(\Exception $exception) {
         // throw new HttpException(400, "Invalid data - {$exception->getMessage}");
