@@ -9,6 +9,8 @@ import Profile from './profile';
 import Signup from './signup';
 import Clients from './client';
 import Items from './items';
+import Rfq from './rfq';
+import Rfq_Item from './rfq_items';
 
 import { Button, Card, CardBody, Collapse,
   Navbar,
@@ -123,12 +125,12 @@ return (
           <>
           <li><Link onClick={handleOnClick} to="/partners">Partners</Link></li>
           <li><Link onClick={handleOnClick} to="/users">Users</Link></li>
-
-         
           </>
           :null
             }
             <li><Link className="link link-primary" to="/client">Clients</Link></li>
+            <li><Link className="link link-primary" to="/rfq">RFQ</Link></li>
+            <li><Link className="link link-primary" to="/rfq_items">Rfq Items</Link></li>
             <li><Link className="link link-primary" to="/items">Items</Link></li>
              <li><Link onClick={handleOnClick} to="/profile">Profile</Link></li>
           <li><a className="link link-primary" onClick={handleLogout} >Logout</a></li>
@@ -152,9 +154,15 @@ return (
             <li><Link to="/partners">Partners</Link></li>
             <li><Link  to="/users">Users</Link></li>
 
+
                </>
           :null}
           <li><Link className="link link-primary" to="/client">Clients</Link></li>
+          <li><Link className="link link-primary" to="/rfq">RFQ</Link></li>
+
+          <li><Link className="link link-primary" to="/rfq_items">Rfq Items</Link></li>
+
+
           <li><Link className="link link-primary" to="/items">Items</Link></li>
         
           <li><Link className="link link-primary" to="/profile">Profile</Link></li>
@@ -167,6 +175,10 @@ return (
         <Routes>
 <Route path="/tenders" exact name="Tenders" element={<Tenders/>} /> 
 <Route path="/client" exact name ="Client" element={<Clients />}/>
+<Route path="/rfq" exact name ="RFQ" element={<Rfq/>}/>
+<Route path="/rfq_items" exact name ="RFQ Items" element={<Rfq_Item/>}/>
+
+
 <Route path="/items" exact name ="ITEMS" element={< Items/>}/>
 
             <Route path="/users" exact name="users" element={<Users />} />
