@@ -10,7 +10,8 @@ import Signup from './signup';
 import Clients from './client';
 import Items from './items';
 import Rfq from './rfq';
-import Rfq_Item from './rfq_items';
+import Rfq_Item from './rfq-items';
+import Unit_Category from './unit-category'
 
 import { Button, Card, CardBody, Collapse,
   Navbar,
@@ -105,95 +106,243 @@ export default function App() {
 if (loggedIn)
     
 return (
-<>
- <nav className="navbar navbar-inverse navbar-fixed-top">
-      <div className="container-fluid">
-        <div className="navbar-header">
-          <button type="button" id="toggle" onClick={handleOnClick} className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span className="sr-only">Toggle navigation</span>
-            <span className="icon-bar"></span>
-            <span className="icon-bar"></span>
-            <span className="icon-bar"></span>
-          </button>
-          <a className="navbar-brand" href="#">Projects, Welcome {User.name}</a>
-        </div>
-        <div id="navbar" className="navbar-collapse collapse">
-          <ul className="nav navbar-nav navbar-right flip">
-          <li><Link onClick={handleOnClick} to="/main">Home</Link></li>
-          <li> <Link onClick={handleOnClick} to="/tenders">Projects</Link></li>
-          {isAdmin?
-          <>
-          <li><Link onClick={handleOnClick} to="/partners">Partners</Link></li>
-          <li><Link onClick={handleOnClick} to="/users">Users</Link></li>
-          </>
-          :null
-            }
-            <li><Link className="link link-primary" to="/client">Clients</Link></li>
-            <li><Link className="link link-primary" to="/rfq">RFQ</Link></li>
-            <li><Link className="link link-primary" to="/rfq_items">Rfq Items</Link></li>
-            <li><Link className="link link-primary" to="/items">Items</Link></li>
-             <li><Link onClick={handleOnClick} to="/profile">Profile</Link></li>
-          <li><a className="link link-primary" onClick={handleLogout} >Logout</a></li>
-         </ul>
-          {/* <form className="navbar-form navbar-right flip">
+    <>
+        <nav className="navbar navbar-inverse navbar-fixed-top">
+            <div className="container-fluid">
+                <div className="navbar-header">
+                    <button
+                        type="button"
+                        id="toggle"
+                        onClick={handleOnClick}
+                        className="navbar-toggle collapsed"
+                        data-toggle="collapse"
+                        data-target="#navbar"
+                        aria-expanded="false"
+                        aria-controls="navbar"
+                    >
+                        <span className="sr-only">Toggle navigation</span>
+                        <span className="icon-bar"></span>
+                        <span className="icon-bar"></span>
+                        <span className="icon-bar"></span>
+                    </button>
+                    <a className="navbar-brand" href="#">
+                        Projects, Welcome {User.name}
+                    </a>
+                </div>
+                <div id="navbar" className="navbar-collapse collapse">
+                    <ul className="nav navbar-nav navbar-right flip">
+                        <li>
+                            <Link onClick={handleOnClick} to="/main">
+                                Home
+                            </Link>
+                        </li>
+                        <li>
+                            {" "}
+                            <Link onClick={handleOnClick} to="/tenders">
+                                Projects
+                            </Link>
+                        </li>
+                        {isAdmin ? (
+                            <>
+                                <li>
+                                    <Link
+                                        onClick={handleOnClick}
+                                        to="/partners"
+                                    >
+                                        Partners
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link onClick={handleOnClick} to="/users">
+                                        Users
+                                    </Link>
+                                </li>
+                            </>
+                        ) : null}
+                        <li>
+                            <Link className="link link-primary" to="/client">
+                                Clients
+                            </Link>
+                        </li>
+                        <li>
+                            <Link className="link link-primary" to="/rfq">
+                                RFQ
+                            </Link>
+                        </li>
+                        <li>
+                            <Link className="link link-primary" to="/rfq-items">
+                                RFQ Items
+                            </Link>
+                        </li>
+                        <li>
+                            <Link className="link link-primary" to="/items">
+                                Items
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                className="link link-primary"
+                                to="/unit-category"
+                            >
+                                Unit Category
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link onClick={handleOnClick} to="/profile">
+                                Profile
+                            </Link>
+                        </li>
+                        <li>
+                            <a
+                                className="link link-primary"
+                                onClick={handleLogout}
+                            >
+                                Logout
+                            </a>
+                        </li>
+                    </ul>
+                    {/* <form className="navbar-form navbar-right flip">
             <input type="text" className="form-control" placeholder="Search" />
           </form> */}
+                </div>
+            </div>
+        </nav>
+
+        <div className="container-fluid">
+            <div className="row">
+                <div className="col-sm-3 col-md-2 sidebar">
+                    <ul className="nav nav-sidebar   navbar-center ">
+                        <li>
+                            <Link to="/main">Home</Link>
+                        </li>
+                        <li>
+                            <Link to="/tenders">Projects</Link>
+                        </li>
+                        {isAdmin ? (
+                            <>
+                                <li>
+                                    <Link to="/partners">Partners</Link>
+                                </li>
+                                <li>
+                                    <Link to="/users">Users</Link>
+                                </li>
+                            </>
+                        ) : null}
+                        <li>
+                            <Link className="link link-primary" to="/client">
+                                Clients
+                            </Link>
+                        </li>
+                        <li>
+                            <Link className="link link-primary" to="/rfq">
+                                RFQ
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link className="link link-primary" to="/rfq-items">
+                                RFQ Items
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link className="link link-primary" to="/items">
+                                Items
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link
+                                className="link link-primary"
+                                to="/unit-category"
+                            >
+                                Unit Category
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link className="link link-primary" to="/profile">
+                                Profile
+                            </Link>
+                        </li>
+
+                        <li>
+                            <a
+                                className="link link-primary"
+                                onClick={handleLogout}
+                            >
+                                Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div className="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                    <Routes>
+                        <Route
+                            path="/tenders"
+                            exact
+                            name="Tenders"
+                            element={<Tenders />}
+                        />
+                        <Route
+                            path="/client"
+                            exact
+                            name="Client"
+                            element={<Clients />}
+                        />
+                        <Route path="/rfq" exact name="RFQ" element={<Rfq />} />
+                        <Route
+                            path="/rfq-items"
+                            exact
+                            name="RFQ Items"
+                            element={<Rfq_Item />}
+                        />
+
+                        <Route
+                            path="/unit-category"
+                            exact
+                            name="Unit Category"
+                            element={<Unit_Category />}
+                        />
+
+                        <Route
+                            path="/items"
+                            exact
+                            name="ITEMS"
+                            element={<Items />}
+                        />
+
+                        <Route
+                            path="/users"
+                            exact
+                            name="users"
+                            element={<Users />}
+                        />
+                        <Route
+                            path="/main"
+                            exact
+                            name="main"
+                            element={<Main />}
+                        />
+                        <Route
+                            path="/partners"
+                            exact
+                            name="partners"
+                            element={<Partners />}
+                        />
+                        <Route
+                            path="/profile"
+                            exact
+                            name="profile"
+                            element={<Profile />}
+                        />
+                    </Routes>
+                </div>
+            </div>
         </div>
-      </div>
-    </nav>
-
-    <div className="container-fluid">
-      <div className="row">
-        <div className="col-sm-3 col-md-2 sidebar">
-          <ul className="nav nav-sidebar   navbar-center ">
-          <li><Link to="/main">Home</Link></li>
-          <li><Link to="/tenders">Projects</Link></li>
-            {isAdmin?
-          <>
-           
-            <li><Link to="/partners">Partners</Link></li>
-            <li><Link  to="/users">Users</Link></li>
-
-
-               </>
-          :null}
-          <li><Link className="link link-primary" to="/client">Clients</Link></li>
-          <li><Link className="link link-primary" to="/rfq">RFQ</Link></li>
-
-          <li><Link className="link link-primary" to="/rfq_items">Rfq Items</Link></li>
-
-
-          <li><Link className="link link-primary" to="/items">Items</Link></li>
-        
-          <li><Link className="link link-primary" to="/profile">Profile</Link></li>
-         
-            <li><a className="link link-primary" onClick={handleLogout} >Logout</a></li>
-          </ul>
-        
-        </div>
-        <div className="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-        <Routes>
-<Route path="/tenders" exact name="Tenders" element={<Tenders/>} /> 
-<Route path="/client" exact name ="Client" element={<Clients />}/>
-<Route path="/rfq" exact name ="RFQ" element={<Rfq/>}/>
-<Route path="/rfq_items" exact name ="RFQ Items" element={<Rfq_Item/>}/>
-
-
-<Route path="/items" exact name ="ITEMS" element={< Items/>}/>
-
-            <Route path="/users" exact name="users" element={<Users />} />
-         <Route path='/main' exact name="main" element={<Main />} /> 
-         <Route path='/partners' exact name="partners" element={<Partners />} /> 
-         <Route path='/profile' exact name="profile" element={<Profile />} /> 
-         
-          </Routes>
-                      
-        </div>
-      </div>
-    </div>
-
     </>
-)
+);
 else
 {
  return(  <Routes>

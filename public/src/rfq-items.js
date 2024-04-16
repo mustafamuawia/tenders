@@ -320,7 +320,7 @@ export default function Rfq_Item() {
                         <Label htmlFor="Item">Item</Label>
                         
                         <select className='form-control' onChange={handleChange}  name="Status" value={formData.Status}> 
-                         
+                        <option >Select Item</option>
 
                             </select>
 
@@ -368,7 +368,7 @@ export default function Rfq_Item() {
                         <Label htmlFor="unit"> Unit </Label>
                           
                         <select className='form-control' onChange={handleChange}  name="unit" value={formData.unit}> 
-                         <option disabled>Select Unit</option>
+                         <option >Select Unit</option>
                          <option>Centimeter (cm)</option>
                          <option>Inch (in)</option>
                           <option>Meter (m)</option>
@@ -381,12 +381,15 @@ export default function Rfq_Item() {
                           </Col>
 
                           <Col lg="4">
-                            <div className='form-group'>  
-                        <Label htmlFor="rfq">RFQ</Label>
-                        
-                          <Input type="text" onChange={handleChange} value={formData.rfq} name="rfq_id" placeholder="RFQ"/>
-                            </div>
-                          </Col>
+    <div className='form-group'>  
+        <Label htmlFor="rfq">RFQ</Label>
+        <select className='form-control' onChange={handleChange} name="rfq_id" value={formData.rfq}>
+            <option>Select RFQ</option>
+          
+        </select>
+    </div>
+</Col>
+
                          {/* <Col lg="4">
                              <div className='form-group'>  
                         <Label htmlFor="ResellerCompanyName">Reseller Company Name</Label>
@@ -434,7 +437,7 @@ export default function Rfq_Item() {
                 <Col lg="12" xs="12">
                 <Card>
                   <CardHeader>
-                    <i className="fa fa-align-justify"></i> Rfqs List
+                    <i className="fa fa-align-justify"></i> Rfq Items List
                   </CardHeader>
                   <CardBody>
          
