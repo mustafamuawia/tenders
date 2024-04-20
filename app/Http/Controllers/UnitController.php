@@ -20,9 +20,8 @@ class UnitController extends Controller
    public function index()
    {
     $units = Unit::with('unit_group')->get();
-    $unitgroups = Unitgroup::all();
-    return view('units' ,['units' => $units,'unitgroups'=>$unitgroups]);
-   }
+    return response()->json(['data'=>['units' => $units]], 200);   
+}
    /**
     * Show the form for creating a new resource.
     *
@@ -41,16 +40,17 @@ class UnitController extends Controller
    public function store(Request $request)
    {
     try {
-        $unit=Unit::create($request->all());
-
-        $units = Unit::with('unit_group')->get();
-        $unitgroups = Unitgroup::all();
-
-        return view('units' ,['units' => $units,'unitgroups'=>$unitgroups]);
+        $unit = new Unit;
+        $unit->unit_name=$request->unit_name;
+        $unit->eq=$request->unit_name;
+        $unit->unit_group_id=$request->unit_name;
+        $unit->status=$request->unit_name;
+        $unit->created_by = auth()->user()->id;
+        $unit->save();
+        return response()->json(['msg'=>'Success','data'=>['unit' => $unit]], 200);   
     } catch(\Exception $exception) {
         // throw new HttpException(400, "Invalid data - {$exception->getMessage}");
-        $units = Unit::with('unit_group')->get();
-        return view('units' ,['units' => $units,'error'=>$exception->getMessage()]);
+        return response()->json(['msg'=>$exception->getMessage()], 400);
     }
    }
    /**
@@ -61,16 +61,8 @@ class UnitController extends Controller
     */
    public function show($id)
    {
-    if(is_numeric($id))
-    {
-        $unit = Unit::find($id);
-        return view('user' ,['unit' => $unit]);
-    }
-    else
-    {
-        $units = Unit::with('unit_group')->get();
-        return view('units' ,['units' => $units]);
-    }
+    $unit = Unit::find($id);
+    return response()->json(['data' => ['unit'=>$unit]], 200);
    }
    /**
     * Show the form for editing the specified resource.
@@ -80,9 +72,7 @@ class UnitController extends Controller
     */
    public function edit($id)
    {
-    $unit = Unit::find($id);
-    $unitgroups = Unitgroup::all();
-    return view('units' ,['unit' => $unit,'unitgroups'=>$unitgroups]);
+
    }
    /**
     * Update the specified resource in storage.
@@ -96,19 +86,15 @@ class UnitController extends Controller
     
     try {
         $unit = Unit::find($id);
-    $unit->unit_name=$request->unit_name;
-    $unit->eq=$request->unit_name;
-    $unit->unit_group_id=$request->unit_name;
-    $unit->status=$request->unit_name;
-$unit->save();
-        $units = Unit::with('unit_group')->get();
-        $unitgroups = Unitgroup::all();
-
-        return view('units' ,['units' => $units,'unitgroups'=>$unitgroups]);
+        $unit->unit_name=$request->unit_name;
+        $unit->eq=$request->unit_name;
+        $unit->unit_group_id=$request->unit_name;
+        $unit->status=$request->unit_name;
+        $unit->save();
+        return response()->json(['msg'=>'Success','data' => ['unit'=>$unit]], 200);   
     } catch(\Exception $exception) {
         // throw new HttpException(400, "Invalid data - {$exception->getMessage}");
-        $units = Unit::with('unit_group')->get();
-        return view('units' ,['units' => $units,'error'=>$exception->getMessage()]);
+        return response()->json(['error'=>$exception->getMessage()], 400);
     }
    }
    /**
@@ -121,7 +107,7 @@ $unit->save();
    {
     $unit= Unit::findOrFail($id);
     $unit->delete();
-    return response()->json(['تمت العملية بنجاح'], 200);
+    return response()->json(['msg'=>'Success'], 200);
    }
 
    public function change_status(Request $request)

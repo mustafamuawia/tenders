@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\unit_group;
  
-class unit_groupsController extends Controller
+class unit_groupController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -13,7 +13,7 @@ class unit_groupsController extends Controller
     public function index()
     {
         $unit_groups = unit_group::all();
-        return view('unit_groups' ,['unit_groups' => $unit_groups]);
+        return response()->json(['data'=>['unit_groups' => $unit_groups]], 200);   
     }
 
     /**
@@ -30,14 +30,14 @@ class unit_groupsController extends Controller
     public function store(Request $request)
     {
         try {
-            $unit_groups=unit_group::create($request->all());
-    
-            $unit_groups = unit_group::all();
-            return view('unit_groups' ,['unit_groups' => $unit_groups]);
+            $unit_group = new unit_group;
+            $unit_group->unit_group_name=$request->unit_group_name;
+            $unit_group->description=$request->description;
+            $unit_group->status=$request->status;
+            $unit_group->save();
+            return response()->json(['msg'=>'Success','data' => ['unit_group'=>$unit_group]], 200);
         } catch(\Exception $exception) {
             // throw new HttpException(400, "Invalid data - {$exception->getMessage}");
-            $unit_groups = unit_group::all();
-            return view('units' ,['unit_groups' => $unit_groups,'error'=>$exception->getMessage()]);
         }
     }
 
@@ -67,13 +67,12 @@ class unit_groupsController extends Controller
             $unit_group=unit_group::find($id);
             $unit_group->unit_group_name=$request->unit_group_name;
             $unit_group->description=$request->description;
-            $unit_group->status=$request->status;
-            $unit_groups = unit_group::all();
-            return view('unit_groups' ,['unit_groups' => $unit_groups]);
+            $unit_groups->save();
+
+            return response()->json(['error'=>$exception->getMessage()], 400);
         } catch(\Exception $exception) {
             // throw new HttpException(400, "Invalid data - {$exception->getMessage}");
-            $unit_groups = unit_group::all();
-            return view('units' ,['unit_groups' => $unit_groups,'error'=>$exception->getMessage()]);
+            return response()->json(['error'=>$exception->getMessage()], 400);
         }
     }
 
@@ -84,7 +83,7 @@ class unit_groupsController extends Controller
     {
         $unit_group = unit_group::findOrFail($id);
         $unit_group->delete();
-        return response()->json(['تمت العملية بنجاح'], 200);
+        return response()->json(['msg'=>'Success'], 200);
     }
     /**
      * Change the status of a unit group.

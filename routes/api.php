@@ -7,6 +7,11 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\TenderController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PartnerController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\UnitController;
+use App\Http\Controllers\unit_groupController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\RequestForQuotationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -34,27 +39,36 @@ Route::group([
 
 ], function ($router) {
     //project
-    Route::post('/tender/create',[TenderController::class, 'create'])->name('create');
-    Route::post('/tender/update',[TenderController::class, 'update'])->name('update');
-    Route::get('/tender/delete/{id}',[TenderController::class, 'delete'])->name('delete');
-    Route::get('/tender/gettenders',[TenderController::class, 'getall'])->name('getall');
+    Route::apiResource('projects', ProjectController::class);
 
-//user
-Route::get('/user/getusers',[UserController::class, 'getusers'])->name('getusers');
-Route::post('/user/changestatus',[UserController::class, 'changestatus'])->name('changestatus');
-Route::get('/user/delete/{id}',[UserController::class, 'delete'])->name('delete');
-Route::post('/user/updateuser',[UserController::class, 'updateuser'])->name('updateuser');
-Route::post('/user/updateadmin',[UserController::class, 'updateadmin'])->name('updateadmin');
+    Route::apiResource('clients', ClientController::class);
 
-//partner
-Route::get('/partner/getpartners',[PartnerController::class, 'getpartners'])->name('getpartners');
-Route::get('/partner/delete/{id}',[PartnerController::class, 'delete'])->name('delete');
+    Route::apiResource('items', ItemController::class);
+
+    Route::apiResource('units', UnitController::class);
+
+    Route::apiResource('unitgroups', unit_groupController::class);
+//     Route::post('/tender/create',[TenderController::class, 'create'])->name('create');
+//     Route::post('/tender/update',[TenderController::class, 'update'])->name('update');
+//     Route::get('/tender/delete/{id}',[TenderController::class, 'delete'])->name('delete');
+//     Route::get('/tender/gettenders',[TenderController::class, 'getall'])->name('getall');
+
+// //user
+// Route::get('/user/getusers',[UserController::class, 'getusers'])->name('getusers');
+// Route::post('/user/changestatus',[UserController::class, 'changestatus'])->name('changestatus');
+// Route::get('/user/delete/{id}',[UserController::class, 'delete'])->name('delete');
+// Route::post('/user/updateuser',[UserController::class, 'updateuser'])->name('updateuser');
+// Route::post('/user/updateadmin',[UserController::class, 'updateadmin'])->name('updateadmin');
+
+// //partner
+// Route::get('/partner/getpartners',[PartnerController::class, 'getpartners'])->name('getpartners');
+// Route::get('/partner/delete/{id}',[PartnerController::class, 'delete'])->name('delete');
  
-   //  Route::post('login', 'AuthController@login');
-     //Route::post('create', 'AuthController@create');
+//    //  Route::post('login', 'AuthController@login');
+//      //Route::post('create', 'AuthController@create');
    
-    // client
-    Route::get('/client/getclients',[]);
+//     // client
+//     Route::get('/client/getclients',[]);
     // Route::post('logout', 'AuthController@logout');
     // Route::post('refresh', 'AuthController@refresh');
     // Route::post('me', 'AuthController@me');

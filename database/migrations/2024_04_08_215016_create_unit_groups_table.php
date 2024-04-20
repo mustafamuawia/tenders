@@ -17,6 +17,7 @@ class CreateUnitGroupsTable extends Migration
             $table->increments('id');
             $table->text('name');
             $table->text('description')->nullable();
+            $table->integer('created_by');
             $table->softDeletes();
             $table->timestamps();
             $table->tinyInteger('status')->default(1);

@@ -17,7 +17,6 @@ class Item extends Model
         'manufacturer',
         'origin_country',
         'created_by',
-        'timestamp',
         'created_at',
         'updated_at',
         'status',

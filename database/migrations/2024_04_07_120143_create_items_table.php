@@ -22,6 +22,7 @@ class CreateItemsTable extends Migration
             $table->string('manufacturer')->nullable();
             $table->string('origin_country')->nullable();
             $table->string('note');
+            $table->integer('created_by');
             $table->softDeletes();
             $table->timestamps();
             $table->tinyInteger('status')->default(1);
