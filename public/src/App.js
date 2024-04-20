@@ -10,7 +10,6 @@ import Signup from './signup';
 import Clients from './client';
 import Items from './items';
 import Rfq from './rfq';
-import Rfq_Item from './rfq-items';
 import Unit_Category from './unit-category'
 
 import { Button, Card, CardBody, Collapse,
@@ -169,11 +168,7 @@ return (
                                 RFQ
                             </Link>
                         </li>
-                        <li>
-                            <Link className="link link-primary" to="/rfq-items">
-                                RFQ Items
-                            </Link>
-                        </li>
+
                         <li>
                             <Link className="link link-primary" to="/items">
                                 Items
@@ -240,11 +235,6 @@ return (
                             </Link>
                         </li>
 
-                        <li>
-                            <Link className="link link-primary" to="/rfq-items">
-                                RFQ Items
-                            </Link>
-                        </li>
 
                         <li>
                             <Link className="link link-primary" to="/items">
@@ -292,12 +282,7 @@ return (
                             element={<Clients />}
                         />
                         <Route path="/rfq" exact name="RFQ" element={<Rfq />} />
-                        <Route
-                            path="/rfq-items"
-                            exact
-                            name="RFQ Items"
-                            element={<Rfq_Item />}
-                        />
+
 
                         <Route
                             path="/unit-category"

@@ -1,8 +1,10 @@
 import React, { useState,useEffect,useMemo } from 'react';
 import { Button, Card, CardBody, CardGroup, Col, Container, Form, Input, 
-  InputGroup, InputGroupAddon, InputGroupText, Row,Label,FormGroup,CardHeader,Table,
-  Badge,Pagination,PaginationItem,PaginationLink} from 'reactstrap';
+InputGroup, InputGroupAddon, InputGroupText, Row,Label,FormGroup,CardHeader,Table,
+Badge,Pagination,PaginationItem,PaginationLink} from 'reactstrap';
   import DataTable from 'react-data-table-component';
+  import Select from 'react-select';
+
 
 export default function Rfq() {
   const [filterText, setFilterText] = useState('');
@@ -11,6 +13,11 @@ export default function Rfq() {
   const [oldFilter,setOldFilter]=useState('')
   const [selectedRows, setSelectedRows] = React.useState([]);
 	const [toggleCleared, setToggleCleared] = React.useState(false);
+  const options = [
+    { value: 'option1', label: 'Option 1' },
+    { value: 'option2', label: 'Option 2' },
+
+  ];
 
 
 
@@ -18,12 +25,14 @@ export default function Rfq() {
   let initFormData= { 
 
       Project:'',
-      ClientName:'',
+      Client:'',
       IssueDate:'',
       ExpireDate:'',
       Partner:'',
       Summary:'',
-     Status: 'Initial'}
+      quantity: 0,
+      price:0
+     }
 
   const [formData,setformData]= useState(initFormData)
   const input = { 
@@ -103,6 +112,7 @@ export default function Rfq() {
 		
       console.log(e.target.name);
     };
+
 	const subHeaderComponentMemo = useMemo(() => {
 		const handleClear = () => {
 			if (filterText) {
@@ -158,6 +168,9 @@ export default function Rfq() {
           [event.target.name]: event.target.value
        }))
       }
+
+
+  
         
            const getData = async () =>
         {
@@ -257,193 +270,232 @@ export default function Rfq() {
             	item => item.ProjectTitle && item.ProjectTitle.toLowerCase().includes(filterText.toLowerCase()),
             	));
          },[filterText])
-        //  const contextActions = React.useMemo(() => {
-        //   		const handleDelete = () => {
-          			
-        //   			if (window.confirm(`Are you sure you want to delete:\r ${selectedRows.map(r => r.title)}?`)) {
-        //   				setToggleCleared(!toggleCleared);
-        //   				}
-        //   		};
-        //       const handleEdit = () => {
-          			
-        //   			if (window.confirm(`Are you sure you want to Edit:\r ${selectedRows.map(r => r.title)}?`)) {
-        //   				setToggleCleared(!toggleCleared);
-        //   				}
-        //   		};
-          
-        //   		return (<>
-        //   			<Button key="delete" onClick={handleDelete} style={{ color:'white',backgroundColor: 'red' }} icon>
-        //   				Delete
-        //   			</Button>
-        //       </>
-        //   		);
-        //   	}, [data, selectedRows, toggleCleared]);
-          //  const ManageSelections = () => {
-          // 	const [selectedRows, setSelectedRows] = React.useState([]);
-          //     	const [toggleCleared, setToggleCleared] = React.useState(false);
-              
-          //     	const handleRowSelected = React.useCallback(state => {
-          //     //		setSelectedRows(state.selectedRows);
-          //     	}, []);}
          return (
-            <Container>
-              {isAdmin?<></>:<Row>
-              <Col lg="12" xs="12">
-                 <Card>
-          
-                <CardHeader>
-                <h1>Add RFQ</h1>
-                </CardHeader>
-                <CardBody>
-                
-                  <Form onSubmit={handleSubmit}>
-                      
-                  <Row>
-                        <Col lg="4">
-                          <div className='form-group'>  
-                        <Label htmlFor="ClientName">Client Name</Label>
-                        
-                          <Input type="text" onChange={handleChange} value={formData.ClientName} name="client_id " placeholder="Client Name" autoComplete="ClientName" />
-                          
-                            </div>
-                          </Col>
+             <Container>
 
+                     <Row>
+                         <Col lg="12" xs="12">
+                             <Card>
+                                 <CardHeader>
+                                     <h1>Add RFQ</h1>
+                                 </CardHeader>
+                                 <CardBody>
+                                     <Form onSubmit={handleSubmit}>
+                                         <Row>
+                                             <Col lg="4">
+                                                 <div className="form-group">
+                                                     <Label htmlFor="Client">
+                                                         Client
+                                                     </Label>
+                                                     <Select
+                                                         options={options}
+                                                         onChange={handleChange}
+                                                         name="client"
+                                                         value={formData.Status}
+                                                         placeholder="Search"
+                                                         isSearchable={true}
+                                                         isDisabled={isAdmin}
+                                                     />
+                                                 </div>
+                                             </Col>
+                                             <Col lg="4">
+                                                 <div className="form-group">
+                                                     <Label htmlFor="Project">
+                                                         Project
+                                                     </Label>
+                                                     <Select
+                                                         options={options}
+                                                         onChange={handleChange}
+                                                         name="project"
+                                                         value={formData.Status}
+                                                         placeholder="Search"
+                                                         isSearchable={true}
+                                                         isDisabled={isAdmin}
+                                                     />
+                                                 </div>
+                                             </Col>
+                                             <Col lg="4">
+                                                 <div className="form-group">
+                                                     <Label htmlFor="IssueDate">
+                                                         {" "}
+                                                         Issue Date{" "}
+                                                     </Label>
+                                                     <Input
+                                                         type="date"
+                                                         onChange={handleChange}
+                                                         value={
+                                                             formData.IssueDate
+                                                         }
+                                                         name="issue_date"
+                                                         disabled={isAdmin} // Disable if not admin
+                                                     />
+                                                 </div>
+                                             </Col>
+                                         </Row>
+                                         <Row>
+                                             <Col lg="4">
+                                                 <div className="form-group">
+                                                     <Label htmlFor="ExpireDate">
+                                                         {" "}
+                                                         Expire Date{" "}
+                                                     </Label>
+                                                     <Input
+                                                         type="date"
+                                                         onChange={handleChange}
+                                                         value={
+                                                             formData.ExpireDate
+                                                         }
+                                                         name="expire_date"
+                                                         disabled={!isAdmin} // Disable if admin
+                                                     />
+                                                 </div>
+                                             </Col>
+                                             <Col lg="4">
+                                                 <div className="form-group">
+                                                     <Label htmlFor="Item">
+                                                         Item
+                                                     </Label>
+                                                     <Select
+                                                         options={options}
+                                                         onChange={handleChange}
+                                                         name="Status"
+                                                         value={formData.Status}
+                                                         placeholder="Search"
+                                                         isSearchable={true}
+                                                         isDisabled={isAdmin}
+                                                     />
+                                                 </div>
+                                             </Col>
+                                             <Col lg="4">
+                                                 <div
+                                                     className="form-group"
+                                                     style={{ width: "100%" }}
+                                                 >
+                                                     <Label htmlFor="quantity">
+                                                         Qty
+                                                     </Label>
+                                                     <div className="input-group">
+                                                         <input
+                                                             type="number"
+                                                             className="form-control"
+                                                             style={{
+                                                                 width: "100%",
+                                                             }}
+                                                             value={
+                                                                 formData.quantity
+                                                             }
+                                                             onChange={
+                                                                 handleChange
+                                                             }
+                                                             name="quantity"
+                                                             disabled={isAdmin} // Disable if not admin
+                                                         />
+                                                     </div>
+                                                 </div>
+                                             </Col>
+                                             <Col lg="6">
+                                                 <div className="form-group">
+                                                     <Label htmlFor="quantity">
+                                                         Price ($)
+                                                     </Label>
+                                                     <div className="input-group">
+                                                         <input
+                                                             className="form-control"
+                                                             type="number"
+                                                             step="0.01"
+                                                             value={
+                                                                 formData.price
+                                                             }
+                                                             onChange={
+                                                                 handleChange
+                                                             }
+                                                             name="price"
+                                                             disabled={!isAdmin} // Disable if admin
+                                                         />
+                                                     </div>
+                                                 </div>
+                                             </Col>
+                                         </Row>
+                                         <Row>
+                                             <Col lg="4">
+                                                 <div className="form-group">
+                                                     <Label htmlFor="Unit">
+                                                         Unit
+                                                     </Label>
+                                                     <Select
+                                                         options={options}
+                                                         onChange={handleChange}
+                                                         name="unit"
+                                                         value={formData.Status}
+                                                         placeholder="Search"
+                                                         isSearchable={true}
+                                                         isDisabled={isAdmin}
+                                                     />
+                                                 </div>
+                                             </Col>
+                                             <Col lg="4">
+                                                 <div className="form-group">
+                                                     <Label htmlFor="Summary">
+                                                         Summary
+                                                     </Label>
+                                                     <textarea
+                                                         onChange={handleChange}
+                                                         className="form-control"
+                                                         value={
+                                                             formData.Summary
+                                                         }
+                                                         name="Summary"
+                                                         placeholder="Summary"
+                                                         autoComplete="Summary"
+                                                         disabled={isAdmin} // Disable if not admin
+                                                     ></textarea>
+                                                 </div>
+                                             </Col>
+                                         </Row>
 
-                          <Col lg="4">
-                          <div className='form-group'>  
-                        <Label htmlFor="Project">Project</Label>
-                        
-                          <Input type="text" onChange={handleChange} value={formData.Project} name="project_id" placeholder="Project" autoComplete="Project" />
-                          
-                            </div>
-                          </Col>
-
-                          <Col lg="4">
-                            <div className='form-group'>  
-                        <Label htmlFor="IssueDate"> Issue Date </Label>
-                        
-                          <Input type="date" onChange={handleChange} value={formData.IssueDate} name="issue_date"  />
-                            </div>
-                          </Col>
-
-                          </Row>
-                          <Row>
-
-                           <Col lg="4">
-                            <div className='form-group'>  
-                        <Label htmlFor="ExpireDate"> Expire Date </Label>
-                        
-                          <Input type="date" onChange={handleChange} value={formData.ExpireDate} name="expire_date"  />
-                            </div>
-                          </Col>
-
-                          <Col lg="4">
-                            <div className='form-group'>  
-                        <Label htmlFor="Partner">Partner</Label>
-                        
-                          <Input type="text" onChange={handleChange} value={formData.Partner} name="partner_id" placeholder="Partner"/>
-                            </div>
-                          </Col>
-                         {/* <Col lg="4">
-                             <div className='form-group'>  
-                        <Label htmlFor="ResellerCompanyName">Reseller Company Name</Label>
-                        
-                          <Input type="text" onChange={handleChange} value={formData.ResellerCompanyName} name="ResellerCompanyName" placeholder="Reseller Company Name" autoComplete="ResellerCompanyName" />
-                            </div>
-                          </Col>
-                          <Col lg="4">
-                            <div className='form-group'>  
-                        <Label htmlFor="ResellerContactName">Reseller Contact Name</Label>
-                        
-                          <Input type="text" onChange={handleChange} value={formData.ResellerContactName} name="ResellerContactName" placeholder="Reseller Contact Name" autoComplete="ResellerContactName" />
-                            </div>
-                          </Col>
-                          <Col lg="4">
-                            <div className='form-group'>  
-                        <Label htmlFor="ResellerEmail">Reseller Email</Label>
-                        
-                          <Input type="text" onChange={handleChange} value={formData.ResellerEmail} name="ResellerEmail" placeholder="Reseller Email" autoComplete="ResellerEmail" />
-                            </div>
-                          </Col>
-                          <Col lg="4">
-                            <div className='form-group'>  
-                        <Label htmlFor="DistributorCompanyName">Distributor Company Name</Label>
-                        
-                          <Input type="text" onChange={handleChange} value={formData.DistributorCompanyName} name="DistributorCompanyName" placeholder="Distributor Company Name" autoComplete="DistributorCompanyName" />
-                            </div>
-                          </Col> */}
-                          
-                         
-                          
-                      
-                      <Col lg="4">
-
-<div className='form-group'>  
-
-<Label htmlFor="Status">Status</Label>
-<select className='form-control' onChange={handleChange}  name="Status" value={formData.Status}> 
-<option>Initial</option>
-<option>Under negotiation</option>
-<option>Confirmed</option>
-<option>Lost</option>
-</select>
-
-</div>
-</Col>
-                      <Col lg="4">
-
-<div className='form-group'>  
-
-<Label htmlFor="Summary">Summary</Label>
-<textarea onChange={handleChange} className="form-control" value={formData.Summary} name="Summary" placeholder="Summary" autoComplete="Summary" >
-
-</textarea>
-
-
-</div>
-</Col>
-</Row>
-<Row>
-                <Col lg="6">
-                  <Button color="primary" className="btn btn-info">Save</Button>
-                </Col>
-                </Row>
-                          
-                      </Form>
-                  
-                </CardBody>
-                
-              </Card>
-              </Col>
-            
-          </Row>}
-            <Row>
-                <Col lg="12" xs="12">
-                <Card>
-                  <CardHeader>
-                    <i className="fa fa-align-justify"></i> Rfqs List
-                  </CardHeader>
-                  <CardBody>
-         
-                  <DataTable responsive striped
-            columns={columns}
-            data={filteredItems}
-            subHeader
-            subHeaderComponent={subHeaderComponentMemo}
-            pagination
-            actions
-            fixedHeader	
-           /* selectableRows
+                                         <Row>
+                                             <Col lg="6">
+                                                 <Button
+                                                     color="primary"
+                                                     className="btn btn-info"
+                                                 >
+                                                     Save
+                                                 </Button>
+                                             </Col>
+                                         </Row>
+                                     </Form>
+                                 </CardBody>
+                             </Card>
+                         </Col>
+                     </Row>
+                 <Row>
+                     <Col lg="12" xs="12">
+                         <Card>
+                             <CardHeader>
+                                 <i className="fa fa-align-justify"></i> Rfqs
+                                 List
+                             </CardHeader>
+                             <CardBody>
+                                 <DataTable
+                                     responsive
+                                     striped
+                                     columns={columns}
+                                     data={filteredItems}
+                                     subHeader
+                                     subHeaderComponent={subHeaderComponentMemo}
+                                     pagination
+                                     actions
+                                     fixedHeader
+                                     /* selectableRows
             contextActions={contextActions}*/
-            defaultSortFieldId='TenderId'
-            customStyles={customStyles}
-        />               </CardBody>
-                        </Card>
-    
-                </Col>
-                </Row>
-            </Container>
-        
-        );
+                                     defaultSortFieldId="TenderId"
+                                     customStyles={customStyles}
+                                 />{" "}
+                             </CardBody>
+                         </Card>
+                     </Col>
+                 </Row>
+             </Container>
+         );
        
                       }

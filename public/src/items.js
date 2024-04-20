@@ -292,7 +292,7 @@ export default function Items() {
 
          return (
 <Container>
-  {isAdmin ? (
+  {!isAdmin ? (
     <></>
   ) : (
     <Row>
@@ -306,8 +306,8 @@ export default function Items() {
               <Row>
                 <Col lg="4">
                   <div className='form-group'>              
-                    <Label htmlFor="itemName">Item Name</Label>
-                    <Input type="text" onChange={handleChange} value={formData.item_name} name="itemName" placeholder="Item Name" autoComplete="Item Name" /> 
+                    <Label htmlFor="itemName">Name</Label>
+                    <Input type="text" onChange={handleChange} value={formData.item_name} name="itemName" placeholder="Name" autoComplete="Item Name" /> 
                   </div>
                 </Col>
 
@@ -349,21 +349,6 @@ export default function Items() {
         </select>
       </div>
     </Col>
-
-    <Col lg="4">
-
-<div className='form-group'>  
-
-<Label htmlFor="Status">Status</Label>
-<select className='form-control' onChange={handleChange}  name="Status" value={formData.Status}> 
-<option>Initial</option>
-<option>Under negotiation</option>
-<option>Confirmed</option>
-<option>Lost</option>
-</select>
-
-</div>
-</Col>
     <Col lg="4">
 
 <div className='form-group'>  
