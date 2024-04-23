@@ -17,6 +17,10 @@ class unit_group extends Model
     protected $fillable = [
         'unit_group_name',
         'description',
+        'created_by',
+        'deleted_at',
+        'created_at',
+        'updated_at',
         'status'
     ];
 }

@@ -8,16 +8,32 @@ use App\Http\Requests\UpdateProjectRequest;
 
 class ProjectController extends Controller
 {
-    /** 
-    * Display a listing of the resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
+    /**
+     * @OA\get(
+     *      path="/projects",
+     *      operationId="get_all_projects",
+     *      tags={"Projects"},
+     *      summary="Get list of projects",
+     *      description="get all projects",
+     *      security={{"bearer_token":{}}},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation"
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     */
    public function index()
    {
-    $units = Unit::with('unit_group')->get();
-    $unitgroups = Unitgroup::all();
-    return view('units' ,['units' => $units,'unitgroups'=>$unitgroups]);
+    $projects = Project::with('client')->where('partner_id',auth()->user()->id)->get();
+    return response()->json(['data'=>['projects' => $projects]], 200);   
    }
    /**
     * Show the form for creating a new resource.
@@ -29,44 +45,137 @@ class ProjectController extends Controller
        //
    }
    /**
-    * Store a newly created resource in storage.
-    *
-    * @param  \Illuminate\Http\Request  $request
-    * @return \Illuminate\Http\Response
-    */
+     * @OA\Post(
+     *      path="/projects",
+     *      operationId="store_project",
+     *      tags={"Projects"},
+     *      summary="store project",
+     *      description="store project",
+     *     @OA\Parameter(
+     *          name="project_code",
+     *          description="Project Code",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          ) ),
+     *     @OA\Parameter(
+     *          name="project_title",
+     *          description="Project Title",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          ) ),
+     *     @OA\Parameter(
+     *          name="start_date",
+     *          description="Start Date",
+     *          description="Start Date Ex. (2024-03-20)",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="Date"
+     *          ) ),
+     *     @OA\Parameter(
+     *          name="end_date",
+     *          description="End Date",
+     *          description="End Date Ex. (2024-03-20)",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="Date"
+     *          ) ),
+     *     @OA\Parameter(
+     *          name="country",
+     *          description="Country",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          ) ),
+     *     @OA\Parameter(
+     *          name="state",
+     *          description="State",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          ) ),
+     *     @OA\Parameter(
+     *          name="city",
+     *          description="City",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          ) ),
+     *     @OA\Parameter(
+     *          name="address",
+     *          description="Address",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          ) ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     */
    public function store(Request $request)
    {
     try {
-        $unit=Unit::create($request->all());
-
-        $units = Unit::with('unit_group')->get();
-        $unitgroups = Unitgroup::all();
-
-        return view('units' ,['units' => $units,'unitgroups'=>$unitgroups]);
+        $project=new Project;
+        $project->project_code=$request->project_code;
+        $project->project_title=$request->project_title;
+        $project->start_date=$request->start_date;
+        $project->end_date=$request->end_date;
+        $project->country=$request->country;
+        $project->state=$request->state;
+        $project->city=$request->city;
+        $project->address=$request->address;
+        $project->partner_id=auth()->user()->id;
+        $project->save();
+        return response()->json(['msg'=>'Success'], 200);   
     } catch(\Exception $exception) {
         // throw new HttpException(400, "Invalid data - {$exception->getMessage}");
-        $units = Unit::with('unit_group')->get();
-        return view('units' ,['units' => $units,'error'=>$exception->getMessage()]);
+        return response()->json(['msg'=>$exception->getMessage()], 400);   
     }
    }
    /**
-    * Display the specified resource.
-    *
-    * @param  int  $id
-    * @return \Illuminate\Http\Response
-    */
+     * @OA\get(
+     *      path="/projects/{id}",
+     *      operationId="show_project",
+     *      tags={"Projects"},
+     *      summary="show project",
+     *      description="show project",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     */
    public function show($id)
    {
-    if(is_numeric($id))
-    {
-        $unit = Unit::find($id);
-        return view('user' ,['unit' => $unit]);
-    }
-    else
-    {
-        $units = Unit::with('unit_group')->get();
-        return view('units' ,['units' => $units]);
-    }
+    $project = Project::find($id);
+    return response()->json(['data' => ['project'=>$project]], 200);
    }
    /**
     * Show the form for editing the specified resource.
@@ -76,48 +185,145 @@ class ProjectController extends Controller
     */
    public function edit($id)
    {
-    $unit = Unit::find($id);
-    $unitgroups = Unitgroup::all();
-    return view('units' ,['unit' => $unit,'unitgroups'=>$unitgroups]);
+   
    }
    /**
-    * Update the specified resource in storage.
-    *
-    * @param  \Illuminate\Http\Request  $request
-    * @param  int  $id
-    * @return \Illuminate\Http\Response
-    */
+     * @OA\put(
+     *      path="/projects/{id}",
+     *      operationId="update_project",
+     *      tags={"Projects"},
+     *      summary="update project",
+     *      description="update project",
+     *     @OA\Parameter(
+     *          name="project_code",
+     *          description="Project Code",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          ) ),
+     *     @OA\Parameter(
+     *          name="project_title",
+     *          description="Project Title",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          ) ),
+     *     @OA\Parameter(
+     *          name="start_date",
+     *          description="Start Date",
+     *          description="Start Date Ex. (2024-03-20)",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="Date"
+     *          )),
+     *     @OA\Parameter(
+     *          name="end_date",
+     *          description="End Date",
+     *          description="End Date Ex. (2024-03-20)",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="Date"
+     *          ) ),
+     *     @OA\Parameter(
+     *          name="country",
+     *          description="Country",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          ) ),
+     *     @OA\Parameter(
+     *          name="state",
+     *          description="State",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          ) ),
+     *     @OA\Parameter(
+     *          name="city",
+     *          description="City",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          ) ),
+     *     @OA\Parameter(
+     *          name="address",
+     *          description="Address",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="string"
+     *          ) ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     */
+   
    public function update(Request $request, $id)
    {
     
     try {
-        $unit = Unit::find($id);
-    $unit->unit_name=$request->unit_name;
-    $unit->eq=$request->unit_name;
-    $unit->unit_group_id=$request->unit_name;
-    $unit->status=$request->unit_name;
-$unit->save();
-        $units = Unit::with('unit_group')->get();
-        $unitgroups = Unitgroup::all();
+        $project = Project::find($id);
 
-        return view('units' ,['units' => $units,'unitgroups'=>$unitgroups]);
+        $project->project_code=$request->project_code;
+        $project->project_title=$request->project_title;
+        $project->start_date=$request->start_date;
+        $project->end_date=$request->end_date;
+        $project->country=$request->country;
+        $project->state=$request->state;
+        $project->city=$request->city;
+        $project->address=$request->address;
+        $project->partner_id=auth()->user()->id;
+        $project->save();
+
+        return response()->json(['msg'=>'Success'], 200);
     } catch(\Exception $exception) {
         // throw new HttpException(400, "Invalid data - {$exception->getMessage}");
-        $units = Unit::with('unit_group')->get();
-        return view('units' ,['units' => $units,'error'=>$exception->getMessage()]);
+        return response()->json(['msg'=>$exception->getMessage()], 400);    
     }
    }
    /**
-    * Remove the specified resource from storage.
-    *
-    * @param  int  $id
-    * @return \Illuminate\Http\Response
-    */
+     * @OA\delete(
+     *      path="/projects/{id}",
+     *      operationId="delete_project",
+     *      tags={"Projects"},
+     *      summary="delete project",
+     *      description="delete project",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     */
    public function destroy($id)
    {
-    $unit= Unit::findOrFail($id);
-    $unit->delete();
-    return response()->json(['تمت العملية بنجاح'], 200);
+    $project= Project::findOrFail($id);
+    $project->delete();
+    return response()->json(['msg'=>'Success'], 200);
    }
 
    public function change_status(Request $request)

@@ -20,7 +20,6 @@ class CreateRfqDetailsTable extends Migration
             $table->integer('qty');
             $table->integer('unit_id');
             $table->integer('unit_price');
-            $table->integer('total_price');
             $table->timestamps();
         });
     }

@@ -1,0 +1,722 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Tenders API Documentation",
+        "description": "Tenders API Documentation",
+        "contact": {
+            "email": "info@just.sd"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://my-default-host.com",
+            "description": "Tenders API Server"
+        }
+    ],
+    "paths": {
+        "/clients": {
+            "get": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "Get list of clients",
+                "description": "get all clients",
+                "operationId": "get_all_clients",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_token": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "update client",
+                "description": "update client",
+                "operationId": "update_client",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "client_name",
+                        "in": "path",
+                        "description": "Client Name",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    },
+                    {
+                        "name": "phone",
+                        "in": "path",
+                        "description": "phone",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    },
+                    {
+                        "name": "city",
+                        "in": "path",
+                        "description": "city",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    },
+                    {
+                        "name": "state",
+                        "in": "path",
+                        "description": "State",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    },
+                    {
+                        "name": "country",
+                        "in": "path",
+                        "description": "country",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    },
+                    {
+                        "name": "address",
+                        "in": "path",
+                        "description": "Address",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "store client",
+                "description": "store client",
+                "operationId": "store_client",
+                "parameters": [
+                    {
+                        "name": "client_name",
+                        "in": "path",
+                        "description": "Client Name",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    },
+                    {
+                        "name": "phone",
+                        "in": "path",
+                        "description": "phone",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    },
+                    {
+                        "name": "city",
+                        "in": "path",
+                        "description": "city",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    },
+                    {
+                        "name": "state",
+                        "in": "path",
+                        "description": "State",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    },
+                    {
+                        "name": "country",
+                        "in": "path",
+                        "description": "country",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    },
+                    {
+                        "name": "address",
+                        "in": "path",
+                        "description": "Address",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/clients/{id}": {
+            "get": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "show client",
+                "description": "show client",
+                "operationId": "show_client",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "delete client",
+                "description": "delete client",
+                "operationId": "delete_client",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/items": {
+            "get": {
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Get list of items",
+                "description": "get all items",
+                "operationId": "get_all_items",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Items"
+                ],
+                "summary": "store item",
+                "description": "store item",
+                "operationId": "store_item",
+                "parameters": [
+                    {
+                        "name": "item_name",
+                        "in": "path",
+                        "description": "Item Name",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    },
+                    {
+                        "name": "description",
+                        "in": "path",
+                        "description": "Description",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    },
+                    {
+                        "name": "specifications",
+                        "in": "path",
+                        "description": "Specifications",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    },
+                    {
+                        "name": "manufacturer",
+                        "in": "path",
+                        "description": "Manufacturer",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    },
+                    {
+                        "name": "origin_country",
+                        "in": "path",
+                        "description": "Origin Country",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/items/{id}": {
+            "get": {
+                "tags": [
+                    "Items"
+                ],
+                "summary": "show item",
+                "description": "show item",
+                "operationId": "show_item",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Items"
+                ],
+                "summary": "update item",
+                "description": "update item",
+                "operationId": "update_item",
+                "parameters": [
+                    {
+                        "name": "item_name",
+                        "in": "path",
+                        "description": "Item Name",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    },
+                    {
+                        "name": "phone",
+                        "in": "path",
+                        "description": "phone",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    },
+                    {
+                        "name": "city",
+                        "in": "path",
+                        "description": "city",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    },
+                    {
+                        "name": "state",
+                        "in": "path",
+                        "description": "State",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    },
+                    {
+                        "name": "country",
+                        "in": "path",
+                        "description": "country",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    },
+                    {
+                        "name": "address",
+                        "in": "path",
+                        "description": "Address",
+                        "required": true,
+                        "schema": {
+                            "type": "text"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Items"
+                ],
+                "summary": "delete item",
+                "description": "delete item",
+                "operationId": "delete_item",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/projects": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Get list of projects",
+                "description": "get all projects",
+                "operationId": "get_all_projects",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "store project",
+                "description": "store project",
+                "operationId": "store_project",
+                "parameters": [
+                    {
+                        "name": "project_code",
+                        "in": "path",
+                        "description": "Project Code",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "project_title",
+                        "in": "path",
+                        "description": "Project Title",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "start_date",
+                        "in": "path",
+                        "description": "Start Date Ex. (2024-03-20)",
+                        "required": true,
+                        "schema": {
+                            "type": "Date"
+                        }
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "path",
+                        "description": "End Date Ex. (2024-03-20)",
+                        "required": true,
+                        "schema": {
+                            "type": "Date"
+                        }
+                    },
+                    {
+                        "name": "country",
+                        "in": "path",
+                        "description": "Country",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "state",
+                        "in": "path",
+                        "description": "State",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "city",
+                        "in": "path",
+                        "description": "City",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "address",
+                        "in": "path",
+                        "description": "Address",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/projects/{id}": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "show project",
+                "description": "show project",
+                "operationId": "show_project",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "update project",
+                "description": "update project",
+                "operationId": "update_project",
+                "parameters": [
+                    {
+                        "name": "project_code",
+                        "in": "path",
+                        "description": "Project Code",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "project_title",
+                        "in": "path",
+                        "description": "Project Title",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "start_date",
+                        "in": "path",
+                        "description": "Start Date Ex. (2024-03-20)",
+                        "required": true,
+                        "schema": {
+                            "type": "Date"
+                        }
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "path",
+                        "description": "End Date Ex. (2024-03-20)",
+                        "required": true,
+                        "schema": {
+                            "type": "Date"
+                        }
+                    },
+                    {
+                        "name": "country",
+                        "in": "path",
+                        "description": "Country",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "state",
+                        "in": "path",
+                        "description": "State",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "city",
+                        "in": "path",
+                        "description": "City",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "address",
+                        "in": "path",
+                        "description": "Address",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "delete project",
+                "description": "delete project",
+                "operationId": "delete_project",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Tenders",
+            "description": "API Endpoints of Tenders"
+        }
+    ]
+}
