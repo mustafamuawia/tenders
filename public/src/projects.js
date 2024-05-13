@@ -11,7 +11,7 @@ export default function Projects() {
         state: '',
         city: '',
         address: '',
-        status: '',
+        
     });
 
     const [projects, setProjects] = useState([]);
@@ -80,7 +80,7 @@ export default function Projects() {
     };
 
     const handleEdit = (id) => {
-        // Implement edit functionality here
+        
     };
 
     const handleDelete = async (id) => {
@@ -123,7 +123,7 @@ export default function Projects() {
                                         name="project_code"
                                         id="project_code"
                                         placeholder="Project Code"
-                                        value={generateProjectCode()} // Generate project code here
+                                        value={generateProjectCode()} 
                                         disabled
                                     />
                                 </FormGroup>

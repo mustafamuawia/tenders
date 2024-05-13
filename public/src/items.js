@@ -5,6 +5,7 @@ import { Button, Card, CardBody, CardHeader, Col, Container, Form, FormGroup, In
 
 export default function Items() {
     const [formData, setFormData] = useState({
+        id: null,
         item_name: '',
         description: '',
         specifications: '',
@@ -39,25 +40,36 @@ export default function Items() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-          const token = localStorage.getItem('access_token')
-            const response = await axios.post('https://tenders.just.sd/api/items', formData, {
-                headers: {
-                    'Access-Control-Allow-Origin': '*',
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    "Authorization" : 'Bearer '+token+''
-                },
-            });
-            setFormData({
-                item_name: '',
-                description: '',
-                specifications: '',
-                manufacturer: '',
-                origin_country: '',
-            });
+            const token = localStorage.getItem('access_token');
+            if (formData.id) {
+                // If formData has an id, it means we're updating an existing item
+                await axios.put(`https://tenders.just.sd/api/items/${formData.id}`, formData, {
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        "Authorization" : 'Bearer '+token+''
+                    },
+                });
+            } else {
+                // If formData doesn't have an id, it means we're creating a new item
+                await axios.post('https://tenders.just.sd/api/items', formData, {
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        "Authorization" : 'Bearer '+token+''
+                    },
+                });
+            }
+            
+            // Clear the form fields after submission
+            clearFormFields();
+            
+            // Fetch the updated list of items
             fetchItems(); 
         } catch (error) {
-            console.error('Error creating item:', error);
+            console.error('Error creating/updating item:', error);
         }
     };
 
@@ -67,7 +79,18 @@ export default function Items() {
     };
 
     const handleEdit = (id) => {
-        // Implement edit functionality here
+        // Find the item with the specified id
+        const itemToEdit = items.find(item => item.id === id);
+        
+        // Populate the form fields with the data of the item to edit
+        setFormData({
+            id: itemToEdit.id,
+            item_name: itemToEdit.item_name,
+            description: itemToEdit.description,
+            specifications: itemToEdit.specifications,
+            manufacturer: itemToEdit.manufacturer,
+            origin_country: itemToEdit.origin_country,
+        });
     };
 
     const handleDelete = async (id) => {
@@ -90,7 +113,16 @@ export default function Items() {
         }
     };
 
-    
+    const clearFormFields = () => {
+        setFormData({
+            id: null,
+            item_name: '',
+            description: '',
+            specifications: '',
+            manufacturer: '',
+            origin_country: '',
+        });
+    };
 
     return (
         <Container>
@@ -123,7 +155,9 @@ export default function Items() {
                                     />
                                 </FormGroup>
                                 <FormGroup>
-                                    <Label for="specifications">Specifications</Label>
+                                    <Label for="specifications">
+                                        Specifications
+                                    </Label>
                                     <Input
                                         type="textarea"
                                         name="specifications"
@@ -134,7 +168,9 @@ export default function Items() {
                                     />
                                 </FormGroup>
                                 <FormGroup>
-                                    <Label for="manufacturer">Manufacturer</Label>
+                                    <Label for="manufacturer">
+                                        Manufacturer
+                                    </Label>
                                     <Input
                                         type="text"
                                         name="manufacturer"
@@ -144,13 +180,16 @@ export default function Items() {
                                         onChange={handleChange}
                                     />
                                 </FormGroup>
-                                <FormGroup  
+                                <FormGroup
                                     className="mt-4"
                                     style={{
                                         borderBottom: "1px solid #ced4da",
                                         marginBottom: "20px",
-                                    }}>
-                                    <Label for="origin_country">Origin Country</Label>
+                                    }}
+                                >
+                                    <Label for="origin_country">
+                                        Origin Country
+                                    </Label>
                                     <Input
                                         type="text"
                                         name="origin_country"
@@ -160,7 +199,16 @@ export default function Items() {
                                         onChange={handleChange}
                                     />
                                 </FormGroup>
-                                <Button color="primary">Save</Button>
+                                <Button color="primary" className="mr-2">
+                                    Save
+                                </Button>
+                                <span style={{ marginRight: "10px" }}></span>{" "}
+                                <Button
+                                    color="secondary"
+                                    onClick={clearFormFields}
+                                >
+                                    Clear
+                                </Button>
                             </Form>
                         </CardBody>
                     </Card>
@@ -186,8 +234,24 @@ export default function Items() {
                                                 <td>{item.manufacturer}</td>
                                                 <td>{item.created_at}</td>
                                                 <td>
-                                                    <Button color="info" onClick={() => handleEdit(item.id)}>Edit</Button>{' '}
-                                                    <Button color="danger" onClick={() => handleDelete(item.id)}>Delete</Button>
+                                                    <Button
+                                                        color="info"
+                                                        onClick={() =>
+                                                            handleEdit(item.id)
+                                                        }
+                                                    >
+                                                        Edit
+                                                    </Button>{" "}
+                                                    <Button
+                                                        color="danger"
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                item.id
+                                                            )
+                                                        }
+                                                    >
+                                                        Delete
+                                                    </Button>
                                                 </td>
                                             </tr>
                                         ))
