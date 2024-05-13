@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import React , { useState,useEffect } from 'react';
-import Tenders from './tenders';
+import Projects from './projects';
 import Users from './users';
 import Main from './main';
 import Login from './login';
@@ -11,6 +11,7 @@ import Clients from './client';
 import Items from './items';
 import Rfq from './rfq';
 import Unit_Category from './unit-category'
+import AdminRfq from './AdminRfq';
 
 import { Button, Card, CardBody, Collapse,
   Navbar,
@@ -42,6 +43,7 @@ export default function App() {
   const [isAdmin,setIsAdmin] = useState(false)
   const [isOpen,setIsOpen] = useState(false)
   const [User,setUser]= useState([])
+  
   function getUser()  
   {
     var user = localStorage.getItem('user')
@@ -137,7 +139,7 @@ return (
                         </li>
                         <li>
                             {" "}
-                            <Link onClick={handleOnClick} to="/tenders">
+                            <Link onClick={handleOnClick} to="/projects">
                                 Projects
                             </Link>
                         </li>
@@ -156,6 +158,21 @@ return (
                                         Users
                                     </Link>
                                 </li>
+
+                                <li>
+                            <Link className="link link-primary" to="/items">
+                                Items
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link
+                                className="link link-primary"
+                                to="/unit-category"
+                            >
+                                Unit Category
+                            </Link>
+                        </li>
                             </>
                         ) : null}
                         <li>
@@ -169,19 +186,8 @@ return (
                             </Link>
                         </li>
 
-                        <li>
-                            <Link className="link link-primary" to="/items">
-                                Items
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                className="link link-primary"
-                                to="/unit-category"
-                            >
-                                Unit Category
-                            </Link>
-                        </li>
+
+
 
                         <li>
                             <Link onClick={handleOnClick} to="/profile">
@@ -212,7 +218,7 @@ return (
                             <Link to="/main">Home</Link>
                         </li>
                         <li>
-                            <Link to="/tenders">Projects</Link>
+                            <Link to="/projects">Projects</Link>
                         </li>
                         {isAdmin ? (
                             <>
@@ -222,6 +228,19 @@ return (
                                 <li>
                                     <Link to="/users">Users</Link>
                                 </li>
+                                <li>
+                            <Link className="link link-primary" to="/items">
+                                Items
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                className="link link-primary"
+                                to="/unit-category"
+                            >
+                                Unit Category
+                            </Link>
+                        </li>
                             </>
                         ) : null}
                         <li>
@@ -236,20 +255,6 @@ return (
                         </li>
 
 
-                        <li>
-                            <Link className="link link-primary" to="/items">
-                                Items
-                            </Link>
-                        </li>
-
-                        <li>
-                            <Link
-                                className="link link-primary"
-                                to="/unit-category"
-                            >
-                                Unit Category
-                            </Link>
-                        </li>
 
                         <li>
                             <Link className="link link-primary" to="/profile">
@@ -270,10 +275,10 @@ return (
                 <div className="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                     <Routes>
                         <Route
-                            path="/tenders"
+                            path="/projects"
                             exact
-                            name="Tenders"
-                            element={<Tenders />}
+                            name="Projects"
+                            element={<Projects />}
                         />
                         <Route
                             path="/client"
@@ -281,9 +286,20 @@ return (
                             name="Client"
                             element={<Clients />}
                         />
-                        <Route path="/rfq" exact name="RFQ" element={<Rfq />} />
+                       <Route
+                        path="/rfq"
+                        element={isAdmin ? <AdminRfq /> : <Rfq />}
+                          />
 
+ 
 
+                                  {isAdmin ? (
+                                    <Route
+                                       path="/items"
+                                    element={<Items />}
+                                       />
+                                       ) : null}
+        
                         <Route
                             path="/unit-category"
                             exact
@@ -291,13 +307,7 @@ return (
                             element={<Unit_Category />}
                         />
 
-                        <Route
-                            path="/items"
-                            exact
-                            name="ITEMS"
-                            element={<Items />}
-                        />
-
+                       
                         <Route
                             path="/users"
                             exact

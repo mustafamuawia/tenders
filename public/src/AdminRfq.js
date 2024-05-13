@@ -24,7 +24,7 @@ import {
 import DataTable from "react-data-table-component";
 import Select from "react-select";
 
-export default function Rfq() {
+export default function AdminRfq() {
     const [filterText, setFilterText] = useState("");
     const [resetPaginationToggle, setResetPaginationToggle] = useState(false);
     const [filteredItems, setfilteredItems] = useState([]);
@@ -336,163 +336,71 @@ export default function Rfq() {
     }, [filterText]);
     return (
         <Container>
-            <Row>
-                <Col lg="12" xs="12">
-                    <Card>
-                        <CardHeader>
-                            <h1>Add RFQ</h1>
-                        </CardHeader>
-                        <CardBody>
-                            <Form onSubmit={handleSubmit}>
-                                <Row>
-                                    <Col lg="4">
-                                        <div className="form-group">
-                                            <Label htmlFor="Client">
-                                                Client
-                                            </Label>
-                                            <Select
-                                                options={options}
-                                                onChange={handleChange}
-                                                name="client"
-                                                value={formData.Status}
-                                                placeholder="Search"
-                                                isSearchable={true}
-                                                isDisabled={isAdmin}
-                                            />
-                                        </div>
-                                    </Col>
-                                    <Col lg="4">
-                                        <div className="form-group">
-                                            <Label htmlFor="Project">
-                                                Project
-                                            </Label>
-                                            <Select
-                                                options={options}
-                                                onChange={handleChange}
-                                                name="project"
-                                                value={formData.Status}
-                                                placeholder="Search"
-                                                isSearchable={true}
-                                                isDisabled={isAdmin}
-                                            />
-                                        </div>
-                                    </Col>
-                                    <Col lg="4">
-                                        <div className="form-group">
-                                            <Label htmlFor="IssueDate">
-                                                {" "}
-                                                Issue Date{" "}
-                                            </Label>
-                                            <Input
-                                                type="date"
-                                                onChange={handleChange}
-                                                value={formData.IssueDate}
-                                                name="issue_date"
-                                                disabled={isAdmin} // Disable if not admin
-                                            />
-                                        </div>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col lg="12">
-                                        <div className="col-12">
-                                            <div
-                                                className="form-group"
-                                                app-field-wrapper="notes"
-                                            >
-                                                <label
-                                                    htmlFor="notes"
-                                                    className="control-label"
-                                                >
-                                                    Note
-                                                </label>
-                                                <textarea
-                                                    id="notes"
-                                                    name="notes"
-                                                    className="form-control"
-                                                    rows="4"
-                                                ></textarea>
-                                            </div>
-                                        </div>
-                                    </Col>
-                                </Row>
-
-                                <Row>
-                                    <Col lg="12">
-                                        <div className="form-group mt-4">
-                                            <Label htmlFor="itemSearch">
-                                                Select Item
-                                            </Label>
-                                            <Select
-                                                options={options}
-                                                onChange={handleChange}
-                                                name="itemSearch"
-                                                value={formData.itemSearch}
-                                                placeholder="Search"
-                                                isSearchable={true}
-                                                isDisabled={isAdmin}
-                                            />
-                                        </div>
-                                    </Col>
-                                </Row>
-                            </Form>
-                            {/* Table */}
-                            <div
-                                className="mt-4"
+            <Table striped bordered hover>
+                <thead>
+                    <tr>
+                        <th>RFQ</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>RFQ 1</td>
+                        <td>
+                            <Button
+                                variant="outline-primary"
+                                size="sm"
                                 style={{
-                                    borderBottom: "1px solid #ced4da",
-                                    marginBottom: "20px",
+                                    color: "#FFFFFF",
+                                    backgroundColor: "#007BFF",
+                                    borderColor: "#007BFF",
                                 }}
                             >
-                                <Table>
-                                    <thead>
-                                        <tr>
-                                            <th>Item</th>
-                                            <th>Qty</th>
-                                            <th>Admin Qty</th>
-                                            <th>Price</th>
-                                            <th>Unit</th>
-                                            <th>RFQ</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <Input type="text" />
-                                            </td>
-                                            <td>
-                                                <Input type="number" />
-                                            </td>
-                                            <td>
-                                                <Input type="number" />
-                                            </td>
-                                            <td>
-                                                <Input type="text" />
-                                            </td>
-                                            <td>
-                                                <Select
-                                                    options={options}
-                                                    onChange={handleChange}
-                                                    name="unit"
-                                                    value={formData.Status}
-                                                    isSearchable={true}
-                                                    isDisabled={isAdmin}
-                                                />
-                                            </td>
-                                            <td>
-                                                <Input type="text" />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </Table>
-                            </div>
-                        </CardBody>
-                    </Card>
-                </Col>
-                <div className="fixed-bottom d-flex justify-content-center mb-3">
-                    <Button color="primary">Save</Button>
-                </div>
-            </Row>
+                                Edit
+                            </Button>{" "}
+                            <Button
+                                variant="outline-danger"
+                                size="sm"
+                                style={{
+                                    color: "#FFFFFF",
+                                    backgroundColor: "#DC3545",
+                                    borderColor: "#DC3545",
+                                }}
+                            >
+                                Delete
+                            </Button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>RFQ 2</td>
+                        <td>
+                            <Button
+                                variant="outline-primary"
+                                size="sm"
+                                style={{
+                                    color: "#FFFFFF",
+                                    backgroundColor: "#007BFF",
+                                    borderColor: "#007BFF",
+                                }}
+                            >
+                                Edit
+                            </Button>{" "}
+                            <Button
+                                variant="outline-danger"
+                                size="sm"
+                                style={{
+                                    color: "#FFFFFF",
+                                    backgroundColor: "#DC3545",
+                                    borderColor: "#DC3545",
+                                }}
+                            >
+                                Delete
+                            </Button>
+                        </td>
+                    </tr>
+                    {/* Add more rows as needed */}
+                </tbody>
+            </Table>
         </Container>
     );
 }
