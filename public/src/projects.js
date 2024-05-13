@@ -1,516 +1,279 @@
-import React, { useState,useEffect,useMemo } from 'react';
-import { Button, Card, CardBody, CardGroup, Col, Container, Form, Input, 
-  InputGroup, InputGroupAddon, InputGroupText, Row,Label,FormGroup,CardHeader,Table,
-  Badge,Pagination,PaginationItem,PaginationLink} from 'reactstrap';
-  import DataTable from 'react-data-table-component';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Button, Card, CardBody, CardHeader, Col, Container, Form, FormGroup, Input, Label, Row, Table } from 'reactstrap';
 
 export default function Projects() {
-  const [filterText, setFilterText] = useState('');
-	const [resetPaginationToggle, setResetPaginationToggle] = useState(false);
-  const [filteredItems,setfilteredItems]=useState([]) ;
-  const [oldFilter,setOldFilter]=useState('')
-  const [selectedRows, setSelectedRows] = React.useState([]);
-	const [toggleCleared, setToggleCleared] = React.useState(false);
-  const [countries, setCountries] = useState([]);
+    const [formData, setFormData] = useState({
+        project_title: '',
+        start_date: '',
+        end_date: '',
+        country: '',
+        state: '',
+        city: '',
+        address: '',
+        status: '',
+    });
 
-  useEffect(() => {
-    // Fetch countries data from REST Countries API
-    fetch('https://restcountries.com/v3.1/all')
-      .then((response) => response.json())
-      .then((data) => {
-        // Extract country names from the response
-        const countryNames = data.map((country) => country.name.common);
-        // Set the countries array state
-        setCountries(countryNames);
-      })
-      .catch((error) => {
-        console.error('Error fetching countries:', error);
-      });
-  }, []); // Empty dependency array ensures the effect runs only once on component mount
+    const [projects, setProjects] = useState([]);
 
+    useEffect(() => {
+        fetchProjects();
+    }, []);
 
-	
-  let initFormData= { 
-    TenderId:'',
-      UserId:0,
-      ProjectTitle:'',
-      ClientName:'',
-      Country:'',
-      State:'',
-      InstallationCity:'',
-      InstallationState:'',
-      ResellerCompanyName:'',
-      ResellerContactName:'',
-      ResellerEmail:'',
-      DistributorCompanyName:'',
-      Address:'',
-      created_by:'',
-      TenderCode:'',
-      Sector:'Private',
-      Summary:'',
-      Revenue:'',
-      PurchasingDecisionDate:'',
-      StartDate:'',
-      FinishDate:'',}
-
-  const [formData,setformData]= useState(initFormData)
-  const input = { 
-  	height: '32px',
-  	width: '200px',
-  	borderRadius: '3px',
-  	borderTopLeftRadius: '5px',
-  	borderBottomReftRadius: '5px',
-  	borderTopRightRadius: 0,
-  	borderBottomRightRadius: 0,
-  border: '1px solid #e5e5e5',
-  	padding: '0 32px 0 16px',
-  
-  	"&:hover": {
-  		cursor: 'pointer',
-  	}
-  }
-  const customStyles = {
-    // rows: {
-    //     style: {
-    //         minHeight: '72px', // override the row height
-    //     },
-    // },
-    headCells: {
-      '.eUeqdG':{whiteSpace:'break-spaces !important',},
-
-        style: {
-          whiteSpace: 'break-spaces !important',
-            // paddingLeft: '8px', // override the cell padding for head cells
-            // paddingRight: '8px',
-        },
-    },
-    // cells: {
-    //     style: {
-    //         paddingLeft: '8px', // override the cell padding for data cells
-    //         paddingRight: '8px',
-    //     },
-    // },
-};
-  const ClearButton = {
-  	borderTopLeftRadius: 0,
-  	borderBottomLeftRadius: 0,
-  	borderTopRightRadius: '5px',
-  	borderBottomBightRadius: '5px',
-  	height: '34px',
-  	width: '32px',
-  	textAlign: 'center',
-  	display: 'flex',
-  	alignItems: 'center',
-  	justifyContent: 'center',
-  }
- 
-
-  const FilterComponent = ({ filterText, onFilter, onClear }) => (
-    	<>
-    		<Input
-    			id="search"
-    			type="text"
-    			placeholder="Filter end user company"
-    			aria-label="Search Input"
-    			value={filterText}
-    			onChange={onFilter}
-          autoFocus
-          style={input}
-    		/>
-    		<button style={ClearButton} type="button" onClick={onClear}>
-    			X
-    	</button>
-    	</>
-    );
-    const handleDeleteButtonClick = (e) => {
-		
-      console.log(e.target.name);
-    };
-  
-    const handleEditButtonClick = (e) => {
-		
-      console.log(e.target.name);
-    };
-	const subHeaderComponentMemo = useMemo(() => {
-		const handleClear = () => {
-			if (filterText) {
-				setResetPaginationToggle(!resetPaginationToggle);
-				setFilterText('');
-			}
-		};
-
-		return (
-			<FilterComponent onFilter={e => 
-        setFilterText(e.target.value)} 
-        onClear={handleClear} 
-        filterText={filterText} />
-		);
-	}, [filterText, resetPaginationToggle]);
-    const [Tenders, setTenders] = useState([]);
-    const [value,setValue] = useState('')
-    const [isAdmin,setIsAdmin] = useState(false)
-
-    function getUser()  
-    {
-      var user = localStorage.getItem('user')
-      return JSON.parse(user);
-    }
-    const columns = [
-      {
-				selector: row => row.TenderId,
-				cell: (row) => <>
-        <button name={row.TenderId} className='btn btn-danger' style={{display: 'block !important',
-            width:'100%'}} onClick={(()=>deleteRow(row.TenderId))}>Delete</button>
-         {!isAdmin?<button name={row.TenderId} style={{display: 'block !important',
-            width:'100%'}} className='btn btn-info' onClick={(()=>editRow(row))}>Edit</button>:<></>}
-        </>,
-				ignoreRowClick: true,
-				allowOverflow: true,
-				button: true,
-			},
-      { name: 'ProjectId', selector: row => row.TenderId,wrap	:true,sortable:true	},
-      { name: 'Partner', selector: row => row.user.partner.CompanyName,wrap	:true,sortable:true	},
-      { name: 'Project Title', selector: row => row.ProjectTitle,wrap	:true,sortable:true	},
-      { name: 'Client Name', selector: row => row.ClientName,wrap	:true,sortable:true	},
-      { name: 'Country', selector: row => row.Country,wrap	:true,sortable:true	},
-      { name: 'State', selector: row => row.State,wrap	:true,sortable:true	},
-      { name: 'Installation City', selector: row => row.InstallationCity,wrap	:true,sortable:true	},
-      { name: 'Project Status', selector: row => row.Status,wrap	:true,sortable:true	},
-      // { name: 'Installation State', selector: row => row.InstallationState,wrap	:true,sortable:true	},
-      // // { name: 'Reseller Company Name', selector: row => row.ResellerCompanyName,wrap	:true,sortable:true	},
-      // { name: 'Reseller Contact Name', selector: row => row.ResellerContactName,wrap	:true,sortable:true	},
-      // { name: 'Reseller Email', selector: row => row.ResellerEmail,wrap	:true,sortable:true	},
-      // { name: 'Distributor Company Name', selector: row => row.DistributorCompanyName,wrap	:true,sortable:true	},
-      { name: 'Address', selector: row => row.Address,wrap	:true,sortable:true	},
-      { name: 'Created By', selector: row => row.created_by,wrap	:true,sortable:true	},
-      { name: 'Project Code', selector: row => row.TenderCode,wrap	:true,sortable:true	},
-      { name: 'Sector', selector: row => row.Sector,wrap	:true,sortable:true	},
-      { name: 'Summary', selector: row => row.Summary,wrap	:true,sortable:true	},
-      { name: 'Revenue', selector: row => row.Revenue,wrap	:true,sortable:true	},
-      { name: 'Purchasing Decision Date', selector: row => row.PurchasingDecisionDate,wrap	:true,sortable:true	},
-      { name: 'StartDate', selector: row => row.StartDate,wrap	:true,sortable:true	},
-      { name: 'FinishDate', selector: row => row.FinishDate,wrap	:true,sortable:true}	,
-
-  ];
-  
-  
-    
-    function handleChange(event) {
-        const value = event.target.value;
-        setformData(formData=>({
-          ...formData,
-          [event.target.name]: event.target.value
-       }))
-      }
-        
-           const getData = async () =>
-        {
-          const token = localStorage.getItem('access_token')
-            
-       await   fetch(process.env['REACT_APP_API_URL']+"/tender/gettenders",{
-           // mode:'cors',
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            "Authorization" : 'Bearer '+token+''
-          }
-        },)
-              .then(res => res.json())
-              .then(
-                (result) => {
-                  setTenders(result)
-                  setfilteredItems(result)
-                },
-                
-                (error) => {
-                
+    const fetchProjects = async () => {
+        try {
+            const token = localStorage.getItem('access_token');
+            const response = await axios.get(
+                "https://tenders.just.sd/api/projects",
+                {
+                    headers: {
+                        "Access-Control-Allow-Origin": "*",
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        Authorization: "Bearer " + token + "",
+                    },
                 }
-              )
+            );
+            setProjects(response.data.data.projects);
+        } catch (error) {
+            console.error('Error fetching projects:', error);
         }
-    
-        const editRow=(row) =>
-                  {          
+    };
 
-                    setformData(row);
-                  }     
-        
-    
-        const deleteRow = id => {
-          if(window.confirm('Are you sure to delete this record?')){ 
-            const token = localStorage.getItem('access_token')
-           fetch(process.env['REACT_APP_API_URL']+"/auth/tender/delete/"+id, {
-            method: 'get',
-            headers: {
-              'Access-Control-Allow-Origin': '*',
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              "Authorization" : 'Bearer '+token+''
-            },
-          }).then(getData()).then(setformData(initFormData)).then(alert("تم"));
-          }
-        }
-        const handleSubmit = e => {
-          e.preventDefault();
-          const token = localStorage.getItem('access_token')
-          
-            if (formData.TenderId!='' && typeof formData.TenderId != "undefined") 
-            {
-               fetch(process.env['REACT_APP_API_URL']+"/auth/tender/update", {
-                method: 'post',
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const token = localStorage.getItem('access_token');
+            await axios.post("https://tenders.just.sd/api/projects", formData, {
                 headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json',
-                  "Authorization" : 'Bearer '+token+''
+                    "Access-Control-Allow-Origin": "*",
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token + "",
                 },
-                body: JSON.stringify(formData),
-              }).then(getData()).then( setformData(initFormData)).then(alert("تم"));
+            });
+            setFormData({
+                project_title: '',
+                start_date: '',
+                end_date: '',
+                country: '',
+                state: '',
+                city: '',
+                address: '',
+                status: '',
+            });
+            fetchProjects();
+        } catch (error) {
+            console.error('Error creating project:', error);
+        }
+    };
+    const generateProjectCode = () => {
+        // Generate a unique project code, you can use any logic you prefer
+        const code =
+            "PROJ_" + Math.random().toString(36).substring(2, 8).toUpperCase();
+        return code;
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    const handleEdit = (id) => {
+        // Implement edit functionality here
+    };
+
+    const handleDelete = async (id) => {
+        try {
+            const token = localStorage.getItem('access_token');
+            const confirmDelete = window.confirm('Are you sure you want to delete this project?');
+            if (confirmDelete) {
+                await axios.delete(
+                    `https://tenders.just.sd/api/projects/${id}`,
+                    {
+                        headers: {
+                            "Access-Control-Allow-Origin": "*",
+                            Accept: "application/json",
+                            "Content-Type": "application/json",
+                            Authorization: "Bearer " + token + "",
+                        },
+                    }
+                );
+                fetchProjects();
             }
-            else
-            {
-             fetch(process.env['REACT_APP_API_URL']+"/auth/tender/create", {
-              method: 'POST',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                "Authorization" : 'Bearer '+token+''
-              },
-              body: JSON.stringify(formData),
-            }).then(getData()).then(setformData(formData)).then(alert("تم"));;
-          }
-          
-        };
-          useEffect(() => {
-           
-            getData();
-            
-          const user = getUser()
-          if (user.role=='Admin')
-          {
-            setIsAdmin(true)
-          }
-          else
-          setIsAdmin(false)
-          
-          
-          },[value]);
-         useEffect(()=>
-         {
+        } catch (error) {
+            console.error('Error deleting project:', error);
+        }
+    };
 
-          setfilteredItems(Tenders.filter(
-            	item => item.ProjectTitle && item.ProjectTitle.toLowerCase().includes(filterText.toLowerCase()),
-            	));
-         },[filterText])
+    return (
+        <Container>
+            <Row>
+                <Col md={6}>
+                    <Card>
+                        <CardHeader>Add Project</CardHeader>
+                        <CardBody>
+                            <Form onSubmit={handleSubmit}>
+                                <FormGroup>
+                                    <Label for="project_code">
+                                        Project Code
+                                    </Label>
+                                    <Input
+                                        type="text"
+                                        name="project_code"
+                                        id="project_code"
+                                        placeholder="Project Code"
+                                        value={generateProjectCode()} // Generate project code here
+                                        disabled
+                                    />
+                                </FormGroup>
+                                <FormGroup>
+                                    <Label for="project_title">
+                                        Project Title
+                                    </Label>
+                                    <Input
+                                        type="text"
+                                        name="project_title"
+                                        id="project_title"
+                                        placeholder="Enter project title"
+                                        value={formData.project_title}
+                                        onChange={handleChange}
+                                    />
+                                </FormGroup>
 
-         return (
-             <Container>
-                 {isAdmin ? (
-                     <></>
-                 ) : (
-                     <Row>
-                         <Col lg="12" xs="12">
-                             <Card>
-                                 <CardHeader>
-                                     <h1>Add Project</h1>
-                                 </CardHeader>
-                                 <CardBody>
-                                     <Form onSubmit={handleSubmit}>
-                                         <Row>
-                                             <Col lg="4">
-                                                 <div className="form-group">
-                                                     <Label htmlFor="ProjectTitle">
-                                                         Project Title
-                                                     </Label>
-                                                     <Input
-                                                         type="text"
-                                                         onChange={handleChange}
-                                                         value={
-                                                             formData.ProjectTitle
-                                                         }
-                                                         name="ProjectTitle"
-                                                         placeholder="Project Title"
-                                                         autoComplete="Project Title"
-                                                     />
-                                                 </div>
-                                             </Col>
+                                <FormGroup>
+                                    <Label for="start_date">Start Date</Label>
+                                    <Input
+                                        type="date"
+                                        name="start_date"
+                                        id="start_date"
+                                        value={formData.start_date}
+                                        onChange={handleChange}
+                                    />
+                                </FormGroup>
+                                <FormGroup>
+                                    <Label for="end_date">End Date</Label>
+                                    <Input
+                                        type="date"
+                                        name="end_date"
+                                        id="end_date"
+                                        value={formData.end_date}
+                                        onChange={handleChange}
+                                    />
+                                </FormGroup>
+                                <FormGroup>
+                                    <Label for="country">Country</Label>
+                                    <Input
+                                        type="text"
+                                        name="country"
+                                        id="country"
+                                        placeholder="Enter country"
+                                        value={formData.country}
+                                        onChange={handleChange}
+                                    />
+                                </FormGroup>
+                                <FormGroup>
+                                    <Label for="state">State</Label>
+                                    <Input
+                                        type="text"
+                                        name="state"
+                                        id="state"
+                                        placeholder="Enter state"
+                                        value={formData.state}
+                                        onChange={handleChange}
+                                    />
+                                </FormGroup>
+                                <FormGroup>
+                                    <Label for="city">City</Label>
+                                    <Input
+                                        type="text"
+                                        name="city"
+                                        id="city"
+                                        placeholder="Enter city"
+                                        value={formData.city}
+                                        onChange={handleChange}
+                                    />
+                                </FormGroup>
+                                <FormGroup>
+                                    <Label for="address">Address</Label>
+                                    <Input
+                                        style={{
+                                            borderBottom: "1px solid #ced4da",
+                                            marginBottom: "20px",
+                                        }}
+                                        type="text"
+                                        name="address"
+                                        id="address"
+                                        placeholder="Enter address"
+                                        value={formData.address}
+                                        onChange={handleChange}
+                                    />
+                                </FormGroup>
 
-                                             <Col lg="4">
-                                                 <div className="form-group">
-                                                     <Label htmlFor="StartDate">
-                                                         {" "}
-                                                         Start Date{" "}
-                                                     </Label>
-
-                                                     <Input
-                                                         type="date"
-                                                         onChange={handleChange}
-                                                         value={
-                                                             formData.StartDate
-                                                         }
-                                                         name="StartDate"
-                                                         autoComplete="StartDate"
-                                                     />
-                                                 </div>
-                                             </Col>
-                                             <Col lg="4">
-                                                 <div className="form-group">
-                                                     <Label htmlFor="FinishDate">
-                                                         {" "}
-                                                         End Date{" "}
-                                                     </Label>
-
-                                                     <Input
-                                                         type="date"
-                                                         onChange={handleChange}
-                                                         value={
-                                                             formData.FinishDate
-                                                         }
-                                                         name="FinishDate"
-                                                         autoComplete="FinishDate"
-                                                     />
-                                                 </div>
-                                             </Col>
-
-
-                                             <Col lg="4">
-                                                 <div className="form-group">
-                                                     <Label htmlFor="Country">
-                                                         Country
-                                                     </Label>
-                                                     <select
-                                                         className="form-control"
-                                                         onChange={handleChange}
-                                                         name="Country"
-                                                         value={
-                                                             formData.Country
-                                                         }
-                                                     >
-                                                         <option value="">
-                                                             Select a country
-                                                         </option>
-                                                         {countries.map(
-                                                             (
-                                                                 country,
-                                                                 index
-                                                             ) => (
-                                                                 <option
-                                                                     key={index}
-                                                                     value={
-                                                                         country
-                                                                     }
-                                                                 >
-                                                                     {country}
-                                                                 </option>
-                                                             )
-                                                         )}
-                                                     </select>
-                                                 </div>
-                                             </Col>
-                                         </Row>
-                                         <Row>
-                                             <Col lg="4">
-                                                 <div className="form-group">
-                                                     <Label htmlFor="State">
-                                                         State
-                                                     </Label>
-                                                     <Input
-                                                         type="text"
-                                                         onChange={handleChange}
-                                                         value={formData.State}
-                                                         name="State"
-                                                         placeholder="State"
-                                                         autoComplete="State"
-                                                     />
-                                                 </div>
-                                             </Col>
-                                             <Col lg="4">
-                                                 <div className="form-group">
-                                                     <Label htmlFor="InstallationCity">
-                                                         Installation City
-                                                     </Label>
-
-                                                     <Input
-                                                         type="text"
-                                                         onChange={handleChange}
-                                                         value={
-                                                             formData.InstallationCity
-                                                         }
-                                                         name="InstallationCity"
-                                                         placeholder="Installation City"
-                                                         autoComplete="Installation City"
-                                                     />
-                                                 </div>
-                                             </Col>
-                                             <Col lg="4">
-                                                 <div className="form-group">
-                                                     <Label htmlFor="Address">
-                                                         Address
-                                                     </Label>
-
-                                                     <Input
-                                                         type="text"
-                                                         onChange={handleChange}
-                                                         value={
-                                                             formData.Address
-                                                         }
-                                                         name="Address"
-                                                         placeholder="Address"
-                                                         autoComplete="Address"
-                                                     />
-                                                 </div>
-                                             </Col>
-
-                                             <Col lg="4">
-                                                 <div className="form-group">
-                                                     <Label htmlFor="TenderCode">
-                                                         Project Code (Optional)
-                                                     </Label>
-                                                     <Input
-                                                         type="text"
-                                                         onChange={handleChange}
-                                                         value={
-                                                             formData.TenderCode
-                                                         }
-                                                         name="TenderCode"
-                                                         placeholder="Project Code"
-                                                         autoComplete="TenderCode"
-                                                     />
-                                                 </div>
-                                             </Col>
-
-                                             <Col lg="4">
-                                                 <div className="form-group">
-                                                     <Label htmlFor="Summary">
-                                                         Summary
-                                                     </Label>
-                                                     <textarea
-                                                         onChange={handleChange}
-                                                         className="form-control"
-                                                         value={
-                                                             formData.Summary
-                                                         }
-                                                         name="Summary"
-                                                         placeholder="Summary"
-                                                         autoComplete="Summary"
-                                                     ></textarea>
-                                                 </div>
-                                             </Col>
-                                             <Col lg="6">
-                                                 <Button
-                                                     color="primary"
-                                                     className="btn btn-info"
-                                                 >
-                                                     Save
-                                                 </Button>
-                                             </Col>
-                                         </Row>
-                                     </Form>
-                                 </CardBody>
-                             </Card>
-                         </Col>
-                     </Row>
-                 )}
-             </Container>
-         );
-       
-                      }
+                                <Button color="primary">Save</Button>
+                            </Form>
+                        </CardBody>
+                    </Card>
+                </Col>
+                <Col md={6}>
+                    <Card>
+                        <CardHeader>Projects List</CardHeader>
+                        <CardBody>
+                            <Table>
+                                <thead>
+                                    <tr>
+                                        <th>Project Code</th>
+                                        <th>Project Title</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {projects && projects.length > 0 ? (
+                                        projects.map((project) => (
+                                            <tr key={project.id}>
+                                                <td>{project.project_title}</td>
+                                                <td>{project.start_date}</td>
+                                                <td>{project.end_date}</td>
+                                                <td>{project.status}</td>
+                                                <td>
+                                                    <Button
+                                                        color="info"
+                                                        onClick={() =>
+                                                            handleEdit(
+                                                                project.id
+                                                            )
+                                                        }
+                                                    >
+                                                        Edit
+                                                    </Button>{" "}
+                                                    <Button
+                                                        color="danger"
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                project.id
+                                                            )
+                                                        }
+                                                    >
+                                                        Delete
+                                                    </Button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="5">
+                                                No projects found.
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </Table>
+                        </CardBody>
+                    </Card>
+                </Col>
+            </Row>
+        </Container>
+    );
+}
