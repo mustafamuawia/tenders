@@ -15,9 +15,14 @@ class RequestForQuotationController extends Controller
     */
    public function index()
    {
-    $units = Unit::with('unit_group')->get();
-    $unitgroups = Unitgroup::all();
-    return view('units' ,['units' => $units,'unitgroups'=>$unitgroups]);
+    // client
+    // project
+    // partner
+    // items
+    // units
+    $requests = request_for_quotation::with('unit_group')->with('client')->with('project')->
+    with('partner')->with('items')->withget();
+        return response()->json(['data'=>['requests' => $requests]], 200);   
    }
    /**
     * Show the form for creating a new resource.

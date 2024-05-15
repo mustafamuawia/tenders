@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
+use App\Http\Requests\StoreItemRequest;
+use App\Http\Requests\UpdateItemRequest;
 use Illuminate\Http\Request;
-use App\Models\Unit;
-
 class ItemController extends Controller
 {
     /**
