@@ -1,409 +1,251 @@
-import React, { useState,useEffect,useMemo } from 'react';
-import { Button, Card, CardBody, CardGroup, Col, Container, Form, Input, 
-  InputGroup, InputGroupAddon, InputGroupText, Row,Label,FormGroup,CardHeader,Table,
-  Badge,Pagination,PaginationItem,PaginationLink} from 'reactstrap';
-  import DataTable from 'react-data-table-component';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Button, Card, CardBody, CardHeader, Col, Container, Form, FormGroup, Input, Label, Row, Table } from 'reactstrap';
 
 export default function Clients() {
-  const [filterText, setFilterText] = useState('');
-	const [resetPaginationToggle, setResetPaginationToggle] = useState(false);
-  const [filteredItems,setfilteredItems]=useState([]) ;
-  const [oldFilter,setOldFilter]=useState('')
-  const [selectedRows, setSelectedRows] = React.useState([]);
-	const [toggleCleared, setToggleCleared] = React.useState(false);
-  const [countries, setCountries] = useState([]);
+    const [formData, setFormData] = useState({
+        client_name: '',
+        phone: '',
+        address: '',
+        country: '',
+        state: '',
+        city: '',
+        status: '',
+    });
 
-  useEffect(() => {
-    // Fetch countries data from REST Countries API
-    fetch('https://restcountries.com/v3.1/all')
-      .then((response) => response.json())
-      .then((data) => {
-        // Extract country names from the response
-        const countryNames = data.map((country) => country.name.common);
-        // Set the countries array state
-        setCountries(countryNames);
-      })
-      .catch((error) => {
-        console.error('Error fetching countries:', error);
-      });
-  }, []); 
+    const [clients, setClients] = useState([]);
 
+    useEffect(() => {
+        fetchClients();
+    }, []);
 
-	
-  let initFormData= { 
-    id: '',
-   clientName: '',
-   phone: '',
-   address: '',
-   country: '',
-   state: '',
-   city: '',
-   partnerName: 0,
-   Status: 'Initial'}
-
-  const [formData,setformData]= useState(initFormData)
-  const input = { 
-  	height: '32px',
-  	width: '200px',
-  	borderRadius: '3px',
-  	borderTopLeftRadius: '5px',
-  	borderBottomReftRadius: '5px',
-  	borderTopRightRadius: 0,
-  	borderBottomRightRadius: 0,
-  border: '1px solid #e5e5e5',
-  	padding: '0 32px 0 16px',
-  
-  	"&:hover": {
-  		cursor: 'pointer',
-  	}
-  }
-  const customStyles = {
-    // rows: {
-    //     style: {
-    //         minHeight: '72px', // override the row height
-    //     },
-    // },
-    headCells: {
-      '.eUeqdG':{whiteSpace:'break-spaces !important',},
-
-        style: {
-          whiteSpace: 'break-spaces !important',
-            // paddingLeft: '8px', // override the cell padding for head cells
-            // paddingRight: '8px',
-        },
-    },
-    // cells: {
-    //     style: {
-    //         paddingLeft: '8px', // override the cell padding for data cells
-    //         paddingRight: '8px',
-    //     },
-    // },
-};
-  const ClearButton = {
-  	borderTopLeftRadius: 0,
-  	borderBottomLeftRadius: 0,
-  	borderTopRightRadius: '5px',
-  	borderBottomBightRadius: '5px',
-  	height: '34px',
-  	width: '32px',
-  	textAlign: 'center',
-  	display: 'flex',
-  	alignItems: 'center',
-  	justifyContent: 'center',
-  }
- 
-
-  const FilterComponent = ({ filterText, onFilter, onClear }) => (
-    	<>
-    		<Input
-    			id="search"
-    			type="text"
-    			placeholder="Filter end user company"
-    			aria-label="Search Input"
-    			value={filterText}
-    			onChange={onFilter}
-          autoFocus
-          style={input}
-    		/>
-    		<button style={ClearButton} type="button" onClick={onClear}>
-    			X
-    	</button>
-    	</>
-    );
-    const handleDeleteButtonClick = (e) => {
-		
-      console.log(e.target.name);
-    };
-  
-    const handleEditButtonClick = (e) => {
-		
-      console.log(e.target.name);
-    };
-	const subHeaderComponentMemo = useMemo(() => {
-		const handleClear = () => {
-			if (filterText) {
-				setResetPaginationToggle(!resetPaginationToggle);
-				setFilterText('');
-			}
-		};
-
-		return (
-			<FilterComponent onFilter={e => 
-        setFilterText(e.target.value)} 
-        onClear={handleClear} 
-        filterText={filterText} />
-		);
-	}, [filterText, resetPaginationToggle]);
-    const [Clients, setClients] = useState([]);
-    const [value,setValue] = useState('')
-    const [isAdmin,setIsAdmin] = useState(false)
-
-    function getUser()  
-    {
-      var user = localStorage.getItem('user')
-      return JSON.parse(user);
-    }
-    const columns = [
-        {
-                  selector: row => row.id,
-                  cell: (row) => <>
-          <button name={row.id} className='btn btn-danger' style={{display: 'block !important',
-              width:'100%'}} onClick={(()=>deleteRow(row.id))}>Delete</button>
-           {!isAdmin?<button name={row.id} style={{display: 'block !important',
-              width:'100%'}} className='btn btn-info' onClick={(()=>editRow(row))}>Edit</button>:<></>}
-          </>,
-                  ignoreRowClick: true,
-                  allowOverflow: true,
-                  button: true,
-              },
-        { name: 'ID', selector: row => row.id,wrap	:true,sortable:true	},
-        { name: 'clientName', selector: row => row.user.clientName.CompanyName,wrap	:true,sortable:true	},
-        { name: 'Project Title', selector: row => row.ProjectTitle,wrap	:true,sortable:true	},
-        { name: 'Client Name', selector: row => row.ClientName,wrap	:true,sortable:true	},
-        { name: 'Country', selector: row => row.Country,wrap	:true,sortable:true	},
-        { name: 'PartnerName', selector: row => row.PartnerName,wrap	:true,sortable:true	},
-        { name: 'State', selector: row => row.State,wrap	:true,sortable:true	},
-        { name: 'Installation City', selector: row => row.InstallationCity,wrap	:true,sortable:true	},
-        { name: 'Project Status', selector: row => row.Status,wrap	:true,sortable:true	},
-        
-        { name: 'Address', selector: row => row.Address,wrap	:true,sortable:true	},
-        { name: 'Created By', selector: row => row.created_by,wrap	:true,sortable:true	},
-        { name: 'Project Code', selector: row => row.TenderCode,wrap	:true,sortable:true	},
-        { name: 'Sector', selector: row => row.Sector,wrap	:true,sortable:true	},
-        { name: 'Summary', selector: row => row.Summary,wrap	:true,sortable:true	},
-        { name: 'Revenue', selector: row => row.Revenue,wrap	:true,sortable:true	},
-        { name: 'Purchasing Decision Date', selector: row => row.PurchasingDecisionDate,wrap	:true,sortable:true	},
-        { name: 'StartDate', selector: row => row.StartDate,wrap	:true,sortable:true	},
-        { name: 'FinishDate', selector: row => row.FinishDate,wrap	:true,sortable:true}	,
-  
-    ];
-      
-  
-  
-    
-    function handleChange(event) {
-        const value = event.target.value;
-        setformData(formData=>({
-          ...formData,
-          [event.target.name]: event.target.value
-       }))
-      }
-        
-           const getData = async () =>
-        {
-          const token = localStorage.getItem('access_token')
-            
-       await   fetch(process.env['REACT_APP_API_URL']+"/client/getclients",{
-           // mode:'cors',
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-                    "Authorization" : 'Bearer '+token+''
-          }
-        },)
-              .then(res => res.json())
-              .then(
-                (result) => {
-                  setClients(result)
-                  setfilteredItems(result)
-                },
-                
-                (error) => {
-                
-                }
-              )
-        }
-    
-        const editRow=(row) =>
-                  {          
-
-                    setformData(row);
-                  }     
-        
-    
-        const deleteRow = id => {
-          if(window.confirm('Are you sure to delete this record?')){ 
-            const token = localStorage.getItem('access_token')
-           fetch(process.env['REACT_APP_API_URL']+"/auth/client/delete/"+id, {
-            method: 'get',
-            headers: {
-              'Access-Control-Allow-Origin': '*',
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              "Authorization" : 'Bearer '+token+''
-            },
-          }).then(getData()).then(setformData(initFormData)).then(alert("تم"));
-          }
-        }
-        const handleSubmit = e => {
-          e.preventDefault();
-          const token = localStorage.getItem('access_token')
-          
-            if (formData.id!='' && typeof formData.id != "undefined") 
-            {
-               fetch(process.env['REACT_APP_API_URL']+"/auth/client/update", {
-                method: 'post',
+    const fetchClients = async () => {
+        try {
+            const token = localStorage.getItem('access_token');
+            const response = await axios.get('https://tenders.just.sd/api/clients', {
                 headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json',
-                  "Authorization" : 'Bearer '+token+''
+                    'Access-Control-Allow-Origin': '*',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token + '',
                 },
-                body: JSON.stringify(formData),
-              }).then(getData()).then( setformData(initFormData)).then(alert("تم"));
+            });
+            setClients(response.data.clients);
+        } catch (error) {
+            console.error('Error fetching clients:', error);
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const token = localStorage.getItem('access_token');
+            await axios.post('https://tenders.just.sd/api/clients', formData, {
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token + '',
+                },
+            });
+            clearFormFields();
+            fetchClients();
+        } catch (error) {
+            console.error('Error creating client:', error);
+        }
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    const handleEdit = (id) => {
+        // Handle editing client
+    };
+
+    const handleDelete = async (id) => {
+        try {
+            const token = localStorage.getItem('access_token');
+            const confirmDelete = window.confirm('Are you sure you want to delete this client?');
+            if (confirmDelete) {
+                await axios.delete(`https://tenders.just.sd/api/clients/${id}`, {
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token + '',
+                    },
+                });
+                fetchClients();
             }
-            else
-            {
-             fetch(process.env['REACT_APP_API_URL']+"/auth/client/create", {
-              method: 'POST',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                "Authorization" : 'Bearer '+token+''
-              },
-              body: JSON.stringify(formData),
-            }).then(getData()).then(setformData(formData)).then(alert("تم"));;
-          }
-          
-        };
-          useEffect(() => {
-           
-            getData();
-            
-          const user = getUser()
-          if (user.role=='Admin')
-          {
-            setIsAdmin(true)
-          }
-          else
-          setIsAdmin(false)
-          
-          
-          },[value]);
-         useEffect(()=>
-         {
+        } catch (error) {
+            console.error('Error deleting client:', error);
+        }
+    };
 
-          setfilteredItems(Clients.filter(
-            	item => item.ProjectTitle && item.ProjectTitle.toLowerCase().includes(filterText.toLowerCase()),
-            	));
-         },[filterText])
+    const clearFormFields = () => {
+        setFormData({
+            client_name: '',
+            phone: '',
+            address: '',
+            country: '',
+            state: '',
+            city: '',
+            status: '',
+        });
+    };
 
-         return (
-<Container>
-  {isAdmin ? (
-    <></>
-  ) : (
-    <Row>
-      <Col lg="12" xs="12">
-        <Card>
-          <CardHeader>
-            <h1>Add Client</h1>
-          </CardHeader>
-          <CardBody>
-            <Form onSubmit={handleSubmit}>
-              <Row>
-                <Col lg="4">
-                  <div className='form-group'>              
-                    <Label htmlFor="clientName">Client Name</Label>
-                    <Input type="text" onChange={handleChange} value={formData.clientName} name="clientName" placeholder="Client Name" autoComplete="Client Name" /> 
-                  </div>
+
+    return (
+        <Container>
+            <Row>
+                <Col md={6}>
+                    <Card>
+                        <CardHeader>Add Client</CardHeader>
+                        <CardBody>
+                            <Form onSubmit={handleSubmit}>
+                                <FormGroup>
+                                    <Label for="client_name">Client Name</Label>
+                                    <Input
+                                        type="text"
+                                        name="client_name"
+                                        id="client_name"
+                                        placeholder="Client Name"
+                                        value={formData.client_name}
+                                        onChange={handleChange}
+                                    />
+                                </FormGroup>
+                                <FormGroup>
+                                    <Label for="phone">Phone</Label>
+                                    <Input
+                                        type="text"
+                                        name="phone"
+                                        id="phone"
+                                        placeholder="Enter phone number"
+                                        value={formData.phone}
+                                        onChange={handleChange}
+                                    />
+                                </FormGroup>
+                                <FormGroup>
+                                    <Label for="address">Address</Label>
+                                    <Input
+                                        type="text"
+                                        name="address"
+                                        id="address"
+                                        placeholder="Enter address"
+                                        value={formData.address}
+                                        onChange={handleChange}
+                                    />
+                                </FormGroup>
+                                <FormGroup>
+                                    <Label for="country">Country</Label>
+                                    <Input
+                                        type="text"
+                                        name="country"
+                                        id="country"
+                                        placeholder="Enter country"
+                                        value={formData.country}
+                                        onChange={handleChange}
+                                    />
+                                </FormGroup>
+                                <FormGroup>
+                                    <Label for="state">State</Label>
+                                    <Input
+                                        type="text"
+                                        name="state"
+                                        id="state"
+                                        placeholder="Enter state"
+                                        value={formData.state}
+                                        onChange={handleChange}
+                                    />
+                                </FormGroup>
+                                <FormGroup>
+                                    <Label for="city">City</Label>
+                                    <Input
+                                        style={{
+                                            borderBottom: "1px solid #ced4da",
+                                            marginBottom: "20px",
+                                        }}
+                                        type="text"
+                                        name="city"
+                                        id="city"
+                                        placeholder="Enter city"
+                                        value={formData.city}
+                                        onChange={handleChange}
+                                    />
+                                </FormGroup>
+                                <Button color="primary">Save</Button>
+                                <span
+                                    style={{ marginRight: "10px" }}
+                                ></span>{" "}
+                                <Button
+                                    color="secondary"
+                                    onClick={clearFormFields}
+                                >
+                                    Clear
+                                </Button>
+                            </Form>
+                        </CardBody>
+                    </Card>
                 </Col>
-
-                <Col lg="4">
-                  <div className='form-group'>  
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input type="tel" onChange={handleChange} value={formData.phone} name="phone" placeholder="Phone" autoComplete="Phone" />
-                  </div>
+                <Col md={6}>
+                    <Card>
+                        <CardHeader>Clients List</CardHeader>
+                        <CardBody>
+                            <Table>
+                                <thead>
+                                    <tr>
+                                        <th>Client Name</th>
+                                        <th>Phone</th>
+                                        <th>Address</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {clients && clients.length > 0 ? (
+                                        clients.map((client) => (
+                                            <tr key={client.id}>
+                                                <td>{client.client_name}</td>
+                                                <td>{client.phone}</td>
+                                                <td>{client.address}</td>
+                                                <td>
+                                                    <Button
+                                                        color="info"
+                                                        onClick={() =>
+                                                            handleEdit(
+                                                                client.id
+                                                            )
+                                                        }
+                                                    >
+                                                        Edit
+                                                    </Button>{" "}
+                                                    <Button
+                                                        color="danger"
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                client.id
+                                                            )
+                                                        }
+                                                    >
+                                                        Delete
+                                                    </Button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="4">
+                                                No clients found.
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </Table>
+                        </CardBody>
+                    </Card>
                 </Col>
-
-                <Col lg="4">
-                  <div className='form-group'>  
-                    <Label htmlFor="address">Address</Label>
-                    <Input type="text" onChange={handleChange} value={formData.address} name="address" placeholder="Address" autoComplete="Address" />
-                  </div>
-                </Col>
-
-                <Col lg="4">
-                <div className='form-group'>
-        <Label htmlFor="Country">Country</Label>
-        <select className='form-control' onChange={handleChange} name="Country" value={formData.Country}>
-          <option value="">Select a country</option>
-          {countries.map((country, index) => (
-            <option key={index} value={country}>
-              {country}
-            </option>
-          ))}
-        </select>
-      </div>
-                </Col>
-
-                <Col lg="4">
-                  <div className='form-group'>  
-                    <Label htmlFor="state">State</Label>
-                    <Input type="text" onChange={handleChange} value={formData.state} name="state" placeholder="State" autoComplete="State" />
-                  </div>
-                </Col>
-
-                <Col lg="4">
-                  <div className='form-group'>  
-                    <Label htmlFor="city">City</Label>
-                    <Input type="text" onChange={handleChange} value={formData.city} name="city" placeholder="City" autoComplete="City" />
-                  </div>
-                </Col>
-
-                <Col lg="4">
-
-<div className='form-group'>  
-
-<Label htmlFor="Status">Status</Label>
-<select className='form-control' onChange={handleChange}  name="Status" value={formData.Status}> 
-<option>Initial</option>
-<option>Under negotiation</option>
-<option>Confirmed</option>
-<option>Lost</option>
-</select>
-
-</div>
-</Col>
-
-                <Col lg="6">
-                  <Button color="primary" className="btn btn-info">Save</Button>
-                </Col>
-              </Row>
-            </Form>
-          </CardBody>
-        </Card>
-      </Col>
-    </Row>
-  )}
-  
-  <Row>
-    <Col lg="12" xs="12">
-      <Card>
-        <CardHeader>
-          <i className="fa fa-align-justify"></i> Clients List
-        </CardHeader>
-        <CardBody>
-          <DataTable
-            responsive
-            striped
-            columns={columns}
-            data={filteredItems}
-            subHeader
-            subHeaderComponent={subHeaderComponentMemo}
-            pagination
-            actions
-            fixedHeader
-            defaultSortFieldId='id'
-            customStyles={customStyles}
-          />
-        </CardBody>
-      </Card>
-    </Col>
-  </Row>
-</Container>
-
-        
-        );
-       
-                      }
+            </Row>
+        </Container>
+    );
+}

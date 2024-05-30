@@ -21,8 +21,7 @@ import {
     PaginationItem,
     PaginationLink,
 } from "reactstrap";
-import DataTable from "react-data-table-component";
-import Select from "react-select";
+
 
 export default function AdminRfq() {
     const [filterText, setFilterText] = useState("");
@@ -280,41 +279,7 @@ export default function AdminRfq() {
                 .then(alert("تم"));
         }
     };
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const token = localStorage.getItem("access_token");
 
-        if (
-            formData.TenderId != "" &&
-            typeof formData.TenderId != "undefined"
-        ) {
-            fetch(process.env["REACT_APP_API_URL"] + "/auth/tender/update", {
-                method: "post",
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token + "",
-                },
-                body: JSON.stringify(formData),
-            })
-                .then(getData())
-                .then(setformData(initFormData))
-                .then(alert("تم"));
-        } else {
-            fetch(process.env["REACT_APP_API_URL"] + "/auth/tender/create", {
-                method: "POST",
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token + "",
-                },
-                body: JSON.stringify(formData),
-            })
-                .then(getData())
-                .then(setformData(formData))
-                .then(alert("تم"));
-        }
-    };
     useEffect(() => {
         getData();
 

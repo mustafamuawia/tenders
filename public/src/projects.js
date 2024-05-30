@@ -4,6 +4,7 @@ import { Button, Card, CardBody, CardHeader, Col, Container, Form, FormGroup, In
 
 export default function Projects() {
     const [formData, setFormData] = useState({
+        project_code:'',
         project_title: '',
         start_date: '',
         end_date: '',
@@ -23,17 +24,14 @@ export default function Projects() {
     const fetchProjects = async () => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axios.get(
-                "https://tenders.just.sd/api/projects",
-                {
-                    headers: {
-                        "Access-Control-Allow-Origin": "*",
-                        Accept: "application/json",
-                        "Content-Type": "application/json",
-                        Authorization: "Bearer " + token + "",
-                    },
-                }
-            );
+            const response = await axios.get('https://tenders.just.sd/api/projects', {
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token + '',
+                },
+            });
             setProjects(response.data.data.projects);
         } catch (error) {
             console.error('Error fetching projects:', error);
@@ -44,34 +42,30 @@ export default function Projects() {
         e.preventDefault();
         try {
             const token = localStorage.getItem('access_token');
-            await axios.post("https://tenders.just.sd/api/projects", formData, {
-                headers: {
-                    "Access-Control-Allow-Origin": "*",
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token + "",
-                },
-            });
-            setFormData({
-                project_title: '',
-                start_date: '',
-                end_date: '',
-                country: '',
-                state: '',
-                city: '',
-                address: '',
-                status: '',
-            });
+            if (formData.id) {
+                await axios.put(`https://tenders.just.sd/api/projects/${formData.id}`, formData, {
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token + '',
+                    },
+                });
+            } else {
+                await axios.post('https://tenders.just.sd/api/projects', formData, {
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token + '',
+                    },
+                });
+            }
+            clearFormFields();
             fetchProjects();
         } catch (error) {
-            console.error('Error creating project:', error);
+            console.error('Error creating/updating project:', error);
         }
-    };
-    const generateProjectCode = () => {
-        // Generate a unique project code, you can use any logic you prefer
-        const code =
-            "PROJ_" + Math.random().toString(36).substring(2, 8).toUpperCase();
-        return code;
     };
 
     const handleChange = (e) => {
@@ -80,7 +74,18 @@ export default function Projects() {
     };
 
     const handleEdit = (id) => {
-        
+        const projectToEdit = projects.find(project => project.id === id);
+        setFormData({
+            id: projectToEdit.id,
+            project_code: projectToEdit.project_code,
+            project_title: projectToEdit.project_title,
+            start_date: projectToEdit.start_date,
+            end_date: projectToEdit.end_date,
+            country: projectToEdit.country,
+            state: projectToEdit.state,
+            city: projectToEdit.city,
+            address: projectToEdit.address,
+        });
     };
 
     const handleDelete = async (id) => {
@@ -88,23 +93,35 @@ export default function Projects() {
             const token = localStorage.getItem('access_token');
             const confirmDelete = window.confirm('Are you sure you want to delete this project?');
             if (confirmDelete) {
-                await axios.delete(
-                    `https://tenders.just.sd/api/projects/${id}`,
-                    {
-                        headers: {
-                            "Access-Control-Allow-Origin": "*",
-                            Accept: "application/json",
-                            "Content-Type": "application/json",
-                            Authorization: "Bearer " + token + "",
-                        },
-                    }
-                );
+                await axios.delete(`https://tenders.just.sd/api/projects/${id}`, {
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token + '',
+                    },
+                });
                 fetchProjects();
             }
         } catch (error) {
             console.error('Error deleting project:', error);
         }
     };
+
+    const clearFormFields = () => {
+        setFormData({
+            id: null,
+            project_code: '',
+            project_title: '',
+            start_date: '',
+            end_date: '',
+            country: '',
+            state: '',
+            city: '',
+            address: '',
+        });
+    };
+
 
     return (
         <Container>
@@ -123,8 +140,8 @@ export default function Projects() {
                                         name="project_code"
                                         id="project_code"
                                         placeholder="Project Code"
-                                        value={generateProjectCode()} 
-                                        disabled
+                                        value={formData.project_code}
+                                        onChange={handleChange}
                                     />
                                 </FormGroup>
                                 <FormGroup>
@@ -140,7 +157,6 @@ export default function Projects() {
                                         onChange={handleChange}
                                     />
                                 </FormGroup>
-
                                 <FormGroup>
                                     <Label for="start_date">Start Date</Label>
                                     <Input
@@ -209,8 +225,16 @@ export default function Projects() {
                                         onChange={handleChange}
                                     />
                                 </FormGroup>
-
                                 <Button color="primary">Save</Button>
+                                <span
+                                    style={{ marginRight: "10px" }}
+                                ></span>{" "}
+                                <Button
+                                    color="secondary"
+                                    onClick={clearFormFields}
+                                >
+                                    Clear
+                                </Button>
                             </Form>
                         </CardBody>
                     </Card>
@@ -233,10 +257,10 @@ export default function Projects() {
                                     {projects && projects.length > 0 ? (
                                         projects.map((project) => (
                                             <tr key={project.id}>
+                                                <td>{project.project_code}</td>
                                                 <td>{project.project_title}</td>
                                                 <td>{project.start_date}</td>
                                                 <td>{project.end_date}</td>
-                                                <td>{project.status}</td>
                                                 <td>
                                                     <Button
                                                         color="info"

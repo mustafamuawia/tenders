@@ -12,6 +12,7 @@ import Items from './items';
 import Rfq from './rfq';
 import Unit_Category from './unit-category'
 import AdminRfq from './AdminRfq';
+import Adminproj from './Adminproj';
 
 import { Button, Card, CardBody, Collapse,
   Navbar,
@@ -279,6 +280,7 @@ return (
                             exact
                             name="Projects"
                             element={<Projects />}
+
                         />
                         <Route
                             path="/client"
