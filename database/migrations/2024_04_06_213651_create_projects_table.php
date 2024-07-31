@@ -26,7 +26,7 @@ class CreateProjectsTable extends Migration
                 $table->text('state')->nullable();
                 $table->text('city')->nullable();
                 $table->text('address')->nullable();
-                $table->softdeletes();
+                $table->softDeletes(); // Corrected method name
                 $table->timestamps();
                 $table->tinyInteger('status')->default(1);
             });

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -24,6 +25,7 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required|string|min:2',
         ]);
+
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
@@ -66,7 +68,7 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        //return $this->respondWithToken(auth()->refresh());
+        return $this->respondWithToken(auth()->refresh());
     }
 
     /**
@@ -81,7 +83,6 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-           // 'expires_in' => auth()->factory()->getTTL() * 60,
             'user'=> auth()->user()->load('partner')
         ]);
     }
