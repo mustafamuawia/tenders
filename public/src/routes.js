@@ -1,0 +1,127 @@
+import React from "react";
+import { Icon } from "@chakra-ui/react";
+import {
+  MdHome,
+  MdGroup,
+  MdExitToApp,
+  MdPeople,
+  MdList,
+  MdEdit,
+  MdLayers,
+  MdBuild,
+  MdBusiness,
+  MdAttachMoney,
+  MdControlPoint,
+} from "react-icons/md";
+
+// Admin Imports
+import MainDashboard from "views/admin/default";
+import Users from "views/admin/users";
+import Items from "views/admin/items";
+import Clients from "views/admin/clients";
+import Projects from "views/admin/projects";
+import RFQ from "views/admin/rfq";
+import UnitGroups from "views/admin/unitGroups";
+import Units from "views/admin/units";
+import EditProfile from "views/admin/editProfile";
+import Logout from "views/admin/logout";
+
+// Auth Imports
+import SignInCentered from "views/auth/signIn";
+import ForgotPassword from "views/auth/forgotpassword"; // Import Forgot Password component
+import ResetPassword from "views/auth/resetpassword"; // Import Reset Password component
+
+// Partner Imports
+
+const routes = [
+  {
+    layout: "/auth",
+    path: "/sign-in",
+    component: SignInCentered,
+  },
+  {
+    layout: "/auth",
+    path: "/forgot-password",
+    component: ForgotPassword,
+  },
+  {
+    layout: "/auth",
+    path: "/reset-password",
+    component: ResetPassword,
+  },
+  {
+    name: "Dashboard",
+    layout: "/admin",
+    path: "/default",
+    icon: <Icon as={MdHome} width='20px' height='20px' color='inherit' />,
+    component: MainDashboard,
+  },
+  {
+    name: "Users",
+    layout: "/admin",
+    path: "/users",
+    icon: <Icon as={MdGroup} width='20px' height='20px' color='inherit' />,
+    component: Users,
+  },
+  {
+    name: "Items",
+    layout: "/admin",
+    path: "/items",
+    icon: <Icon as={MdList} width='20px' height='20px' color='inherit' />,
+    component: Items,
+  },
+  {
+    name: "Clients",
+    layout: "/admin",
+    path: "/clients",
+    icon: <Icon as={MdPeople} width='20px' height='20px' color='inherit' />,
+    component: Clients,
+  },
+  {
+    name: "Projects",
+    layout: "/admin",
+    path: "/projects",
+    icon: <Icon as={MdLayers} width='20px' height='20px' color='inherit' />,
+    component: Projects,
+  },
+  {
+    name: "RFQ",
+    layout: "/admin",
+    path: "/rfq",
+    icon: <Icon as={MdBuild} width='20px' height='20px' color='inherit' />,
+    component: RFQ,
+  },
+  {
+    name: "Unit Groups",
+    layout: "/admin",
+    path: "/unit-groups",
+    icon: <Icon as={MdBusiness} width='20px' height='20px' color='inherit' />,
+    component: UnitGroups,
+  },
+  {
+    name: "Units",
+    layout: "/admin",
+    path: "/units",
+    icon: <Icon as={MdControlPoint} width='20px' height='20px' color='inherit' />,
+    component: Units,
+  },
+  {
+    name: "Edit Profile",
+    layout: "/admin",
+    path: "/edit-profile",
+    icon: <Icon as={MdEdit} width='20px' height='20px' color='inherit' />,
+    component: EditProfile,
+  },
+  {
+    name: "Log out",
+    layout: "/admin",
+    path: "/logout",
+    icon: <Icon as={MdExitToApp} width='20px' height='20px' color='inherit' />,
+    component: Logout,
+  }
+];
+
+const sidebarRoutes = routes.filter(route => route.name); // Filter out routes without a name (e.g., Sign In)
+
+export { routes, sidebarRoutes };
+export default routes;
