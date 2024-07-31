@@ -57,7 +57,7 @@ const Users = () => {
     };
 
     try {
-      await axios.post(`${process.env.REACT_APP_API_URL}/user/create`, newUser); // Update the URL
+      await axios.post(`${process.env.REACT_APP_API_URL}/user/createadmin`, newUser); // Update the URL
       fetchUsers();
       closeModal();
     } catch (error) {
