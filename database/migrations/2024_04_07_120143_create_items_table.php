@@ -21,11 +21,11 @@ class CreateItemsTable extends Migration
             $table->string('specifications')->nullable();
             $table->string('manufacturer')->nullable();
             $table->string('origin_country')->nullable();
-            $table->string('note');
+            $table->string('note')->nullable();
             $table->integer('created_by');
             $table->softDeletes();
             $table->timestamps();
-            $table->tinyInteger('status')->default(1);
+            $table->string('status')->default('Not Activated');
         });
         }
     }

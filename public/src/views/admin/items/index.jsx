@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Box, Button, FormControl, FormLabel, Input, Table, Thead, Tbody, Tr, Th, Td, Modal,
+  Box, Button, FormControl, FormLabel, Input, Select, Table, Thead, Tbody, Tr, Th, Td, Modal,
   ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure,
   AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter,
   Switch
@@ -21,7 +21,7 @@ const Items = () => {
   const [manufacturer, setManufacturer] = useState('');
   const [originCountry, setOriginCountry] = useState('');
   const [note, setNote] = useState('');
-  const [status, setStatus] = useState(false); // Switch for status
+  const [status, setStatus] = useState('Not Activated'); // Default status
   const [deleteItemId, setDeleteItemId] = useState(null);
 
   useEffect(() => {
@@ -34,10 +34,10 @@ const Items = () => {
   };
 
   const handleStatusChange = async (itemId, currentStatus) => {
-    const newStatus = currentStatus === 1 ? 0 : 1;
+    const newStatus = currentStatus === 'Activated' ? 'Not Activated' : 'Activated';
     try {
       await axios.post(`${process.env.REACT_APP_API_URL}/changeitemstatus`, { id: itemId, status: newStatus });
-      fetchItems();
+      setItems(items.map(item => item.id === itemId ? { ...item, status: newStatus } : item));
     } catch (error) {
       console.error(error);
     }
@@ -51,7 +51,7 @@ const Items = () => {
       manufacturer,
       origin_country: originCountry,
       note,
-      status: status ? 1 : 0
+      status
     };
 
     try {
@@ -76,7 +76,7 @@ const Items = () => {
       manufacturer,
       origin_country: originCountry,
       note,
-      status: status ? 1 : 0
+      status
     };
     try {
       await axios.put(`${process.env.REACT_APP_API_URL}/items/${currentItem.id}`, item);
@@ -96,7 +96,7 @@ const Items = () => {
     setManufacturer(item.manufacturer || '');
     setOriginCountry(item.origin_country || '');
     setNote(item.note || '');
-    setStatus(item.status === 1);
+    setStatus(item.status);
     openModal();
   };
 
@@ -108,7 +108,7 @@ const Items = () => {
     setManufacturer('');
     setOriginCountry('');
     setNote('');
-    setStatus(false);
+    setStatus('Not Activated');
     openModal();
   };
 
@@ -125,6 +125,10 @@ const Items = () => {
   const confirmDelete = (id) => {
     setDeleteItemId(id);
     openAlert();
+  };
+
+  const renderTableCell = (value) => {
+    return value ? value : 'N/A';
   };
 
   return (
@@ -147,15 +151,18 @@ const Items = () => {
         <Tbody>
           {items.map((item) => (
             <Tr key={item.id}>
-              <Td>{item.item_name}</Td>
-              <Td>{item.description || 'N/A'}</Td>
-              <Td>{item.specifications || 'N/A'}</Td>
-              <Td>{item.manufacturer || 'N/A'}</Td>
-              <Td>{item.origin_country || 'N/A'}</Td>
-              <Td>{item.note || 'N/A'}</Td>
+              <Td>{renderTableCell(item.item_name)}</Td>
+              <Td>{renderTableCell(item.description)}</Td>
+              <Td>{renderTableCell(item.specifications)}</Td>
+              <Td>{renderTableCell(item.manufacturer)}</Td>
+              <Td>{renderTableCell(item.origin_country)}</Td>
+              <Td>{renderTableCell(item.note)}</Td>
               <Td>
+                <Box color={item.status === 'Activated' ? 'green.500' : 'red.500'}>
+                  {item.status}
+                </Box>
                 <Switch
-                  isChecked={item.status === 1}
+                  isChecked={item.status === 'Activated'}
                   onChange={() => handleStatusChange(item.id, item.status)}
                 />
               </Td>
@@ -198,9 +205,12 @@ const Items = () => {
               <FormLabel>Note</FormLabel>
               <Input value={note} onChange={(e) => setNote(e.target.value)} />
             </FormControl>
-            <FormControl id="status">
+            <FormControl id="status" isRequired>
               <FormLabel>Status</FormLabel>
-              <Switch isChecked={status} onChange={(e) => setStatus(e.target.checked)} />
+              <Select value={status} onChange={(e) => setStatus(e.target.value)}>
+                <option value="Activated">Activated</option>
+                <option value="Not Activated">Not Activated</option>
+              </Select>
             </FormControl>
           </ModalBody>
 

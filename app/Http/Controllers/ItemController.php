@@ -32,8 +32,8 @@ class ItemController extends Controller
             'specifications' => 'nullable|string',
             'manufacturer' => 'nullable|string',
             'origin_country' => 'nullable|string',
-            'note' => 'required|string',
-            'status' => 'required|boolean',
+            'note' => 'nullable|string',
+            'status' => 'required|string|in:Activated,Not Activated',
         ]);
 
         $item = Item::create([
@@ -44,7 +44,7 @@ class ItemController extends Controller
             'origin_country' => $request->origin_country,
             'note' => $request->note,
             'status' => $request->status,
-            'created_by' => auth()->id(), // Assuming the user is authenticated
+            'created_by' => auth()->id(), 
         ]);
 
         return response()->json($item, 201);
@@ -76,8 +76,8 @@ class ItemController extends Controller
             'specifications' => 'nullable|string',
             'manufacturer' => 'nullable|string',
             'origin_country' => 'nullable|string',
-            'note' => 'required|string',
-            'status' => 'required|boolean',
+            'note' => 'nullable|string',
+            'status' => 'required|string|in:Activated,Not Activated',
         ]);
 
         $item->update([
@@ -115,7 +115,7 @@ class ItemController extends Controller
     {
         $request->validate([
             'id' => 'required|exists:items,id',
-            'status' => 'required|boolean',
+            'status' => 'required|string|in:Activated,Not Activated',
         ]);
 
         $item = Item::find($request->id);
