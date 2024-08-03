@@ -19,12 +19,8 @@ const Users = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState('Partner');
-  const [companyEmail, setCompanyEmail] = useState('');
-  const [companyName, setCompanyName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [userClass, setUserClass] = useState('');
-  const [status, setStatus] = useState(false); // Switch for status
+  const [role, setRole] = useState('Admin');
+  const [status, setStatus] = useState('Not Activated'); // Default status
   const [deleteUserId, setDeleteUserId] = useState(null);
 
   useEffect(() => {
@@ -32,15 +28,15 @@ const Users = () => {
   }, []);
 
   const fetchUsers = async () => {
-    const response = await axios.get('/api/users'); // Update the URL
+    const response = await axios.get(`${process.env.REACT_APP_API_URL}/admin/fetch`); // Update the URL
     setUsers(response.data);
   };
 
   const handleStatusChange = async (userId, currentStatus) => {
     const newStatus = currentStatus === 'Activated' ? 'Not Activated' : 'Activated';
     try {
-      await axios.post('/api/changestatus', { id: userId, Status: newStatus }); // Update the URL
-      fetchUsers();
+      await axios.post(`${process.env.REACT_APP_API_URL}/admin/changestatus`, { id: userId, status: newStatus });
+      setUsers(users.map(user => user.id === userId ? { ...user, status: newStatus } : user));
     } catch (error) {
       console.error(error);
     }
@@ -49,11 +45,7 @@ const Users = () => {
   const handleAddUser = async () => {
     const newUser = {
       name, email, password, password_confirmation: confirmPassword, role,
-      company_email: role === 'Partner' ? companyEmail : undefined,
-      company_name: role === 'Partner' ? companyName : undefined,
-      phone: role === 'Partner' ? phone : undefined,
-      class: role === 'Partner' ? userClass : undefined,
-      status: status ? 'Activated' : 'Not Activated'
+      status
     };
 
     try {
@@ -62,8 +54,8 @@ const Users = () => {
       closeModal();
     } catch (error) {
       if (error.response) {
-        console.log(error.response.data); // Log the error response for debugging
-        alert("Error: " + error.response.data.message); // Display a user-friendly message
+        console.log(error.response.data);
+        alert("Error: " + error.response.data.message);
       } else {
         console.error(error);
       }
@@ -73,14 +65,10 @@ const Users = () => {
   const handleEditUser = async () => {
     const user = {
       name, email, password, password_confirmation: confirmPassword, role,
-      company_email: role === 'Partner' ? companyEmail : undefined,
-      company_name: role === 'Partner' ? companyName : undefined,
-      phone: role === 'Partner' ? phone : undefined,
-      class: role === 'Partner' ? userClass : undefined,
-      status: status ? 'Activated' : 'Not Activated'
+      status
     };
     try {
-      await axios.put(`/api/users/${currentUser.id}`, user); // Update the URL
+      await axios.put(`${process.env.REACT_APP_API_URL}/admin/edit/${currentUser.id}`, user); // Update the URL
       fetchUsers();
       closeModal();
     } catch (error) {
@@ -93,16 +81,10 @@ const Users = () => {
     setCurrentUser(user);
     setName(user.name);
     setEmail(user.email);
-    setPassword(''); // Clear password field
-    setConfirmPassword(''); // Clear confirm password field
+    setPassword('');
+    setConfirmPassword('');
     setRole(user.role);
-    setStatus(user.Status === 'Activated');
-    if (user.role === 'Partner') {
-      setCompanyEmail(user.company_email || '');
-      setCompanyName(user.company_name || '');
-      setPhone(user.phone || '');
-      setUserClass(user.class || '');
-    }
+    setStatus(user.status);
     openModal();
   };
 
@@ -113,17 +95,13 @@ const Users = () => {
     setPassword('');
     setConfirmPassword('');
     setRole('Admin');
-    setCompanyEmail('');
-    setCompanyName('');
-    setPhone('');
-    setUserClass('');
-    setStatus(false);
+    setStatus('Not Activated');
     openModal();
   };
 
   const handleDeleteUser = async () => {
     try {
-      await axios.delete(`/api/users/${deleteUserId}`); // Update the URL
+      await axios.delete(`${process.env.REACT_APP_API_URL}/admin/delete/${deleteUserId}`); // Update the URL
       fetchUsers();
       closeAlert();
     } catch (error) {
@@ -149,10 +127,6 @@ const Users = () => {
           <Tr>
             <Th>Name</Th>
             <Th>Email</Th>
-            <Th>Phone</Th>
-            <Th>Company Email</Th>
-            <Th>Company Name</Th>
-            <Th>Class</Th>
             <Th>Role</Th>
             <Th>Status</Th>
             <Th>Actions</Th>
@@ -163,12 +137,11 @@ const Users = () => {
             <Tr key={user.id}>
               <Td>{renderTableCell(user.name)}</Td>
               <Td>{renderTableCell(user.email)}</Td>
-              <Td>{renderTableCell(user.phone)}</Td>
-              <Td>{renderTableCell(user.company_email)}</Td>
-              <Td>{renderTableCell(user.company_name)}</Td>
-              <Td>{renderTableCell(user.class)}</Td>
               <Td>{renderTableCell(user.role)}</Td>
               <Td>
+                <Box color={user.status === 'Activated' ? 'green.500' : 'red.500'}>
+                  {user.status}
+                </Box>
                 <Switch
                   isChecked={user.status === 'Activated'}
                   onChange={() => handleStatusChange(user.id, user.status)}
@@ -209,32 +182,14 @@ const Users = () => {
               <FormLabel>Role</FormLabel>
               <Select value={role} onChange={(e) => setRole(e.target.value)}>
                 <option value="Admin">Admin</option>
-                <option value="Partner">Partner</option>
               </Select>
             </FormControl>
-            {role === 'Partner' && (
-              <>
-                <FormControl id="companyEmail" isRequired>
-                  <FormLabel>Company Email</FormLabel>
-                  <Input value={companyEmail} onChange={(e) => setCompanyEmail(e.target.value)} />
-                </FormControl>
-                <FormControl id="companyName" isRequired>
-                  <FormLabel>Company Name</FormLabel>
-                  <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
-                </FormControl>
-                <FormControl id="phone" isRequired>
-                  <FormLabel>Phone</FormLabel>
-                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
-                </FormControl>
-                <FormControl id="class" isRequired>
-                  <FormLabel>Class</FormLabel>
-                  <Input value={userClass} onChange={(e) => setUserClass(e.target.value)} />
-                </FormControl>
-              </>
-            )}
             <FormControl id="status" isRequired>
               <FormLabel>Status</FormLabel>
-              <Switch isChecked={status} onChange={(e) => setStatus(e.target.checked)} />
+              <Select value={status} onChange={(e) => setStatus(e.target.value)}>
+                <option value="Activated">Activated</option>
+                <option value="Not Activated">Not Activated</option>
+              </Select>
             </FormControl>
           </ModalBody>
 

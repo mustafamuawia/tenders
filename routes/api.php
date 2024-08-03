@@ -29,9 +29,16 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 // Authenticated routes
 Route::middleware(['auth:api'])->group(function () {
-    // User routes
-    Route::post('/user/create', [UserController::class, 'create'])->name('create');
+    // Admin routes
     Route::post('/user/createadmin', [UserController::class, 'createadmin'])->name('createadmin');
+    Route::post('/admin/changestatus', [UserController::class, 'changeStatus']);
+    Route::get('/admin/fetch', [UserController::class, 'fetchAdmin']);
+    Route::put('/admin/edit/{id}', [UserController::class, 'updateadmin']);
+    Route::delete('/admin/delete/{id}', [UserController::class, 'deleteadmin']);
+
+       // Partner routes
+    Route::post('/user/create', [UserController::class, 'create'])->name('create');
+    Route::get('/user/getadmin', [UserController::class, 'getusers'])->name('getadmin');
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
@@ -40,6 +47,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('projects', ProjectController::class);
     Route::apiResource('clients', ClientController::class);
     Route::apiResource('items', ItemController::class);
+    Route::post('changeitemstatus', [ItemController::class, 'changeStatus']);
+
     Route::apiResource('units', UnitController::class);
     Route::apiResource('unitgroups', unit_groupController::class);
 

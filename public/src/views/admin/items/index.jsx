@@ -29,14 +29,14 @@ const Items = () => {
   }, []);
 
   const fetchItems = async () => {
-    const response = await axios.get('/api/items'); // Update the URL
+    const response = await axios.get(`${process.env.REACT_APP_API_URL}/items`);
     setItems(response.data);
   };
 
   const handleStatusChange = async (itemId, currentStatus) => {
     const newStatus = currentStatus === 1 ? 0 : 1;
     try {
-      await axios.post('/api/changeitemstatus', { id: itemId, status: newStatus }); // Update the URL
+      await axios.post(`${process.env.REACT_APP_API_URL}/changeitemstatus`, { id: itemId, status: newStatus });
       fetchItems();
     } catch (error) {
       console.error(error);
@@ -55,13 +55,13 @@ const Items = () => {
     };
 
     try {
-      await axios.post('/api/items', newItem); // Update the URL
+      await axios.post(`${process.env.REACT_APP_API_URL}/items`, newItem);
       fetchItems();
       closeModal();
     } catch (error) {
       if (error.response) {
-        console.log(error.response.data); // Log the error response for debugging
-        alert("Error: " + error.response.data.message); // Display a user-friendly message
+        console.log(error.response.data);
+        alert("Error: " + error.response.data.message);
       } else {
         console.error(error);
       }
@@ -79,7 +79,7 @@ const Items = () => {
       status: status ? 1 : 0
     };
     try {
-      await axios.put(`/api/items/${currentItem.id}`, item); // Update the URL
+      await axios.put(`${process.env.REACT_APP_API_URL}/items/${currentItem.id}`, item);
       fetchItems();
       closeModal();
     } catch (error) {
@@ -114,7 +114,7 @@ const Items = () => {
 
   const handleDeleteItem = async () => {
     try {
-      await axios.delete(`/api/items/${deleteItemId}`); // Update the URL
+      await axios.delete(`${process.env.REACT_APP_API_URL}/items/${deleteItemId}`);
       fetchItems();
       closeAlert();
     } catch (error) {
