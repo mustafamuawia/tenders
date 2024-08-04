@@ -37,27 +37,42 @@ const Projects = () => {
   }, []);
 
   const fetchProjects = async () => {
-    const response = await axios.get('/api/projects'); // Update the URL
-    setProjects(response.data);
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/projects`);
+      setProjects(response.data);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+    }
   };
 
   const handleAddProject = async () => {
     const newProject = {
-      endUserCompanyName, endUserContactEmail, distributorContactName, estimatedRevenue,
-      estimatedImplementationFinishDate, summary, endUserContactName, endUserContactPhone,
-      projectStatus, installationCity, installationState, distributorEmail,
-      estimatedBusinessPurchasingDecisionDate, estimatedImplementationStartDate,
-      sector, projectCode
+      end_user_company_name: endUserCompanyName,
+      end_user_contact_email: endUserContactEmail,
+      distributor_contact_name: distributorContactName,
+      estimated_revenue: parseFloat(estimatedRevenue) || null,
+      estimated_implementation_finish_date: estimatedImplementationFinishDate,
+      summary: summary,
+      end_user_contact_name: endUserContactName,
+      end_user_contact_phone: endUserContactPhone,
+      project_status: projectStatus,
+      installation_city: installationCity,
+      installation_state: installationState,
+      distributor_email: distributorEmail,
+      estimated_business_purchasing_decision_date: estimatedBusinessPurchasingDecisionDate,
+      estimated_implementation_start_date: estimatedImplementationStartDate,
+      sector: sector,
+      project_code: projectCode
     };
 
     try {
-      await axios.post(`${process.env.REACT_APP_API_URL}/project/create`, newProject); // Update the URL
+      await axios.post(`${process.env.REACT_APP_API_URL}/projects`, newProject);
       fetchProjects();
       closeModal();
     } catch (error) {
       if (error.response) {
-        console.log(error.response.data); // Log the error response for debugging
-        alert("Error: " + error.response.data.message); // Display a user-friendly message
+        console.log(error.response.data);
+        alert("Error: " + JSON.stringify(error.response.data.errors, null, 2));
       } else {
         console.error(error);
       }
@@ -66,14 +81,26 @@ const Projects = () => {
 
   const handleEditProject = async () => {
     const project = {
-      endUserCompanyName, endUserContactEmail, distributorContactName, estimatedRevenue,
-      estimatedImplementationFinishDate, summary, endUserContactName, endUserContactPhone,
-      projectStatus, installationCity, installationState, distributorEmail,
-      estimatedBusinessPurchasingDecisionDate, estimatedImplementationStartDate,
-      sector, projectCode
+      end_user_company_name: endUserCompanyName,
+      end_user_contact_email: endUserContactEmail,
+      distributor_contact_name: distributorContactName,
+      estimated_revenue: parseFloat(estimatedRevenue) || null,
+      estimated_implementation_finish_date: estimatedImplementationFinishDate,
+      summary: summary,
+      end_user_contact_name: endUserContactName,
+      end_user_contact_phone: endUserContactPhone,
+      project_status: projectStatus,
+      installation_city: installationCity,
+      installation_state: installationState,
+      distributor_email: distributorEmail,
+      estimated_business_purchasing_decision_date: estimatedBusinessPurchasingDecisionDate,
+      estimated_implementation_start_date: estimatedImplementationStartDate,
+      sector: sector,
+      project_code: projectCode
     };
+
     try {
-      await axios.put(`/api/projects/${currentProject.id}`, project); // Update the URL
+      await axios.put(`${process.env.REACT_APP_API_URL}/projects/${currentProject.id}`, project);
       fetchProjects();
       closeModal();
     } catch (error) {
@@ -84,22 +111,22 @@ const Projects = () => {
   const openEditModal = (project) => {
     setIsEdit(true);
     setCurrentProject(project);
-    setEndUserCompanyName(project.endUserCompanyName);
-    setEndUserContactEmail(project.endUserContactEmail);
-    setDistributorContactName(project.distributorContactName);
-    setEstimatedRevenue(project.estimatedRevenue);
-    setEstimatedImplementationFinishDate(project.estimatedImplementationFinishDate);
+    setEndUserCompanyName(project.end_user_company_name);
+    setEndUserContactEmail(project.end_user_contact_email);
+    setDistributorContactName(project.distributor_contact_name);
+    setEstimatedRevenue(project.estimated_revenue);
+    setEstimatedImplementationFinishDate(project.estimated_implementation_finish_date);
     setSummary(project.summary);
-    setEndUserContactName(project.endUserContactName);
-    setEndUserContactPhone(project.endUserContactPhone);
-    setProjectStatus(project.projectStatus);
-    setInstallationCity(project.installationCity);
-    setInstallationState(project.installationState);
-    setDistributorEmail(project.distributorEmail);
-    setEstimatedBusinessPurchasingDecisionDate(project.estimatedBusinessPurchasingDecisionDate);
-    setEstimatedImplementationStartDate(project.estimatedImplementationStartDate);
+    setEndUserContactName(project.end_user_contact_name);
+    setEndUserContactPhone(project.end_user_contact_phone);
+    setProjectStatus(project.project_status);
+    setInstallationCity(project.installation_city);
+    setInstallationState(project.installation_state);
+    setDistributorEmail(project.distributor_email);
+    setEstimatedBusinessPurchasingDecisionDate(project.estimated_business_purchasing_decision_date);
+    setEstimatedImplementationStartDate(project.estimated_implementation_start_date);
     setSector(project.sector);
-    setProjectCode(project.projectCode);
+    setProjectCode(project.project_code);
     openModal();
   };
 
@@ -126,7 +153,7 @@ const Projects = () => {
 
   const handleDeleteProject = async () => {
     try {
-      await axios.delete(`/api/projects/${deleteProjectId}`); // Update the URL
+      await axios.delete(`${process.env.REACT_APP_API_URL}/projects/${deleteProjectId}`);
       fetchProjects();
       closeAlert();
     } catch (error) {
@@ -172,25 +199,25 @@ const Projects = () => {
         <Tbody>
           {projects.map((project) => (
             <Tr key={project.id}>
-              <Td>{renderTableCell(project.endUserCompanyName)}</Td>
-              <Td>{renderTableCell(project.endUserContactEmail)}</Td>
-              <Td>{renderTableCell(project.distributorContactName)}</Td>
-              <Td>{renderTableCell(project.estimatedRevenue)}</Td>
-              <Td>{renderTableCell(project.estimatedImplementationFinishDate)}</Td>
+              <Td>{renderTableCell(project.end_user_company_name)}</Td>
+              <Td>{renderTableCell(project.end_user_contact_email)}</Td>
+              <Td>{renderTableCell(project.distributor_contact_name)}</Td>
+              <Td>{renderTableCell(project.estimated_revenue)}</Td>
+              <Td>{renderTableCell(project.estimated_implementation_finish_date)}</Td>
               <Td>{renderTableCell(project.summary)}</Td>
-              <Td>{renderTableCell(project.endUserContactName)}</Td>
-              <Td>{renderTableCell(project.endUserContactPhone)}</Td>
-              <Td>{renderTableCell(project.projectStatus)}</Td>
-              <Td>{renderTableCell(project.installationCity)}</Td>
-              <Td>{renderTableCell(project.installationState)}</Td>
-              <Td>{renderTableCell(project.distributorEmail)}</Td>
-              <Td>{renderTableCell(project.estimatedBusinessPurchasingDecisionDate)}</Td>
-              <Td>{renderTableCell(project.estimatedImplementationStartDate)}</Td>
+              <Td>{renderTableCell(project.end_user_contact_name)}</Td>
+              <Td>{renderTableCell(project.end_user_contact_phone)}</Td>
+              <Td>{renderTableCell(project.project_status)}</Td>
+              <Td>{renderTableCell(project.installation_city)}</Td>
+              <Td>{renderTableCell(project.installation_state)}</Td>
+              <Td>{renderTableCell(project.distributor_email)}</Td>
+              <Td>{renderTableCell(project.estimated_business_purchasing_decision_date)}</Td>
+              <Td>{renderTableCell(project.estimated_implementation_start_date)}</Td>
               <Td>{renderTableCell(project.sector)}</Td>
-              <Td>{renderTableCell(project.projectCode)}</Td>
+              <Td>{renderTableCell(project.project_code)}</Td>
               <Td display="flex" justifyContent="flex-start" gap="2">
                 <Button colorScheme="yellow" size="sm" onClick={() => openEditModal(project)}>Edit</Button>
-                <Button colorScheme="red" size="sm" ml="1" onClick={() => confirmDelete(project.id)}>Delete</Button>
+                <Button colorScheme="red" size="sm" onClick={() => confirmDelete(project.id)}>Delete</Button>
               </Td>
             </Tr>
           ))}
@@ -203,84 +230,83 @@ const Projects = () => {
           <ModalHeader>{isEdit ? 'Edit Project' : 'Add Project'}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <FormControl id="endUserCompanyName" isRequired>
+            <FormControl mb="4">
               <FormLabel>End User Company Name</FormLabel>
               <Input value={endUserCompanyName} onChange={(e) => setEndUserCompanyName(e.target.value)} />
             </FormControl>
-            <FormControl id="endUserContactEmail" isRequired>
+            <FormControl mb="4">
               <FormLabel>End User Contact Email</FormLabel>
-              <Input type="email" value={endUserContactEmail} onChange={(e) => setEndUserContactEmail(e.target.value)} />
+              <Input value={endUserContactEmail} onChange={(e) => setEndUserContactEmail(e.target.value)} />
             </FormControl>
-            <FormControl id="distributorContactName" isRequired>
+            <FormControl mb="4">
               <FormLabel>Distributor Contact Name</FormLabel>
               <Input value={distributorContactName} onChange={(e) => setDistributorContactName(e.target.value)} />
             </FormControl>
-            <FormControl id="estimatedRevenue">
+            <FormControl mb="4">
               <FormLabel>Estimated Revenue</FormLabel>
-              <Input value={estimatedRevenue} onChange={(e) => setEstimatedRevenue(e.target.value)} />
+              <Input type="number" value={estimatedRevenue} onChange={(e) => setEstimatedRevenue(e.target.value)} />
             </FormControl>
-            <FormControl id="estimatedImplementationFinishDate">
+            <FormControl mb="4">
               <FormLabel>Estimated Implementation Finish Date</FormLabel>
               <Input type="date" value={estimatedImplementationFinishDate} onChange={(e) => setEstimatedImplementationFinishDate(e.target.value)} />
             </FormControl>
-            <FormControl id="summary">
+            <FormControl mb="4">
               <FormLabel>Summary</FormLabel>
               <Input value={summary} onChange={(e) => setSummary(e.target.value)} />
             </FormControl>
-            <FormControl id="endUserContactName">
+            <FormControl mb="4">
               <FormLabel>End User Contact Name</FormLabel>
               <Input value={endUserContactName} onChange={(e) => setEndUserContactName(e.target.value)} />
             </FormControl>
-            <FormControl id="endUserContactPhone">
+            <FormControl mb="4">
               <FormLabel>End User Contact Phone</FormLabel>
               <Input value={endUserContactPhone} onChange={(e) => setEndUserContactPhone(e.target.value)} />
             </FormControl>
-            <FormControl id="projectStatus" isRequired>
+            <FormControl mb="4">
               <FormLabel>Project Status</FormLabel>
               <Select value={projectStatus} onChange={(e) => setProjectStatus(e.target.value)}>
                 <option value="Initial">Initial</option>
                 <option value="In Progress">In Progress</option>
                 <option value="Completed">Completed</option>
-                <option value="Cancelled">Cancelled</option>
               </Select>
             </FormControl>
-            <FormControl id="installationCity">
+            <FormControl mb="4">
               <FormLabel>Installation City</FormLabel>
               <Input value={installationCity} onChange={(e) => setInstallationCity(e.target.value)} />
             </FormControl>
-            <FormControl id="installationState">
+            <FormControl mb="4">
               <FormLabel>Installation State</FormLabel>
               <Input value={installationState} onChange={(e) => setInstallationState(e.target.value)} />
             </FormControl>
-            <FormControl id="distributorEmail">
+            <FormControl mb="4">
               <FormLabel>Distributor Email</FormLabel>
-              <Input type="email" value={distributorEmail} onChange={(e) => setDistributorEmail(e.target.value)} />
+              <Input value={distributorEmail} onChange={(e) => setDistributorEmail(e.target.value)} />
             </FormControl>
-            <FormControl id="estimatedBusinessPurchasingDecisionDate">
+            <FormControl mb="4">
               <FormLabel>Estimated Business Purchasing Decision Date</FormLabel>
               <Input type="date" value={estimatedBusinessPurchasingDecisionDate} onChange={(e) => setEstimatedBusinessPurchasingDecisionDate(e.target.value)} />
             </FormControl>
-            <FormControl id="estimatedImplementationStartDate">
+            <FormControl mb="4">
               <FormLabel>Estimated Implementation Start Date</FormLabel>
               <Input type="date" value={estimatedImplementationStartDate} onChange={(e) => setEstimatedImplementationStartDate(e.target.value)} />
             </FormControl>
-            <FormControl id="sector" isRequired>
+            <FormControl mb="4">
               <FormLabel>Sector</FormLabel>
               <Select value={sector} onChange={(e) => setSector(e.target.value)}>
                 <option value="Private">Private</option>
                 <option value="Public">Public</option>
               </Select>
             </FormControl>
-            <FormControl id="projectCode" isRequired>
+            <FormControl mb="4">
               <FormLabel>Project Code</FormLabel>
               <Input value={projectCode} onChange={(e) => setProjectCode(e.target.value)} />
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={isEdit ? handleEditProject : handleAddProject}>
-              {isEdit ? 'Save' : 'Add'}
+            <Button colorScheme="blue" mr="3" onClick={isEdit ? handleEditProject : handleAddProject}>
+              {isEdit ? 'Update Project' : 'Add Project'}
             </Button>
-            <Button onClick={closeModal}>Cancel</Button>
+            <Button variant="outline" onClick={closeModal}>Cancel</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -288,16 +314,12 @@ const Projects = () => {
       <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={closeAlert}>
         <AlertDialogOverlay>
           <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete Project
-            </AlertDialogHeader>
+            <AlertDialogHeader>Confirm Delete</AlertDialogHeader>
             <AlertDialogBody>
               Are you sure you want to delete this project? This action cannot be undone.
             </AlertDialogBody>
             <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={closeAlert}>
-                Cancel
-              </Button>
+              <Button ref={cancelRef} onClick={closeAlert}>Cancel</Button>
               <Button colorScheme="red" onClick={handleDeleteProject} ml={3}>
                 Delete
               </Button>

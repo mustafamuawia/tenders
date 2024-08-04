@@ -7,25 +7,15 @@ use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        return Project::all();
+        $projects = Project::all();
+        return response()->json($projects, 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'end_user_company_name' => 'required|string|max:255',
             'end_user_contact_email' => 'required|string|email|max:255',
             'distributor_contact_name' => 'required|string|max:255',
@@ -44,32 +34,31 @@ class ProjectController extends Controller
             'project_code' => 'required|string|max:255',
         ]);
 
-        $project = Project::create($request->all());
+        $project = Project::create($validated);
 
         return response()->json($project, 201);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Project  $project
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Project $project)
+    public function show($id)
     {
-        return $project;
+        $project = Project::find($id);
+
+        if ($project) {
+            return response()->json($project, 200);
+        }
+
+        return response()->json(['message' => 'Project not found'], 404);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Project  $project
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Project $project)
+    public function update(Request $request, $id)
     {
-        $request->validate([
+        $project = Project::find($id);
+
+        if (!$project) {
+            return response()->json(['message' => 'Project not found'], 404);
+        }
+
+        $validated = $request->validate([
             'end_user_company_name' => 'required|string|max:255',
             'end_user_contact_email' => 'required|string|email|max:255',
             'distributor_contact_name' => 'required|string|max:255',
@@ -88,36 +77,21 @@ class ProjectController extends Controller
             'project_code' => 'required|string|max:255',
         ]);
 
-        $project->update($request->all());
+        $project->update($validated);
 
         return response()->json($project, 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Project  $project
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Project $project)
+    public function destroy($id)
     {
+        $project = Project::find($id);
+
+        if (!$project) {
+            return response()->json(['message' => 'Project not found'], 404);
+        }
+
         $project->delete();
 
-        return response()->json(null, 204);
-    }
-
-
-    public function changeStatus(Request $request)
-    {
-        $request->validate([
-            'id' => 'required|exists:projects,id',
-            'status' => 'required|string|in:Activated,Not Activated',
-        ]);
-
-        $project = Project::find($request->id);
-        $project->project_status = $request->status;
-        $project->save();
-
-        return response()->json($project);
+        return response()->json(['message' => 'Project deleted successfully'], 200);
     }
 }

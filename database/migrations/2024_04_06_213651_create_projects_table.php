@@ -23,7 +23,7 @@ class CreateProjectsTable extends Migration
             $table->text('summary')->nullable();
             $table->string('end_user_contact_name');
             $table->string('end_user_contact_phone');
-            $table->string('project_status')->default('Not Activated');
+            $table->string('project_status');
             $table->string('installation_city')->nullable();
             $table->string('installation_state')->nullable();
             $table->string('distributor_email')->nullable();

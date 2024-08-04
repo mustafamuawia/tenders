@@ -45,7 +45,6 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Project routes
     Route::apiResource('projects', ProjectController::class);
-    Route::post('changeprojectstatus', [ProjectController::class, 'changeStatus']);
 
     //Clients routes
     Route::apiResource('clients', ClientController::class);
