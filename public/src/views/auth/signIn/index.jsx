@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory, NavLink } from 'react-router-dom';
 import axios from 'axios';
 import {
@@ -20,6 +20,44 @@ import DefaultAuth from 'layouts/auth/Default';
 import { MdOutlineRemoveRedEye } from 'react-icons/md';
 import { RiEyeCloseLine } from 'react-icons/ri';
 
+// Set up Axios defaults and interceptors
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
+
+// Retrieve and set the token if available
+const token = localStorage.getItem('token');
+if (token) {
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}
+
+axios.interceptors.response.use(
+  response => response,
+  async error => {
+    const originalRequest = error.config;
+
+    if (error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const response = await axios.post('/refresh-token', {}, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+
+        const { access_token } = response.data;
+        localStorage.setItem('token', access_token);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+        return axios(originalRequest);
+      } catch (err) {
+        localStorage.removeItem('token');
+        window.location.href = '/auth/sign-in'; // Redirect to sign-in page
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 function SignIn() {
   const navigate = useHistory();
   const textColor = useColorModeValue('navy.700', 'white');
@@ -38,7 +76,7 @@ function SignIn() {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/login`, {
+      const response = await axios.post('/login', {
         email,
         password,
       });
@@ -51,7 +89,11 @@ function SignIn() {
         setError('Login failed. Please check your credentials.');
       }
     } catch (error) {
-      setError('Invalid credentials');
+      if (error.response && error.response.data) {
+        setError(error.response.data.error || 'Invalid credentials');
+      } else {
+        setError('An unexpected error occurred');
+      }
     }
   };
 
@@ -92,7 +134,7 @@ function SignIn() {
               <Text as="span" color={textColorBrand}> *</Text>
             </FormLabel>
             <Input
-              isRequired={true}
+              isRequired
               variant="auth"
               fontSize="sm"
               type="email"
@@ -112,7 +154,7 @@ function SignIn() {
             </FormLabel>
             <InputGroup size="md">
               <Input
-                isRequired={true}
+                isRequired
                 fontSize="sm"
                 placeholder="At least 8 characters"
                 mb="24px"
