@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useHistory, NavLink } from 'react-router-dom';
 import axios from 'axios';
 import {
@@ -107,7 +107,7 @@ function SignIn() {
         p={5}
         sx={{
           '& > *': {
-            zIndex: '1 !important',  // Ensure all elements have higher z-index
+            zIndex: '1 !important',
           },
         }}
       >
@@ -118,7 +118,7 @@ function SignIn() {
           background={inputBgColor}
           borderRadius="15px"
           boxShadow="lg"
-          mb={8} // Margin bottom to push footer down
+          mb={8} 
         >
           <Box mb="auto">
             <Heading color={textColor} fontSize="36px" mb="10px">
