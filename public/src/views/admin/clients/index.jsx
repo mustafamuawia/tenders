@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Box, Button, FormControl, FormLabel, Input, Table, Thead, Tbody, Tr, Th, Td, Modal,
+  Box, Button, FormControl, FormLabel, Input, Select, Table, Thead, Tbody, Tr, Th, Td, Modal,
   ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure,
   AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter,
   Switch
@@ -21,7 +21,7 @@ const Clients = () => {
   const [country, setCountry] = useState('');
   const [state, setState] = useState('');
   const [city, setCity] = useState('');
-  const [status, setStatus] = useState(false); // Switch for status
+  const [status, setStatus] = useState('Not Activated'); // Default status
   const [deleteClientId, setDeleteClientId] = useState(null);
 
   useEffect(() => {
@@ -29,15 +29,15 @@ const Clients = () => {
   }, []);
 
   const fetchClients = async () => {
-    const response = await axios.get('/api/clients'); // Update the URL
+    const response = await axios.get(`${process.env.REACT_APP_API_URL}/clients`);
     setClients(response.data);
   };
 
   const handleStatusChange = async (clientId, currentStatus) => {
-    const newStatus = currentStatus === 1 ? 0 : 1;
+    const newStatus = currentStatus === 'Activated' ? 'Not Activated' : 'Activated';
     try {
-      await axios.post('/api/changeclientstatus', { id: clientId, status: newStatus }); // Update the URL
-      fetchClients();
+      await axios.post(`${process.env.REACT_APP_API_URL}/changeclientstatus`, { id: clientId, status: newStatus });
+      setClients(clients.map(client => client.id === clientId ? { ...client, status: newStatus } : client));
     } catch (error) {
       console.error(error);
     }
@@ -51,17 +51,17 @@ const Clients = () => {
       country,
       state,
       city,
-      status: status ? 1 : 0
+      status
     };
 
     try {
-      await axios.post('/api/clients', newClient); // Update the URL
+      await axios.post(`${process.env.REACT_APP_API_URL}/clients`, newClient);
       fetchClients();
       closeModal();
     } catch (error) {
       if (error.response) {
-        console.log(error.response.data); // Log the error response for debugging
-        alert("Error: " + error.response.data.message); // Display a user-friendly message
+        console.log(error.response.data);
+        alert("Error: " + error.response.data.message);
       } else {
         console.error(error);
       }
@@ -76,10 +76,10 @@ const Clients = () => {
       country,
       state,
       city,
-      status: status ? 1 : 0
+      status
     };
     try {
-      await axios.put(`/api/clients/${currentClient.id}`, client); // Update the URL
+      await axios.put(`${process.env.REACT_APP_API_URL}/clients/${currentClient.id}`, client);
       fetchClients();
       closeModal();
     } catch (error) {
@@ -96,7 +96,7 @@ const Clients = () => {
     setCountry(client.country || '');
     setState(client.state || '');
     setCity(client.city || '');
-    setStatus(client.status === 1);
+    setStatus(client.status);
     openModal();
   };
 
@@ -108,13 +108,13 @@ const Clients = () => {
     setCountry('');
     setState('');
     setCity('');
-    setStatus(false);
+    setStatus('Not Activated');
     openModal();
   };
 
   const handleDeleteClient = async () => {
     try {
-      await axios.delete(`/api/clients/${deleteClientId}`); // Update the URL
+      await axios.delete(`${process.env.REACT_APP_API_URL}/clients/${deleteClientId}`);
       fetchClients();
       closeAlert();
     } catch (error) {
@@ -125,6 +125,10 @@ const Clients = () => {
   const confirmDelete = (id) => {
     setDeleteClientId(id);
     openAlert();
+  };
+
+  const renderTableCell = (value) => {
+    return value ? value : 'N/A';
   };
 
   return (
@@ -147,15 +151,18 @@ const Clients = () => {
         <Tbody>
           {clients.map((client) => (
             <Tr key={client.id}>
-              <Td>{client.client_name}</Td>
-              <Td>{client.phone || 'N/A'}</Td>
-              <Td>{client.address || 'N/A'}</Td>
-              <Td>{client.country || 'N/A'}</Td>
-              <Td>{client.state || 'N/A'}</Td>
-              <Td>{client.city || 'N/A'}</Td>
+              <Td>{renderTableCell(client.client_name)}</Td>
+              <Td>{renderTableCell(client.phone)}</Td>
+              <Td>{renderTableCell(client.address)}</Td>
+              <Td>{renderTableCell(client.country)}</Td>
+              <Td>{renderTableCell(client.state)}</Td>
+              <Td>{renderTableCell(client.city)}</Td>
               <Td>
+                <Box color={client.status === 'Activated' ? 'green.500' : 'red.500'}>
+                  {client.status}
+                </Box>
                 <Switch
-                  isChecked={client.status === 1}
+                  isChecked={client.status === 'Activated'}
                   onChange={() => handleStatusChange(client.id, client.status)}
                 />
               </Td>
@@ -198,9 +205,12 @@ const Clients = () => {
               <FormLabel>City</FormLabel>
               <Input value={city} onChange={(e) => setCity(e.target.value)} />
             </FormControl>
-            <FormControl id="status">
+            <FormControl id="status" isRequired>
               <FormLabel>Status</FormLabel>
-              <Switch isChecked={status} onChange={(e) => setStatus(e.target.checked)} />
+              <Select value={status} onChange={(e) => setStatus(e.target.value)}>
+                <option value="Activated">Activated</option>
+                <option value="Not Activated">Not Activated</option>
+              </Select>
             </FormControl>
           </ModalBody>
 

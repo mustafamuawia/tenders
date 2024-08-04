@@ -13,24 +13,26 @@ class CreateProjectsTable extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('projects')) {
-            Schema::create('projects', function (Blueprint $table) {
-                $table->increments('id');
-                $table->text('project_code')->nullable();
-                $table->text('project_title')->nullable();
-                $table->date('start_date')->nullable();
-                $table->date('end_date')->nullable();
-                $table->integer('client_id')->nullable();
-                $table->integer('partner_id')->nullable();
-                $table->text('country')->nullable();
-                $table->text('state')->nullable();
-                $table->text('city')->nullable();
-                $table->text('address')->nullable();
-                $table->softDeletes(); // Corrected method name
-                $table->timestamps();
-                $table->tinyInteger('status')->default(1);
-            });
-        }
+        Schema::create('projects', function (Blueprint $table) {
+            $table->id();
+            $table->string('end_user_company_name');
+            $table->string('end_user_contact_email');
+            $table->string('distributor_contact_name');
+            $table->decimal('estimated_revenue', 15, 2)->nullable();
+            $table->date('estimated_implementation_finish_date')->nullable();
+            $table->text('summary')->nullable();
+            $table->string('end_user_contact_name');
+            $table->string('end_user_contact_phone');
+            $table->string('project_status')->default('Not Activated');
+            $table->string('installation_city')->nullable();
+            $table->string('installation_state')->nullable();
+            $table->string('distributor_email')->nullable();
+            $table->date('estimated_business_purchasing_decision_date')->nullable();
+            $table->date('estimated_implementation_start_date')->nullable();
+            $table->string('sector');
+            $table->string('project_code');
+            $table->timestamps();
+        });
     }
 
     /**

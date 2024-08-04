@@ -3,336 +3,121 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
-use App\Http\Requests\StoreProjectRequest;
-use App\Http\Requests\UpdateProjectRequest;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
     /**
-     * @OA\get(
-     *      path="/projects",
-     *      operationId="get_all_projects",
-     *      tags={"Projects"},
-     *      summary="Get list of projects",
-     *      description="get all projects",
-     *      security={{"bearer_token":{}}},
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation"
-     *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
-     *     )
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
      */
-   public function index()
-   {
-    $projects = Project::with('client')->where('partner_id',auth()->user()->id)->get();
-    return response()->json(['data'=>['projects' => $projects]], 200);   
-   }
-   /**
-    * Show the form for creating a new resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
-   public function create()
-   {
-       //
-   }
-   /**
-     * @OA\Post(
-     *      path="/projects",
-     *      operationId="store_project",
-     *      tags={"Projects"},
-     *      summary="store project",
-     *      description="store project",
-     *     @OA\Parameter(
-     *          name="project_code",
-     *          description="Project Code",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="string"
-     *          ) ),
-     *     @OA\Parameter(
-     *          name="project_title",
-     *          description="Project Title",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="string"
-     *          ) ),
-     *     @OA\Parameter(
-     *          name="start_date",
-     *          description="Start Date",
-     *          description="Start Date Ex. (2024-03-20)",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="Date"
-     *          ) ),
-     *     @OA\Parameter(
-     *          name="end_date",
-     *          description="End Date",
-     *          description="End Date Ex. (2024-03-20)",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="Date"
-     *          ) ),
-     *     @OA\Parameter(
-     *          name="country",
-     *          description="Country",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="string"
-     *          ) ),
-     *     @OA\Parameter(
-     *          name="state",
-     *          description="State",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="string"
-     *          ) ),
-     *     @OA\Parameter(
-     *          name="city",
-     *          description="City",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="string"
-     *          ) ),
-     *     @OA\Parameter(
-     *          name="address",
-     *          description="Address",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="string"
-     *          ) ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
-     *     )
-     */
-   public function store(Request $request)
-   {
-    try {
-        $project=new Project;
-        $project->project_code=$request->project_code;
-        $project->project_title=$request->project_title;
-        $project->start_date=$request->start_date;
-        $project->end_date=$request->end_date;
-        $project->country=$request->country;
-        $project->state=$request->state;
-        $project->city=$request->city;
-        $project->address=$request->address;
-        $project->partner_id=auth()->user()->id;
-        $project->save();
-        return response()->json(['msg'=>'Success'], 200);   
-    } catch(\Exception $exception) {
-        // throw new HttpException(400, "Invalid data - {$exception->getMessage}");
-        return response()->json(['msg'=>$exception->getMessage()], 400);   
+    public function index()
+    {
+        return Project::all();
     }
-   }
-   /**
-     * @OA\get(
-     *      path="/projects/{id}",
-     *      operationId="show_project",
-     *      tags={"Projects"},
-     *      summary="show project",
-     *      description="show project",
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
-     *     )
-     */
-   public function show($id)
-   {
-    $project = Project::find($id);
-    return response()->json(['data' => ['project'=>$project]], 200);
-   }
-   /**
-    * Show the form for editing the specified resource.
-    *
-    * @param  int  $id
-    * @return \Illuminate\Http\Response
-    */
-   public function edit($id)
-   {
-   
-   }
-   /**
-     * @OA\put(
-     *      path="/projects/{id}",
-     *      operationId="update_project",
-     *      tags={"Projects"},
-     *      summary="update project",
-     *      description="update project",
-     *     @OA\Parameter(
-     *          name="project_code",
-     *          description="Project Code",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="string"
-     *          ) ),
-     *     @OA\Parameter(
-     *          name="project_title",
-     *          description="Project Title",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="string"
-     *          ) ),
-     *     @OA\Parameter(
-     *          name="start_date",
-     *          description="Start Date",
-     *          description="Start Date Ex. (2024-03-20)",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="Date"
-     *          )),
-     *     @OA\Parameter(
-     *          name="end_date",
-     *          description="End Date",
-     *          description="End Date Ex. (2024-03-20)",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="Date"
-     *          ) ),
-     *     @OA\Parameter(
-     *          name="country",
-     *          description="Country",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="string"
-     *          ) ),
-     *     @OA\Parameter(
-     *          name="state",
-     *          description="State",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="string"
-     *          ) ),
-     *     @OA\Parameter(
-     *          name="city",
-     *          description="City",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="string"
-     *          ) ),
-     *     @OA\Parameter(
-     *          name="address",
-     *          description="Address",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="string"
-     *          ) ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
-     *     )
-     */
-   
-   public function update(Request $request, $id)
-   {
-    
-    try {
-        $project = Project::find($id);
 
-        $project->project_code=$request->project_code;
-        $project->project_title=$request->project_title;
-        $project->start_date=$request->start_date;
-        $project->end_date=$request->end_date;
-        $project->country=$request->country;
-        $project->state=$request->state;
-        $project->city=$request->city;
-        $project->address=$request->address;
-        $project->partner_id=auth()->user()->id;
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'end_user_company_name' => 'required|string|max:255',
+            'end_user_contact_email' => 'required|string|email|max:255',
+            'distributor_contact_name' => 'required|string|max:255',
+            'estimated_revenue' => 'nullable|numeric',
+            'estimated_implementation_finish_date' => 'nullable|date',
+            'summary' => 'nullable|string',
+            'end_user_contact_name' => 'required|string|max:255',
+            'end_user_contact_phone' => 'required|string|max:255',
+            'project_status' => 'required|string|max:255',
+            'installation_city' => 'nullable|string|max:255',
+            'installation_state' => 'nullable|string|max:255',
+            'distributor_email' => 'nullable|string|email|max:255',
+            'estimated_business_purchasing_decision_date' => 'nullable|date',
+            'estimated_implementation_start_date' => 'nullable|date',
+            'sector' => 'required|string|max:255',
+            'project_code' => 'required|string|max:255',
+        ]);
+
+        $project = Project::create($request->all());
+
+        return response()->json($project, 201);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Project  $project
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Project $project)
+    {
+        return $project;
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Project  $project
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Project $project)
+    {
+        $request->validate([
+            'end_user_company_name' => 'required|string|max:255',
+            'end_user_contact_email' => 'required|string|email|max:255',
+            'distributor_contact_name' => 'required|string|max:255',
+            'estimated_revenue' => 'nullable|numeric',
+            'estimated_implementation_finish_date' => 'nullable|date',
+            'summary' => 'nullable|string',
+            'end_user_contact_name' => 'required|string|max:255',
+            'end_user_contact_phone' => 'required|string|max:255',
+            'project_status' => 'required|string|max:255',
+            'installation_city' => 'nullable|string|max:255',
+            'installation_state' => 'nullable|string|max:255',
+            'distributor_email' => 'nullable|string|email|max:255',
+            'estimated_business_purchasing_decision_date' => 'nullable|date',
+            'estimated_implementation_start_date' => 'nullable|date',
+            'sector' => 'required|string|max:255',
+            'project_code' => 'required|string|max:255',
+        ]);
+
+        $project->update($request->all());
+
+        return response()->json($project, 200);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Project  $project
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Project $project)
+    {
+        $project->delete();
+
+        return response()->json(null, 204);
+    }
+
+
+    public function changeStatus(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:projects,id',
+            'status' => 'required|string|in:Activated,Not Activated',
+        ]);
+
+        $project = Project::find($request->id);
+        $project->project_status = $request->status;
         $project->save();
 
-        return response()->json(['msg'=>'Success'], 200);
-    } catch(\Exception $exception) {
-        // throw new HttpException(400, "Invalid data - {$exception->getMessage}");
-        return response()->json(['msg'=>$exception->getMessage()], 400);    
+        return response()->json($project);
     }
-   }
-   /**
-     * @OA\delete(
-     *      path="/projects/{id}",
-     *      operationId="delete_project",
-     *      tags={"Projects"},
-     *      summary="delete project",
-     *      description="delete project",
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
-     *     )
-     */
-   public function destroy($id)
-   {
-    $project= Project::findOrFail($id);
-    $project->delete();
-    return response()->json(['msg'=>'Success'], 200);
-   }
-
-   public function change_status(Request $request)
-   {
-    $id = $request->id;
-    $unit = Unit::findOrFail($id);
-    $unit->status=$request->status;
-    $unit->save();
-    return response()->json(['تمت العملية بنجاح'], 200);
-   }
 }
