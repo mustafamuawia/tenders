@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Flex, FormControl, FormLabel, Heading, Input, Text, useColorModeValue } from '@chakra-ui/react';
+import { Button, Flex, FormControl, FormLabel, Heading, Input, Text, useColorModeValue } from '@chakra-ui/react';
 import axios from 'axios';
 import DefaultAuth from 'layouts/auth/Default';
 
@@ -15,7 +15,7 @@ function ForgotPassword() {
 
   const handleForgotPassword = async () => {
     try {
-      const response = await axios.post('http://localhost:8000/api/forgot-password', {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/forgot-password`, {
         email,
       });
 
@@ -30,14 +30,14 @@ function ForgotPassword() {
       <Flex direction="column" alignItems="center" justifyContent="center" minH="100vh">
         <Flex direction="column" w={{ base: '100%', md: '420px' }} p={8} background={inputBgColor} borderRadius="15px" boxShadow="lg">
           <Heading color={textColor} fontSize="36px" mb="10px">
-            نسيت كلمة المرور
+            Forgot Password
           </Heading>
           <Text mb="36px" color={textColorSecondary} fontWeight="400" fontSize="md">
-            أدخل بريدك الإلكتروني للحصول على رابط إعادة تعيين كلمة المرور.
+            Enter your email to receive a password reset link.
           </Text>
           <FormControl>
-            <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="right">
-              البريد الإلكتروني
+            <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px">
+              Email
             </FormLabel>
             <Input
               isRequired={true}
@@ -59,7 +59,7 @@ function ForgotPassword() {
               </Text>
             )}
             <Button fontSize="sm" variant="brand" fontWeight="500" w="100%" h="50" mb="24px" onClick={handleForgotPassword}>
-              إرسال
+              Send
             </Button>
           </FormControl>
         </Flex>

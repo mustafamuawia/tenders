@@ -20,8 +20,9 @@ class Partner extends Model
 'Status', 
 ];
 public $timestamps = false;
-public function User()
+public function user()
 {
-    return $this->hasOne(User::class, 'id', 'UserId');
+    return $this->belongsTo(User::class, 'UserId', 'id');
 }
+
 }

@@ -58,10 +58,11 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(Tender::class);
     }
-    public function Partner()
+    public function partner()
     {
-        return $this->hasOne(Partner::class,  'UserId','id');
+        return $this->hasOne(Partner::class, 'UserId', 'id');
     }
+    
     use Notifiable;
 
     // Rest omitted for brevity

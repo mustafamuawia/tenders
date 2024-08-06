@@ -10,13 +10,14 @@ import {
   MdLayers,
   MdBuild,
   MdBusiness,
-  MdAttachMoney,
   MdControlPoint,
+  MdPersonAdd,
 } from "react-icons/md";
 
 // Admin Imports
 import MainDashboard from "views/admin/default";
 import Users from "views/admin/users";
+import Partners from "views/admin/partners";
 import Items from "views/admin/items";
 import Clients from "views/admin/clients";
 import Projects from "views/admin/projects";
@@ -28,6 +29,7 @@ import Logout from "views/admin/logout";
 
 // Auth Imports
 import SignInCentered from "views/auth/signIn";
+import Register from "views/auth/register";
 import ForgotPassword from "views/auth/forgotpassword"; // Import Forgot Password component
 import ResetPassword from "views/auth/resetpassword"; // Import Reset Password component
 
@@ -38,6 +40,11 @@ const routes = [
     layout: "/auth",
     path: "/sign-in",
     component: SignInCentered,
+  },
+  {
+    layout: "/auth",
+    path: "/register",
+    component: Register, // Add the new route
   },
   {
     layout: "/auth",
@@ -62,6 +69,13 @@ const routes = [
     path: "/users",
     icon: <Icon as={MdGroup} width='20px' height='20px' color='inherit' />,
     component: Users,
+  },
+  {
+    name: "Partners",
+    layout: "/admin",
+    path: "/partners",
+    icon: <Icon as={MdPersonAdd} width='20px' height='20px' color='inherit' />,
+    component: Partners,
   },
   {
     name: "Items",

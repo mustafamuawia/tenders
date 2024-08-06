@@ -197,6 +197,16 @@ function SignIn() {
             <Button fontSize="sm" variant="brand" fontWeight="500" w="100%" h="50" mb="24px" onClick={handleLogin}>
               Sign In
             </Button>
+            <Flex justifyContent="center" mt="4">
+              <Text color={textColor} fontSize="sm">
+                Don't have an account?{' '}
+                <NavLink to="/auth/register">
+                  <Text as="span" color={textColorBrand} fontWeight="500">
+                    Create an account
+                  </Text>
+                </NavLink>
+              </Text>
+            </Flex>
           </FormControl>
         </Flex>
       </Flex>

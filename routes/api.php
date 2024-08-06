@@ -38,6 +38,9 @@ Route::middleware(['auth:api'])->group(function () {
 
        // Partner routes
     Route::post('/user/create', [UserController::class, 'create'])->name('create');
+    Route::get('/user/fetch', [UserController::class, 'getPartners'])->name('getPartners');
+    Route::put('/user/edit/{id}', [UserController::class, 'edit']);
+    Route::delete('/user/delete/{id}', [UserController::class, 'delete']);
     Route::get('/user/getadmin', [UserController::class, 'getusers'])->name('getadmin');
     Route::get('/user', function (Request $request) {
         return $request->user();

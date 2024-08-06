@@ -61,20 +61,26 @@ class UserController extends Controller
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|confirmed|min:2',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+        if($validator->fails()){
+            return response()->json($validator->errors()->toJson(), 400);
         }
-
-        $user = new User;
+    $user= new User;
+ 
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
-        $user->role = 'Partner';
-        $user->status = 'Not Activated'; // Updated status
+        $user->role='Partner';
+        $user->Status='Not Activated';
         $user->save();
 
-        return response()->json(['msg' => 'Success'], 200);
+        $partner= new Partner;
+        $partner->CompanyEmail=$request->CompanyEmail;
+        $partner->CompanyName=$request->CompanyName;
+        $partner->Phone=$request->Phone;
+        $partner->Class=$request->Class;
+        $partner->UserId=$user->id;
+        $partner->save();
+        return response()->json(  ['msg'=>'Success']);
     }
 
     public function fetchAdmin()
@@ -88,46 +94,74 @@ class UserController extends Controller
         }
     }
 
-    public function getusers(Request $request)
-    {
-        $token = $request->bearerToken();
-        $user = JWTAuth::user();
-        
-        $users = User::where('id', '<>', $user->id)->with("Partner")->get();
-        return response()->json($users);
+    public function getPartners()
+{
+    // Fetch all partners with their associated user data
+    $partners = Partner::with('user')->get();
+
+    // Format the data to include necessary user information
+    $formattedPartners = $partners->map(function($partner) {
+        return [
+            'id' => $partner->id,
+            'CompanyEmail' => $partner->CompanyEmail,
+            'CompanyName' => $partner->CompanyName,
+            'Phone' => $partner->Phone,
+            'Class' => $partner->Class,
+            'name' => $partner->user ? $partner->user->name : 'N/A',
+            'email' => $partner->user ? $partner->user->email : 'N/A',
+            'status' => $partner->user ? $partner->user->status : 'N/A'
+        ];
+    });
+
+    // Return the formatted partners in JSON format
+    return response()->json($formattedPartners);
+}
+
+public function edit(Request $request, $id)
+{
+    $validator = Validator::make($request->all(), [
+        'name' => 'required|string|between:2,100',
+        'email' => 'required|string|email|max:100|unique:users,email,' . $id,
+        'password' => 'nullable|string|confirmed|min:2', // Password is optional for editing
+        'CompanyEmail' => 'required|string|email|max:100',
+        'CompanyName' => 'required|string|max:100',
+        'Phone' => 'required|string|max:15',
+        'Class' => 'required|string|in:Silver,Gold,Platinum',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json($validator->errors()->toJson(), 400);
     }
 
-    public function updateuser(Request $request)
-    {
-        $token = $request->bearerToken();
-        $user = JWTAuth::user();
-        $UserId = $user->id;
-        
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|between:2,100',
-            'email' => 'required|string|email|max:100|unique:users,email,' . $UserId,
-            'password' => 'required|string|confirmed|min:2',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-        
-        $user = User::find($UserId);
+    try {
+        // Update the user
+        $user = User::findOrFail($id);
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->password = Hash::make($request->password);
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
         $user->save();
 
-        $partner = Partner::where('UserID', $UserId)->first();
-        $partner->CompanyEmail = $request->CompanyEmail;
-        $partner->CompanyName = $request->CompanyName;
-        $partner->Phone = $request->Phone;
-        $partner->Class = $request->Class;
-        $partner->save();
+        // Update the partner
+        $partner = Partner::where('UserId', $id)->first();
+        if ($partner) {
+            $partner->CompanyEmail = $request->CompanyEmail;
+            $partner->CompanyName = $request->CompanyName;
+            $partner->Phone = $request->Phone;
+            $partner->Class = $request->Class;
+            $partner->save();
+        } else {
+            return response()->json(['msg' => 'Partner record not found'], 404);
+        }
 
-        return response()->json(['msg' => 'Success']);
+        return response()->json(['msg' => 'Update successful']);
+    } catch (\Exception $e) {
+        Log::error('Error editing record: ' . $e->getMessage());
+        return response()->json(['msg' => 'Error editing record', 'error' => $e->getMessage()], 500);
     }
+}
+
 
     public function updateadmin(Request $request, $id)
     {
@@ -172,9 +206,24 @@ class UserController extends Controller
         }
     }
 
-    public function delete(Request $request)
+    public function delete($id)
     {
-        User::destroy($request->id);
-        return response()->json(['msg' => 'Success']);
+        try {
+            // Find and delete the partner
+            $partner = Partner::where('UserId', $id)->first();
+            if ($partner) {
+                $partner->delete();
+            }
+    
+            // Find and delete the user
+            $user = User::findOrFail($id);
+            $user->delete();
+    
+            return response()->json(['msg' => 'Delete successful']);
+        } catch (\Exception $e) {
+            Log::error('Error deleting record: ' . $e->getMessage());
+            return response()->json(['msg' => 'Error deleting record', 'error' => $e->getMessage()], 500);
+        }
     }
+    
 }
