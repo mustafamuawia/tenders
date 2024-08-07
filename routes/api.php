@@ -42,6 +42,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::put('/user/edit/{id}', [UserController::class, 'edit']);
     Route::delete('/user/delete/{id}', [UserController::class, 'delete']);
     Route::get('/user/getadmin', [UserController::class, 'getusers'])->name('getadmin');
+    Route::get('/user/{id}', [UserController::class, 'getUser']);
     Route::get('/user', function (Request $request) {
         return $request->user();
     });

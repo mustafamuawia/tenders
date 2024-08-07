@@ -117,6 +117,17 @@ class UserController extends Controller
     return response()->json($formattedPartners);
 }
 
+public function getUser($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        return response()->json($user);
+    }
+
 public function edit(Request $request, $id)
 {
     $validator = Validator::make($request->all(), [
