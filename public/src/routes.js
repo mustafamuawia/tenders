@@ -3,7 +3,6 @@ import { Icon } from "@chakra-ui/react";
 import {
   MdHome,
   MdGroup,
-  MdExitToApp,
   MdPeople,
   MdList,
   MdEdit,
@@ -15,7 +14,7 @@ import {
 } from "react-icons/md";
 
 // Admin Imports
-import MainDashboard from "views/admin/default";
+import MainDashboard from "views/admin/dashboard";
 import Users from "views/admin/users";
 import Partners from "views/admin/partners";
 import Items from "views/admin/items";
@@ -25,7 +24,6 @@ import RFQ from "views/admin/rfq";
 import UnitGroups from "views/admin/unitGroups";
 import Units from "views/admin/units";
 import EditProfile from "views/admin/editProfile";
-import Logout from "views/admin/logout";
 
 // Auth Imports
 import SignInCentered from "views/auth/signIn";
@@ -59,7 +57,7 @@ const routes = [
   {
     name: "Dashboard",
     layout: "/admin",
-    path: "/default",
+    path: "/dashboard",
     icon: <Icon as={MdHome} width='20px' height='20px' color='inherit' />,
     component: MainDashboard,
   },
@@ -126,13 +124,6 @@ const routes = [
     icon: <Icon as={MdEdit} width='20px' height='20px' color='inherit' />,
     component: EditProfile,
   },
-  {
-    name: "Log out",
-    layout: "/admin",
-    path: "/logout",
-    icon: <Icon as={MdExitToApp} width='20px' height='20px' color='inherit' />,
-    component: Logout,
-  }
 ];
 
 const sidebarRoutes = routes.filter(route => route.name); // Filter out routes without a name (e.g., Sign In)
