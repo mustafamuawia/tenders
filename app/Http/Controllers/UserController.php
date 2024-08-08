@@ -36,7 +36,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
-            'password' => 'required|string|confirmed|min:2',
+            'password' => 'required|string|confirmed|min:8',
         ]);
 
         if ($validator->fails()) {
@@ -59,7 +59,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
-            'password' => 'required|string|confirmed|min:2',
+            'password' => 'required|string|confirmed|min:8',
         ]);
         if($validator->fails()){
             return response()->json($validator->errors()->toJson(), 400);
@@ -133,7 +133,7 @@ public function edit(Request $request, $id)
     $validator = Validator::make($request->all(), [
         'name' => 'required|string|between:2,100',
         'email' => 'required|string|email|max:100|unique:users,email,' . $id,
-        'password' => 'nullable|string|confirmed|min:2', // Password is optional for editing
+        'password' => 'nullable|string|confirmed|min:8', // Password is optional for editing
         'CompanyEmail' => 'required|string|email|max:100',
         'CompanyName' => 'required|string|max:100',
         'Phone' => 'required|string|max:15',
@@ -179,7 +179,7 @@ public function edit(Request $request, $id)
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users,email,' . $id,
-            'password' => 'nullable|string|confirmed|min:2',
+            'password' => 'nullable|string|confirmed|min:8',
             'status' => 'required|in:Activated,Not Activated', // Validation updated
         ]);
 

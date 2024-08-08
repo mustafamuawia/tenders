@@ -12,9 +12,6 @@ import {
   Text,
   useColorModeValue,
   useColorMode,
-  Radio,
-  RadioGroup,
-  Stack,
   IconButton,
 } from '@chakra-ui/react';
 import { ArrowBackIcon } from '@chakra-ui/icons';
@@ -36,7 +33,6 @@ function Register() {
   const [emailConfirm, setEmailConfirm] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
-  const [membershipType, setMembershipType] = useState('Silver');
   const [error, setError] = useState('');
 
   const handleRegister = async () => {
@@ -59,7 +55,6 @@ function Register() {
         CompanyName: companyName,
         CompanyEmail: companyEmail,
         Phone: companyPhone,
-        Class: membershipType,
       });
 
       if (response.data.msg === 'Success') {
@@ -238,21 +233,6 @@ function Register() {
                 onChange={(e) => setPasswordConfirm(e.target.value)}
                 color={inputTextColor}
               />
-              <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="left">
-                Membership Type
-              </FormLabel>
-              <RadioGroup
-                onChange={setMembershipType}
-                value={membershipType}
-                color={labelColor}
-                mb="24px"
-              >
-                <Stack direction="row" spacing={5}>
-                  <Radio value="Golden">Golden</Radio>
-                  <Radio value="Silver">Silver</Radio>
-                  <Radio value="Bronze">Bronze</Radio>
-                </Stack>
-              </RadioGroup>
               {error && (
                 <Text color="red.500" mb="24px">
                   {error}

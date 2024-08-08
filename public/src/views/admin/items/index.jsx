@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Box, Button, FormControl, FormLabel, Input, Select, Table, Thead, Tbody, Tr, Th, Td, Modal,
+  Box, Button, FormControl, FormLabel, Input, Textarea, Select, Table, Thead, Tbody, Tr, Th, Td, Modal,
   ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure,
   AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter,
   Switch
@@ -9,6 +9,7 @@ import axios from 'axios';
 
 const Items = () => {
   const [items, setItems] = useState([]);
+  const [countries, setCountries] = useState([]);
   const [currentItem, setCurrentItem] = useState({});
   const [isEdit, setIsEdit] = useState(false);
   const { isOpen: isModalOpen, onOpen: openModal, onClose: closeModal } = useDisclosure();
@@ -26,11 +27,27 @@ const Items = () => {
 
   useEffect(() => {
     fetchItems();
+    fetchCountries();
   }, []);
 
   const fetchItems = async () => {
     const response = await axios.get(`${process.env.REACT_APP_API_URL}/items`);
     setItems(response.data);
+  };
+
+  const fetchCountries = async () => {
+    try {
+      const response = await axios.get('https://restcountries.com/v3.1/all');
+      const sortedCountries = response.data
+        .map(country => ({
+          name: country.name.common,
+          code: country.cca2
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
+      setCountries(sortedCountries);
+    } catch (error) {
+      console.error("Failed to fetch countries:", error);
+    }
   };
 
   const handleStatusChange = async (itemId, currentStatus) => {
@@ -191,7 +208,7 @@ const Items = () => {
             </FormControl>
             <FormControl id="specifications">
               <FormLabel>Specifications</FormLabel>
-              <Input value={specifications} onChange={(e) => setSpecifications(e.target.value)} />
+              <Textarea value={specifications} onChange={(e) => setSpecifications(e.target.value)} />
             </FormControl>
             <FormControl id="manufacturer">
               <FormLabel>Manufacturer</FormLabel>
@@ -199,11 +216,17 @@ const Items = () => {
             </FormControl>
             <FormControl id="originCountry">
               <FormLabel>Origin Country</FormLabel>
-              <Input value={originCountry} onChange={(e) => setOriginCountry(e.target.value)} />
+              <Select value={originCountry} onChange={(e) => setOriginCountry(e.target.value)}>
+                {countries.map(country => (
+                  <option key={country.code} value={country.name}>
+                    {country.name}
+                  </option>
+                ))}
+              </Select>
             </FormControl>
             <FormControl id="note" isRequired>
               <FormLabel>Note</FormLabel>
-              <Input value={note} onChange={(e) => setNote(e.target.value)} />
+              <Textarea value={note} onChange={(e) => setNote(e.target.value)} />
             </FormControl>
             <FormControl id="status" isRequired>
               <FormLabel>Status</FormLabel>

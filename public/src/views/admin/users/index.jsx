@@ -3,7 +3,7 @@ import {
   Box, Button, FormControl, FormLabel, Input, Select, Table, Thead, Tbody, Tr, Th, Td, Modal,
   ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure,
   AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter,
-  Switch
+  Switch, Text
 } from '@chakra-ui/react';
 import axios from 'axios';
 
@@ -20,15 +20,16 @@ const Users = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState('Admin');
-  const [status, setStatus] = useState('Not Activated'); // Default status
+  const [status, setStatus] = useState('Not Activated');
   const [deleteUserId, setDeleteUserId] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
   const fetchUsers = async () => {
-    const response = await axios.get(`${process.env.REACT_APP_API_URL}/admin/fetch`); // Update the URL
+    const response = await axios.get(`${process.env.REACT_APP_API_URL}/admin/fetch`);
     setUsers(response.data);
   };
 
@@ -42,37 +43,59 @@ const Users = () => {
     }
   };
 
+  const validateForm = () => {
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      return false;
+    }
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return false;
+    }
+    return true;
+  };
+
   const handleAddUser = async () => {
+    if (!validateForm()) return;
+
     const newUser = {
       name, email, password, password_confirmation: confirmPassword, role,
       status
     };
 
     try {
-      await axios.post(`${process.env.REACT_APP_API_URL}/user/createadmin`, newUser); // Update the URL
+      await axios.post(`${process.env.REACT_APP_API_URL}/user/createadmin`, newUser);
       fetchUsers();
       closeModal();
+      setError('');
     } catch (error) {
       if (error.response) {
-        console.log(error.response.data);
-        alert("Error: " + error.response.data.message);
+        if (error.response.data.message.includes('email')) {
+          setError('Email already exists.');
+        } else {
+          setError('An error occurred.');
+        }
       } else {
-        console.error(error);
+        setError('An error occurred.');
       }
     }
   };
 
   const handleEditUser = async () => {
+    if (!validateForm()) return;
+
     const user = {
       name, email, password, password_confirmation: confirmPassword, role,
       status
     };
     try {
-      await axios.put(`${process.env.REACT_APP_API_URL}/admin/edit/${currentUser.id}`, user); // Update the URL
+      await axios.put(`${process.env.REACT_APP_API_URL}/admin/edit/${currentUser.id}`, user);
       fetchUsers();
       closeModal();
+      setError('');
     } catch (error) {
       console.error(error);
+      setError('An error occurred.');
     }
   };
 
@@ -85,6 +108,7 @@ const Users = () => {
     setConfirmPassword('');
     setRole(user.role);
     setStatus(user.status);
+    setError('');
     openModal();
   };
 
@@ -96,12 +120,13 @@ const Users = () => {
     setConfirmPassword('');
     setRole('Admin');
     setStatus('Not Activated');
+    setError('');
     openModal();
   };
 
   const handleDeleteUser = async () => {
     try {
-      await axios.delete(`${process.env.REACT_APP_API_URL}/admin/delete/${deleteUserId}`); // Update the URL
+      await axios.delete(`${process.env.REACT_APP_API_URL}/admin/delete/${deleteUserId}`);
       fetchUsers();
       closeAlert();
     } catch (error) {
@@ -162,6 +187,7 @@ const Users = () => {
           <ModalHeader>{isEdit ? 'Edit User' : 'Add User'}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
+            {error && <Text color="red.500" mb="4">{error}</Text>}
             <FormControl id="name" isRequired>
               <FormLabel>Name</FormLabel>
               <Input value={name} onChange={(e) => setName(e.target.value)} />

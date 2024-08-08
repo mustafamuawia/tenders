@@ -35,7 +35,6 @@ export default function AdminNavbar(props) {
         }
     };
 
-    // Extract route name from the location pathname and capitalize the first letter
     const routeName = location.pathname.split('/').pop();
     const capitalizeFirstLetter = str => str.charAt(0).toUpperCase() + str.slice(1);
     const displayRouteName = `Admin / ${capitalizeFirstLetter(routeName.replace('-', ' '))}`;

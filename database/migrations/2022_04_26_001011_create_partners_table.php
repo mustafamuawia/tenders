@@ -21,7 +21,7 @@ class CreatePartnersTable extends Migration
             $table->text('Phone');
             $table->unsignedBigInteger('UserId');
             $table->index('UserId');
-            $table->string('Class');
+            $table->string('Class')->nullable();
             $table->foreign('UserId')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
         });
     }
