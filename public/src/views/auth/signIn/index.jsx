@@ -85,7 +85,7 @@ function SignIn() {
         localStorage.setItem('token', response.data.access_token);
         localStorage.setItem('userId', response.data.user.id);
         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`;
-        navigate.push('/admin/dashboard'); // Redirect to the dashboard
+        navigate.push('/admin/dashboard'); 
       } else {
         setError('Login failed. Please check your credentials.');
       }

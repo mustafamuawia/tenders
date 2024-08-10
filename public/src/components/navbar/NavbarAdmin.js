@@ -1,14 +1,27 @@
-// Chakra Imports
-import { Box, Flex, Link, Text, useColorModeValue } from '@chakra-ui/react';
+import { Box, Flex, Text, useColorModeValue } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 export default function AdminNavbar(props) {
     const [scrolled, setScrolled] = useState(false);
-    const location = useLocation(); // Get the current location (route)
+    const [displayRouteName, setDisplayRouteName] = useState('');
+    const [isMounted, setIsMounted] = useState(false); // Track if the component is fully mounted
+    const location = useLocation();
 
     useEffect(() => {
+        // Update displayRouteName when location changes
+        if (isMounted) {
+            const routeName = location.pathname.split('/').pop();
+            const capitalizeFirstLetter = str => str.charAt(0).toUpperCase() + str.slice(1);
+            setDisplayRouteName(`Admin / ${capitalizeFirstLetter(routeName.replace('-', ' '))}`);
+        }
+    }, [location, isMounted]);
+
+    useEffect(() => {
+        // Mark component as mounted
+        setIsMounted(true);
+
         window.addEventListener('scroll', changeNavbar);
 
         return () => {
@@ -34,10 +47,6 @@ export default function AdminNavbar(props) {
             setScrolled(false);
         }
     };
-
-    const routeName = location.pathname.split('/').pop();
-    const capitalizeFirstLetter = str => str.charAt(0).toUpperCase() + str.slice(1);
-    const displayRouteName = `Admin / ${capitalizeFirstLetter(routeName.replace('-', ' '))}`;
 
     return (
         <Box
@@ -76,24 +85,6 @@ export default function AdminNavbar(props) {
                 mb={gap}
                 justifyContent={{ xl: 'flex-start' }}>
                 <Box mb={{ sm: '8px', md: '0px' }}>
-                    <Link
-                        color={mainText}
-                        href='#'
-                        bg='inherit'
-                        borderRadius='inherit'
-                        fontWeight='bold'
-                        fontSize='34px'
-                        _hover={{ color: mainText }}
-                        _active={{
-                            bg: 'inherit',
-                            transform: 'none',
-                            borderColor: 'transparent'
-                        }}
-                        _focus={{
-                            boxShadow: 'none'
-                        }}>
-                        {brandText}
-                    </Link>
                 </Box>
                 <Box w={{ sm: '100%', md: 'unset' }}>
                     <Text 

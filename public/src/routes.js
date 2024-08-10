@@ -1,3 +1,4 @@
+// Imports
 import React from "react";
 import { Icon } from "@chakra-ui/react";
 import {
@@ -31,8 +32,7 @@ import Register from "views/auth/register";
 import ForgotPassword from "views/auth/forgotpassword"; // Import Forgot Password component
 import ResetPassword from "views/auth/resetpassword"; // Import Reset Password component
 
-// Partner Imports
-
+// Routes definition with roles
 const routes = [
   {
     layout: "/auth",
@@ -42,7 +42,7 @@ const routes = [
   {
     layout: "/auth",
     path: "/register",
-    component: Register, // Add the new route
+    component: Register,
   },
   {
     layout: "/auth",
@@ -60,6 +60,7 @@ const routes = [
     path: "/dashboard",
     icon: <Icon as={MdHome} width='20px' height='20px' color='inherit' />,
     component: MainDashboard,
+    roles: ["Admin", "Partner"], 
   },
   {
     name: "Users",
@@ -67,6 +68,7 @@ const routes = [
     path: "/users",
     icon: <Icon as={MdGroup} width='20px' height='20px' color='inherit' />,
     component: Users,
+    roles: ["Admin"], 
   },
   {
     name: "Partners",
@@ -74,6 +76,7 @@ const routes = [
     path: "/partners",
     icon: <Icon as={MdPersonAdd} width='20px' height='20px' color='inherit' />,
     component: Partners,
+    roles: ["Admin"], 
   },
   {
     name: "Items",
@@ -81,6 +84,7 @@ const routes = [
     path: "/items",
     icon: <Icon as={MdList} width='20px' height='20px' color='inherit' />,
     component: Items,
+    roles: ["Admin"], 
   },
   {
     name: "Clients",
@@ -88,6 +92,7 @@ const routes = [
     path: "/clients",
     icon: <Icon as={MdPeople} width='20px' height='20px' color='inherit' />,
     component: Clients,
+    roles: ["Admin", "Partner"], 
   },
   {
     name: "Projects",
@@ -95,6 +100,7 @@ const routes = [
     path: "/projects",
     icon: <Icon as={MdLayers} width='20px' height='20px' color='inherit' />,
     component: Projects,
+    roles: ["Admin", "Partner"], 
   },
   {
     name: "RFQ",
@@ -102,6 +108,7 @@ const routes = [
     path: "/rfq",
     icon: <Icon as={MdBuild} width='20px' height='20px' color='inherit' />,
     component: RFQ,
+    roles: ["Admin", "Partner"], 
   },
   {
     name: "Unit Groups",
@@ -109,6 +116,7 @@ const routes = [
     path: "/unit-groups",
     icon: <Icon as={MdBusiness} width='20px' height='20px' color='inherit' />,
     component: UnitGroups,
+    roles: ["Admin"], 
   },
   {
     name: "Units",
@@ -116,6 +124,7 @@ const routes = [
     path: "/units",
     icon: <Icon as={MdControlPoint} width='20px' height='20px' color='inherit' />,
     component: Units,
+    roles: ["Admin"], 
   },
   {
     name: "Edit Profile",
@@ -123,10 +132,18 @@ const routes = [
     path: "/edit-profile",
     icon: <Icon as={MdEdit} width='20px' height='20px' color='inherit' />,
     component: EditProfile,
+    roles: ["Admin", "Partner"], 
   },
 ];
 
-const sidebarRoutes = routes.filter(route => route.name); // Filter out routes without a name (e.g., Sign In)
 
-export { routes, sidebarRoutes };
+const getRoutesForRole = (role) => {
+  return routes.filter((route) => route.roles && route.roles.includes(role));
+};
+
+
+const sidebarRoutes = routes.filter(route => route.name); 
+
+
+export { routes, sidebarRoutes, getRoutesForRole };
 export default routes;
