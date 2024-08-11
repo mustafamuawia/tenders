@@ -253,7 +253,7 @@ const Partners = () => {
             {error && <Text color="red.500" mt="2">{error}</Text>}
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" mr="3" onClick={isEdit ? handleEditPartner : handleAddPartner}>
+            <Button colorScheme="teal" mr="3" onClick={isEdit ? handleEditPartner : handleAddPartner}>
               {isEdit ? 'Save Changes' : 'Add Partner'}
             </Button>
             <Button variant="ghost" onClick={closeModal}>Cancel</Button>

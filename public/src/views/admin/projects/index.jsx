@@ -307,7 +307,7 @@ const Projects = () => {
             </Grid>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={isEdit ? handleEditProject : handleAddProject}>
+            <Button colorScheme="teal" mr={3} onClick={isEdit ? handleEditProject : handleAddProject}>
               {isEdit ? 'Save' : 'Add'}
             </Button>
             <Button variant="ghost" onClick={closeModal}>Cancel</Button>

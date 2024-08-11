@@ -218,6 +218,7 @@ const Clients = () => {
             <Button colorScheme="teal" onClick={isEdit ? handleEditClient : handleAddClient}>
               {isEdit ? 'Edit' : 'Add'}
             </Button>
+            <Button variant="ghost" onClick={closeModal}>Cancel</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

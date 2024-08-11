@@ -223,6 +223,7 @@ const Users = () => {
             <Button colorScheme="teal" onClick={isEdit ? handleEditUser : handleAddUser}>
               {isEdit ? 'Edit' : 'Add'}
             </Button>
+            <Button variant="ghost" onClick={closeModal}>Cancel</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

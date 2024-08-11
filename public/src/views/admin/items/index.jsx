@@ -241,6 +241,7 @@ const Items = () => {
             <Button colorScheme="teal" onClick={isEdit ? handleEditItem : handleAddItem}>
               {isEdit ? 'Edit' : 'Add'}
             </Button>
+            <Button variant="ghost" onClick={closeModal}>Cancel</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
