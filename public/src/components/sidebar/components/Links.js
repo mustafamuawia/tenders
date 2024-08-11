@@ -18,12 +18,12 @@ export function SidebarLinks(props) {
 
   const handleLogout = async () => {
     try {
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem('token');
       if (!token) throw new Error('No access token found');
       
       await axios.post(`${process.env.REACT_APP_API_URL}/logout`);
       
-      localStorage.removeItem('access_token');
+      localStorage.removeItem('token');
       setTimeout(() => {
         history.push('/login');
       }, 1000); // Delay of 1 second
