@@ -9,10 +9,11 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\UnitController;
-use App\Http\Controllers\unit_groupController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RequestForQuotationController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\UnitGroupController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -62,8 +63,8 @@ Route::middleware(['auth:api'])->group(function () {
 
     
     //Unit Groups routes
-    Route::apiResource('unitgroups', unit_groupController::class);
-    Route::post('unitgroups/change-status', [unit_groupController::class, 'change_status']);
+    Route::apiResource('unitgroups', UnitGroupController::class);
+    Route::post('changeunitgroupstatus', [UnitGroupController::class, 'changeStatus']);
 
     // JWT routes
     Route::post('logout', [AuthController::class, 'logout']);

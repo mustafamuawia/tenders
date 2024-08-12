@@ -97,7 +97,7 @@ public function getpartners(Request $request)
         $UserId = $partner->UserId;
 
         Partner::destroy($request->id);
-User::destroy($UserId);
+        User::destroy($UserId);
         return response()->json(  ['msg'=>'Success']);
     }
 }

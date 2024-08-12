@@ -19,7 +19,7 @@ class CreateUnitsTable extends Migration
             $table->text('description')->nullable();
             $table->decimal('ratio',24,6);
             $table->integer('unit_group_id');
-            $table->tinyinteger('status')->default(1);
+            $table->string('status')->default('Not Activated');
             $table->integer('created_by');
             $table->softDeletes();
             $table->timestamps();

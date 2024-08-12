@@ -15,12 +15,12 @@ class CreateUnitGroupsTable extends Migration
     {
         Schema::create('unit_groups', function (Blueprint $table) {
             $table->increments('id');
-            $table->text('name');
+            $table->string('name');
             $table->text('description')->nullable();
-            $table->integer('created_by');
             $table->softDeletes();
             $table->timestamps();
-            $table->tinyInteger('status')->default(1);
+            $table->string('status')->default('Not Activated');
+
         });
     }
 

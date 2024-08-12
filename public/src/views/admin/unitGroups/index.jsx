@@ -28,22 +28,31 @@ const UnitGroups = () => {
   const fetchUnitGroups = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/unitgroups`);
-      setUnitGroups(response.data.data.unit_groups || []);
+      console.log(response.data); // Inspect the data structure
+      setUnitGroups(response.data || []); 
     } catch (error) {
       console.error('Error fetching unit groups:', error);
+      setUnitGroups([]); 
     }
   };
-  
 
   const handleStatusChange = async (unitGroupId, currentStatus) => {
     const newStatus = currentStatus === 'Activated' ? 'Not Activated' : 'Activated';
     try {
-      await axios.post(`${process.env.REACT_APP_API_URL}/unitgroups/change-status`, { id: unitGroupId, status: newStatus });
-      setUnitGroups(unitGroups.map(unitGroup => unitGroup.id === unitGroupId ? { ...unitGroup, status: newStatus } : unitGroup));
+      await axios.post(`${process.env.REACT_APP_API_URL}/changeunitgroupstatus`, {
+        id: unitGroupId,
+        status: newStatus
+      });
+      setUnitGroups(unitGroups.map(unitGroup => 
+        unitGroup.id === unitGroupId 
+          ? { ...unitGroup, status: newStatus } 
+          : unitGroup
+      ));
     } catch (error) {
       console.error('Error changing status:', error);
     }
   };
+  
 
   const handleAddUnitGroup = async () => {
     try {
@@ -54,7 +63,7 @@ const UnitGroups = () => {
       setError('');
     } catch (error) {
       console.error('Error adding unit group:', error);
-      setError('An error occurred.');
+      setError('An error occurred while adding the unit group.');
     }
   };
 
@@ -67,7 +76,7 @@ const UnitGroups = () => {
       setError('');
     } catch (error) {
       console.error('Error editing unit group:', error);
-      setError('An error occurred.');
+      setError('An error occurred while editing the unit group.');
     }
   };
 
@@ -123,22 +132,23 @@ const UnitGroups = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {unitGroups.map((unitGroup) => (
+          {(unitGroups || []).map((unitGroup) => (
             <Tr key={unitGroup.id}>
               <Td>{renderTableCell(unitGroup.name)}</Td>
               <Td>{renderTableCell(unitGroup.description)}</Td>
               <Td>
-                <Box color={unitGroup.status === 1 ? 'green.500' : 'red.500'}>
-                  {unitGroup.status === 1 ? 'Activated' : 'Not Activated'}
+              <Box color={unitGroup.status === 'Activated' ? 'green.500' : 'red.500'}>
+                  {unitGroup.status}
                 </Box>
                 <Switch
-                  isChecked={unitGroup.status === 1}
-                  onChange={() => handleStatusChange(unitGroup.id, unitGroup.status === 1 ? 'Activated' : 'Not Activated')}
+                  isChecked={unitGroup.status === 'Activated'}
+                  onChange={() => handleStatusChange(unitGroup.id, unitGroup.status)}
                 />
               </Td>
-              <Td display="flex" justifyContent="flex-start" gap="2">
+              
+              <Td>
                 <Button colorScheme="yellow" size="sm" onClick={() => openEditModal(unitGroup)}>Edit</Button>
-                <Button colorScheme="red" size="sm" ml="1" onClick={() => confirmDelete(unitGroup.id)}>Delete</Button>
+                <Button colorScheme="red"  size="sm" ml="1" onClick={() => confirmDelete(unitGroup.id)}>Delete</Button>
               </Td>
             </Tr>
           ))}
@@ -151,55 +161,45 @@ const UnitGroups = () => {
           <ModalHeader>{isEdit ? 'Edit Unit Group' : 'Add Unit Group'}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            {error && <Text color="red.500" mb="4">{error}</Text>}
-            <FormControl id="name" isRequired>
+            <FormControl mb="4">
               <FormLabel>Name</FormLabel>
               <Input value={name} onChange={(e) => setName(e.target.value)} />
             </FormControl>
-            <FormControl id="description">
+            <FormControl mb="4">
               <FormLabel>Description</FormLabel>
               <Input value={description} onChange={(e) => setDescription(e.target.value)} />
             </FormControl>
-            <FormControl id="status" isRequired>
+            <FormControl mb="4">
               <FormLabel>Status</FormLabel>
               <Select value={status} onChange={(e) => setStatus(e.target.value)}>
-                <option value="1">Activated</option>
-                <option value="0">Not Activated</option>
+                <option value="Activated">Activated</option>
+                <option value="Not Activated">Not Activated</option>
               </Select>
             </FormControl>
+            {error && <Text color="red.500">{error}</Text>}
           </ModalBody>
-
           <ModalFooter>
-            <Button colorScheme="teal" onClick={isEdit ? handleEditUnitGroup : handleAddUnitGroup}>
-              {isEdit ? 'Edit' : 'Add'}
+            <Button colorScheme="teal" mr="3" onClick={isEdit ? handleEditUnitGroup : handleAddUnitGroup}>
+              {isEdit ? 'Save Changes' : 'Add Unit Group'}
             </Button>
-            <Button variant="ghost" onClick={closeModal}>Cancel</Button>
+            <Button onClick={closeModal}>Cancel</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
-      <AlertDialog
-        isOpen={isAlertOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={closeAlert}
-      >
-        <AlertDialogOverlay />
-        <AlertDialogContent>
-          <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            Delete Unit Group
-          </AlertDialogHeader>
-          <AlertDialogBody>
-            Are you sure you want to delete this unit group? This action cannot be undone.
-          </AlertDialogBody>
-          <AlertDialogFooter>
-            <Button ref={cancelRef} onClick={closeAlert}>
-              Cancel
-            </Button>
-            <Button colorScheme="red" onClick={handleDeleteUnitGroup} ml={3}>
-              Delete
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
+      <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={closeAlert}>
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader>Delete Unit Group</AlertDialogHeader>
+            <AlertDialogBody>
+              Are you sure you want to delete this unit group? This action cannot be undone.
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={closeAlert}>Cancel</Button>
+              <Button colorScheme="red" onClick={handleDeleteUnitGroup} ml={3}>Delete</Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
       </AlertDialog>
     </Box>
   );

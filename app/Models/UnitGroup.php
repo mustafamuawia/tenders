@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 
-class unit_group extends Model
+class UnitGroup extends Model
 {
     use HasFactory;
     use SoftDeletes;
@@ -15,9 +15,8 @@ class unit_group extends Model
     protected $dates = ['deleted_at']; 
 
     protected $fillable = [
-        'unit_group_name',
+        'name',
         'description',
-        'created_by',
         'deleted_at',
         'created_at',
         'updated_at',
