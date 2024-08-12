@@ -67,9 +67,7 @@ class unit_groupController extends Controller
             $unit_group=unit_group::find($id);
             $unit_group->unit_group_name=$request->unit_group_name;
             $unit_group->description=$request->description;
-            $unit_groups->save();
-
-            return response()->json(['error'=>$exception->getMessage()], 400);
+            $unit_group->save();
         } catch(\Exception $exception) {
             // throw new HttpException(400, "Invalid data - {$exception->getMessage}");
             return response()->json(['error'=>$exception->getMessage()], 400);

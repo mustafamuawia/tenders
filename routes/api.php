@@ -59,7 +59,11 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('changeitemstatus', [ItemController::class, 'changeStatus']);
 
     Route::apiResource('units', UnitController::class);
+
+    
+    //Unit Groups routes
     Route::apiResource('unitgroups', unit_groupController::class);
+    Route::post('unitgroups/change-status', [unit_groupController::class, 'change_status']);
 
     // JWT routes
     Route::post('logout', [AuthController::class, 'logout']);
