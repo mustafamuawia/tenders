@@ -22,4 +22,9 @@ class UnitGroup extends Model
         'updated_at',
         'status'
     ];
+
+    public function units()
+    {
+        return $this->hasMany(Unit::class, 'unit_group_id', 'id');
+    }
 }

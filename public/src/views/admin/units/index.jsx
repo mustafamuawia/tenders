@@ -9,6 +9,7 @@ import axios from 'axios';
 
 const Units = () => {
   const [units, setUnits] = useState([]);
+  const [unitGroups, setUnitGroups] = useState([]); // State to store unit groups
   const [currentUnit, setCurrentUnit] = useState({});
   const [isEdit, setIsEdit] = useState(false);
   const { isOpen: isModalOpen, onOpen: openModal, onClose: closeModal } = useDisclosure();
@@ -25,16 +26,28 @@ const Units = () => {
 
   useEffect(() => {
     fetchUnits();
+    fetchUnitGroups(); // Fetch unit groups when component mounts
   }, []);
 
   const fetchUnits = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/units`);
-      console.log('Fetched units:', response.data); // Inspect the data structure
+      console.log('Fetched units:', response.data);
       setUnits(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error('Error fetching units:', error);
-      setUnits([]); 
+      setUnits([]);
+    }
+  };
+
+  const fetchUnitGroups = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/unitgroups`); // Adjust the URL if necessary
+      console.log('Fetched unit groups:', response.data);
+      setUnitGroups(Array.isArray(response.data) ? response.data : []);
+    } catch (error) {
+      console.error('Error fetching unit groups:', error);
+      setUnitGroups([]);
     }
   };
 
@@ -133,7 +146,7 @@ const Units = () => {
             <Th>Unit Name</Th>
             <Th>Description</Th>
             <Th>Ratio</Th>
-            <Th>Unit Group ID</Th>
+            <Th>Unit Group</Th>
             <Th>Status</Th>
             <Th>Actions</Th>
           </Tr>
@@ -144,7 +157,7 @@ const Units = () => {
               <Td>{renderTableCell(unit.unit_name)}</Td>
               <Td>{renderTableCell(unit.description)}</Td>
               <Td>{renderTableCell(unit.ratio)}</Td>
-              <Td>{renderTableCell(unit.unit_group_id)}</Td>
+              <Td>{renderTableCell(unit.unit_group ? unit.unit_group.name : 'N/A')}</Td> {/* Display unit group name */}
               <Td>
                 <Box color={unit.status === 'Activated' ? 'green.500' : 'red.500'}>
                   {unit.status}
@@ -182,8 +195,13 @@ const Units = () => {
               <Input type="number" step="0.000001" value={ratio} onChange={(e) => setRatio(e.target.value)} />
             </FormControl>
             <FormControl mb="4">
-              <FormLabel>Unit Group ID</FormLabel>
-              <Input type="number" value={unitGroupId} onChange={(e) => setUnitGroupId(e.target.value)} />
+              <FormLabel>Unit Group</FormLabel>
+              <Select value={unitGroupId} onChange={(e) => setUnitGroupId(e.target.value)}>
+                <option value="">Select Unit Group</option>
+                {unitGroups.map(group => (
+                  <option key={group.id} value={group.id}>{group.name}</option>
+                ))}
+              </Select>
             </FormControl>
             <FormControl mb="4">
               <FormLabel>Status</FormLabel>
@@ -206,13 +224,15 @@ const Units = () => {
       <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={closeAlert}>
         <AlertDialogOverlay>
           <AlertDialogContent>
-            <AlertDialogHeader>Delete Unit</AlertDialogHeader>
+            <AlertDialogHeader>Confirm Delete</AlertDialogHeader>
             <AlertDialogBody>
               Are you sure you want to delete this unit? This action cannot be undone.
             </AlertDialogBody>
             <AlertDialogFooter>
               <Button ref={cancelRef} onClick={closeAlert}>Cancel</Button>
-              <Button colorScheme="red" onClick={handleDeleteUnit} ml={3}>Delete</Button>
+              <Button colorScheme="red" onClick={handleDeleteUnit} ml={3}>
+                Delete
+              </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialogOverlay>

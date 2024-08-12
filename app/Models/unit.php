@@ -6,8 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-
-class unit extends Model
+class Unit extends Model
 {
     use HasFactory;
     use SoftDeletes;
@@ -19,15 +18,12 @@ class unit extends Model
         'ratio',
         'unit_group_id',
         'description',
-        'deleted_at',
         'created_by',
-        'created_at',
-        'updated_at',
         'status'
     ];
 
     public function unit_group()
     {
-        return $this->belongsTo(unit_group::class,'unit_group_id','id');
+        return $this->belongsTo(UnitGroup::class, 'unit_group_id', 'id');
     }
 }

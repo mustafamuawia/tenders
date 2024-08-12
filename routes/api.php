@@ -60,6 +60,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('changeitemstatus', [ItemController::class, 'changeStatus']);
 
     Route::apiResource('units', UnitController::class);
+    Route::post('changeunitstatus', [UnitController::class,'changeStatus']);
+
 
     
     //Unit Groups routes
