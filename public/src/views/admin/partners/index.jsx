@@ -170,7 +170,7 @@ const Partners = () => {
             <Th>Company Phone</Th>
             <Th>Email</Th>
             <Th>Status</Th>
-            <Th>Membership Type</Th>
+            <Th>Class</Th>
             <Th>Actions</Th>
           </Tr>
         </Thead>
@@ -243,7 +243,7 @@ const Partners = () => {
               </Select>
             </FormControl>
             <FormControl id="membershipType" isRequired>
-              <FormLabel>Membership Type</FormLabel>
+              <FormLabel>Class</FormLabel>
               <Select value={membershipType} onChange={(e) => setMembershipType(e.target.value)}>
                 <option value="Silver">Silver</option>
                 <option value="Gold">Gold</option>
