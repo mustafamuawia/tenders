@@ -30,17 +30,12 @@ function Register() {
   const [companyEmail, setCompanyEmail] = useState('');
   const [companyPhone, setCompanyPhone] = useState('');
   const [email, setEmail] = useState('');
-  const [emailConfirm, setEmailConfirm] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [error, setError] = useState('');
 
   const handleRegister = async () => {
     setError(''); // Reset error message
-    if (email !== emailConfirm) {
-      setError('Emails do not match');
-      return;
-    }
     if (password !== passwordConfirm) {
       setError('Passwords do not match');
       return;
@@ -189,22 +184,6 @@ function Register() {
                 size="lg"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                color={inputTextColor}
-              />
-              <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="left">
-                Confirm Email
-              </FormLabel>
-              <Input
-                isRequired={true}
-                variant="auth"
-                fontSize="sm"
-                type="email"
-                placeholder="Confirm Email"
-                mb="24px"
-                fontWeight="500"
-                size="lg"
-                value={emailConfirm}
-                onChange={(e) => setEmailConfirm(e.target.value)}
                 color={inputTextColor}
               />
               <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="left">

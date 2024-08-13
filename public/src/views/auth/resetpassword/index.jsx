@@ -1,62 +1,105 @@
 import React, { useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
-import { Box, Button, Flex, FormControl, FormLabel, Heading, Input, Text, useColorModeValue } from '@chakra-ui/react';
+import { useLocation, useHistory } from 'react-router-dom';
 import axios from 'axios';
+import {
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import DefaultAuth from 'layouts/auth/Default';
 
 function ResetPassword() {
-  const navigate = useHistory();
   const location = useLocation();
+  const history = useHistory();
+
+  const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+
   const textColor = useColorModeValue('navy.700', 'white');
   const textColorSecondary = useColorModeValue('gray.400', 'gray.500');
   const inputBgColor = useColorModeValue('white', 'gray.700');
   const inputTextColor = useColorModeValue('gray.700', 'gray.200');
   const labelColor = useColorModeValue('gray.700', 'gray.200');
 
-  const [password, setPassword] = useState('');
-  const [passwordConfirmation, setPasswordConfirmation] = useState('');
-  const [message, setMessage] = useState('');
-
   const handleResetPassword = async () => {
-    const query = new URLSearchParams(location.search);
-    const token = query.get('token');
+    const searchParams = new URLSearchParams(location.search);
+    const token = searchParams.get('token');
+    const email = searchParams.get('email');
+
+    if (!password || !passwordConfirm || password !== passwordConfirm) {
+      setError('Passwords do not match');
+      return;
+    }
 
     try {
-      const response = await axios.post('http://localhost:8000/api/reset-password', {
+      await axios.post(`${process.env.REACT_APP_API_URL}/reset-password`, {
         token,
+        email,
         password,
-        password_confirmation: passwordConfirmation,
+        password_confirmation: passwordConfirm,
       });
-
-      setMessage(response.data.message);
-      if (response.data.message === 'Password reset successful') {
-        navigate.push('/auth/sign-in');
-      }
+      setMessage('Password has been successfully reset.');
+      setError('');
+      setTimeout(() => history.push('/auth/sign-in'), 3000); // Redirect to sign-in after a short delay
     } catch (error) {
-      setMessage('Something went wrong, please try again');
+      if (error.response && error.response.data) {
+        setError(error.response.data.error || 'Failed to reset password');
+      } else {
+        setError('An unexpected error occurred');
+      }
+      setMessage('');
     }
   };
 
   return (
     <DefaultAuth>
-      <Flex direction="column" alignItems="center" justifyContent="center" minH="100vh">
-        <Flex direction="column" w={{ base: '100%', md: '420px' }} p={8} background={inputBgColor} borderRadius="15px" boxShadow="lg">
-          <Heading color={textColor} fontSize="36px" mb="10px">
-            إعادة تعيين كلمة المرور
-          </Heading>
-          <Text mb="36px" color={textColorSecondary} fontWeight="400" fontSize="md">
-            أدخل كلمة المرور الجديدة.
-          </Text>
+      <Flex
+        direction="column"
+        alignItems="center"
+        justifyContent="center"
+        minH="100vh"
+        p={5}
+        sx={{
+          '& > *': {
+            zIndex: '1 !important',
+          },
+        }}
+      >
+        <Flex
+          direction="column"
+          w={{ base: '100%', md: '420px' }}
+          p={8}
+          background={inputBgColor}
+          borderRadius="15px"
+          boxShadow="lg"
+        >
+          <Box mb="auto">
+            <Heading color={textColor} fontSize="36px" mb="10px">
+              Reset Password
+            </Heading>
+            <Text mb="36px" color={textColorSecondary} fontWeight="400" fontSize="md">
+              Enter your new password below.
+            </Text>
+          </Box>
           <FormControl>
-            <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="right">
-              كلمة المرور
+            <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="left">
+              New Password
+              <Text as="span" color="red.500"> *</Text>
             </FormLabel>
             <Input
-              isRequired={true}
+              isRequired
               variant="auth"
               fontSize="sm"
               type="password"
-              placeholder="8 أحرف على الأقل"
+              placeholder="New password"
               mb="24px"
               fontWeight="500"
               size="lg"
@@ -64,31 +107,39 @@ function ResetPassword() {
               onChange={(e) => setPassword(e.target.value)}
               bg={inputBgColor}
               color={inputTextColor}
+              _placeholder={{ color: inputTextColor }}
             />
-            <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="right">
-              تأكيد كلمة المرور
+            <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="left">
+              Confirm New Password
+              <Text as="span" color="red.500"> *</Text>
             </FormLabel>
             <Input
-              isRequired={true}
+              isRequired
               variant="auth"
               fontSize="sm"
               type="password"
-              placeholder="8 أحرف على الأقل"
+              placeholder="Confirm new password"
               mb="24px"
               fontWeight="500"
               size="lg"
-              value={passwordConfirmation}
-              onChange={(e) => setPasswordConfirmation(e.target.value)}
+              value={passwordConfirm}
+              onChange={(e) => setPasswordConfirm(e.target.value)}
               bg={inputBgColor}
               color={inputTextColor}
+              _placeholder={{ color: inputTextColor }}
             />
             {message && (
-              <Text color={message.includes('successful') ? 'green.500' : 'red.500'} mb="24px">
+              <Text color="green.500" mb="24px">
                 {message}
               </Text>
             )}
+            {error && (
+              <Text color="red.500" mb="24px">
+                {error}
+              </Text>
+            )}
             <Button fontSize="sm" variant="brand" fontWeight="500" w="100%" h="50" mb="24px" onClick={handleResetPassword}>
-              إعادة تعيين كلمة المرور
+              Reset Password
             </Button>
           </FormControl>
         </Flex>

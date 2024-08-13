@@ -28,6 +28,8 @@ use App\Http\Controllers\UnitGroupController;
 // Public routes
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/user/create', [UserController::class, 'create'])->name('create');
+Route::post('/forgot-password', [UserController::class, 'sendResetLinkEmail']);
+Route::post('/reset-password', [UserController::class, 'reset']);
 
 // Authenticated routes
 Route::middleware(['auth:api'])->group(function () {
@@ -40,6 +42,9 @@ Route::middleware(['auth:api'])->group(function () {
 
 
     Route::post('/user/profile-picture', [UserController::class, 'updateProfilePicture']);
+
+
+    
     
        // Partner routes
     Route::get('/user/fetch', [UserController::class, 'getPartners'])->name('getPartners');

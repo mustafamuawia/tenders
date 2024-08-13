@@ -22,10 +22,8 @@ const EditProfile = () => {
     name: '',
     email: '',
     password: '',
-    // Add other fields as needed
   });
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
-  const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
@@ -33,11 +31,15 @@ const EditProfile = () => {
 
   useEffect(() => {
     // Fetch user profile data
-    axios.get(`${process.env.REACT_APP_API_URL}/api/profile`)
+    axios.get(`${process.env.REACT_APP_API_URL}/profile`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
       .then(response => {
         setProfile(response.data);
-        if (response.data.image) {
-          setImagePreview(`${process.env.REACT_APP_API_URL}/storage/${response.data.image}`);
+        if (response.data.image_url) {
+          setImagePreview(response.data.image_url); // Use the full URL directly
         }
       })
       .catch(error => {
@@ -61,26 +63,35 @@ const EditProfile = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImage(file);
+      // Temporarily preview the new image
       setImagePreview(URL.createObjectURL(file));
 
-      // Upload image immediately
+      // Create FormData object for the file upload
       const formData = new FormData();
       formData.append('image', file);
 
       axios.post(`${process.env.REACT_APP_API_URL}/user/profile-picture`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
       })
         .then(response => {
-          // Handle response if needed
-          toast({
-            title: 'Image uploaded successfully.',
-            status: 'success',
-            duration: 5000,
-            isClosable: true,
-          });
+          if (response.data.success) {
+            setImagePreview(response.data.image_url);
+            toast({
+              title: 'Image uploaded successfully.',
+              status: 'success',
+              duration: 5000,
+              isClosable: true,
+            });
+          } else {
+            toast({
+              title: 'Image upload failed.',
+              status: 'error',
+              duration: 5000,
+              isClosable: true,
+            });
+          }
         })
         .catch(error => {
           toast({
@@ -117,7 +128,11 @@ const EditProfile = () => {
       formData.append('password', profile.password);
     }
 
-    axios.put(`${process.env.REACT_APP_API_URL}/api/profile`, formData)
+    axios.put(`${process.env.REACT_APP_API_URL}/api/profile`, formData, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
       .then(response => {
         toast({
           title: 'Profile updated successfully.',
