@@ -49,7 +49,7 @@ export function SidebarBrand() {
       <Image
         borderRadius="full"
         boxSize="70px"
-        src={user.profileImage}
+        src="http://bootdey.com/img/Content/avatar/avatar1.png"
         alt={user.name}
         mb="12px"
       />
