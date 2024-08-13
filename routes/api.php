@@ -38,6 +38,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::put('/admin/edit/{id}', [UserController::class, 'updateadmin']);
     Route::delete('/admin/delete/{id}', [UserController::class, 'deleteadmin']);
 
+
+    Route::post('/user/profile-picture', [UserController::class, 'updateProfilePicture']);
+    
        // Partner routes
     Route::get('/user/fetch', [UserController::class, 'getPartners'])->name('getPartners');
     Route::put('/user/edit/{id}', [UserController::class, 'edit']);

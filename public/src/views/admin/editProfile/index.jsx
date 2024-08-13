@@ -33,15 +33,11 @@ const EditProfile = () => {
 
   useEffect(() => {
     // Fetch user profile data
-    axios.get('/api/profile', {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
-    })
+    axios.get(`${process.env.REACT_APP_API_URL}/api/profile`)
       .then(response => {
         setProfile(response.data);
         if (response.data.image) {
-          setImagePreview(response.data.image);
+          setImagePreview(`${process.env.REACT_APP_API_URL}/storage/${response.data.image}`);
         }
       })
       .catch(error => {
@@ -67,6 +63,33 @@ const EditProfile = () => {
     if (file) {
       setImage(file);
       setImagePreview(URL.createObjectURL(file));
+
+      // Upload image immediately
+      const formData = new FormData();
+      formData.append('image', file);
+
+      axios.post(`${process.env.REACT_APP_API_URL}/user/profile-picture`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+        .then(response => {
+          // Handle response if needed
+          toast({
+            title: 'Image uploaded successfully.',
+            status: 'success',
+            duration: 5000,
+            isClosable: true,
+          });
+        })
+        .catch(error => {
+          toast({
+            title: 'Error uploading image.',
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+          });
+        });
     }
   };
 
@@ -93,16 +116,8 @@ const EditProfile = () => {
     if (profile.password) {
       formData.append('password', profile.password);
     }
-    if (image) {
-      formData.append('image', image);
-    }
 
-    axios.put('/api/profile', formData, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-        'Content-Type': 'multipart/form-data'
-      }
-    })
+    axios.put(`${process.env.REACT_APP_API_URL}/api/profile`, formData)
       .then(response => {
         toast({
           title: 'Profile updated successfully.',

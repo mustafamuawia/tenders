@@ -2,14 +2,17 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 // Chakra imports
 import { Flex, useColorModeValue, Image, Text } from "@chakra-ui/react";
-// Import the default image in case user profile image is not available
-import defaultUserAvatar from "assets/img/avatars/avatar1.png";
+
+
+
 // Custom components
 import { HSeparator } from "components/separator/Separator";
 
 export function SidebarBrand() {
   // Chakra color mode
   const logoColor = useColorModeValue("navy.700", "white");
+  // Default image URL
+const defaultUserAvatar = "http://bootdey.com/img/Content/avatar/avatar1.png";
 
   const [user, setUser] = useState({
     profileImage: defaultUserAvatar, // Default profile image
@@ -17,31 +20,36 @@ export function SidebarBrand() {
   });
 
   useEffect(() => {
-    // Get the user ID from local storage
-    const userId = localStorage.getItem('userId');
+    const fetchUserData = async () => {
+      try {
+        // Get the user ID from local storage
+        const userId = localStorage.getItem('userId');
 
-    if (userId) {
-      axios.get(`${process.env.REACT_APP_API_URL}/user/${userId}`)
-        .then(response => {
+        if (userId) {
+          const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/${userId}`);
           const userData = response.data;
+          // Use the profile image or fallback to default
+          const imageUrl = userData.profileImage ? `${process.env.REACT_APP_API_URL}/storage/${userData.profileImage}` : defaultUserAvatar;
           setUser({
-            profileImage: userData.profileImage || defaultUserAvatar,
-            name: userData.name
+            profileImage: imageUrl,
+            name: userData.name || "User"
           });
-        })
-        .catch(error => {
-          console.error("There was an error fetching the user data!", error);
+        } else {
           setUser({
             profileImage: defaultUserAvatar,
-            name: "User not found"
+            name: "No user ID found"
           });
+        }
+      } catch (error) {
+        console.error("There was an error fetching the user data!", error);
+        setUser({
+          profileImage: defaultUserAvatar,
+          name: "User not found"
         });
-    } else {
-      setUser({
-        profileImage: defaultUserAvatar,
-        name: "No user ID found"
-      });
-    }
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   return (
@@ -49,9 +57,10 @@ export function SidebarBrand() {
       <Image
         borderRadius="full"
         boxSize="70px"
-        src="http://bootdey.com/img/Content/avatar/avatar1.png"
+        src={user.profileImage} // Use the dynamically updated profile image
         alt={user.name}
         mb="12px"
+        fallbackSrc={defaultUserAvatar} // Fallback image
       />
       <Text color={logoColor} fontWeight="bold" mb="12px">
         {user.name}

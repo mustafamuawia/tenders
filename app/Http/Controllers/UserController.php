@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
@@ -235,6 +237,38 @@ public function edit(Request $request, $id)
             Log::error('Error deleting record: ' . $e->getMessage());
             return response()->json(['msg' => 'Error deleting record', 'error' => $e->getMessage()], 500);
         }
+    }
+
+
+    public function updateProfilePicture(Request $request)
+    {
+        $request->validate([
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
+        ]);
+
+        $user = Auth::user();
+
+        if ($request->hasFile('image')) {
+            // Delete old profile picture if it exists
+            if ($user->image) {
+                Storage::disk('public')->delete($user->image);
+            }
+
+            // Store new profile picture
+            $imagePath = $request->file('image')->store('website/profile_pictures', 'public');
+            $user->image = $imagePath;
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'image_url' => asset('storage/' . $user->image)
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'No profile picture uploaded.'
+        ], 400);
     }
     
 }
