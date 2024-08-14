@@ -6,7 +6,6 @@ import {
   FormLabel,
   Input,
   Stack,
-  useToast,
   Avatar,
   InputGroup,
   InputRightElement,
@@ -24,10 +23,9 @@ const EditProfile = () => {
     password: '',
   });
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
-  const [imagePreview, setImagePreview] = useState(null);
+  const [imagePreview, setImagePreview] = useState(localStorage.getItem('profileImage') || 'http://bootdey.com/img/Content/avatar/avatar1.png');
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
-  const toast = useToast();
 
   useEffect(() => {
     // Fetch user profile data
@@ -39,18 +37,15 @@ const EditProfile = () => {
       .then(response => {
         setProfile(response.data);
         if (response.data.image_url) {
-          setImagePreview(response.data.image_url); // Use the full URL directly
+          const fullImageUrl = response.data.image_url.replace(/\\/, ''); // Correctly format URL
+          setImagePreview(fullImageUrl);
+          localStorage.setItem('profileImage', fullImageUrl); // Save to local storage
         }
       })
       .catch(error => {
-        toast({
-          title: 'Error fetching profile data.',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        });
+        console.error('Error fetching profile data:', error);
       });
-  }, [toast]);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -77,29 +72,21 @@ const EditProfile = () => {
       })
         .then(response => {
           if (response.data.success) {
-            setImagePreview(response.data.image_url);
-            toast({
-              title: 'Image uploaded successfully.',
-              status: 'success',
-              duration: 5000,
-              isClosable: true,
-            });
+            const fullImageUrl = response.data.image_url.replace(/\\/, ''); // Correctly format URL
+            
+            // Update both local storage and state to ensure persistence
+            localStorage.setItem('profileImage', fullImageUrl);
+            setImagePreview(fullImageUrl);
+
+            // Trigger a global event that SidebarBrand can listen to
+            const event = new Event('profileImageUpdated');
+            window.dispatchEvent(event);
           } else {
-            toast({
-              title: 'Image upload failed.',
-              status: 'error',
-              duration: 5000,
-              isClosable: true,
-            });
+            console.error('Image upload failed');
           }
         })
         .catch(error => {
-          toast({
-            title: 'Error uploading image.',
-            status: 'error',
-            duration: 5000,
-            isClosable: true,
-          });
+          console.error('Error uploading image:', error);
         });
     }
   };
@@ -112,12 +99,7 @@ const EditProfile = () => {
     e.preventDefault();
 
     if (profile.password !== passwordConfirmation) {
-      toast({
-        title: 'Password and confirmation do not match.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
+      console.error('Password and confirmation do not match.');
       return;
     }
 
@@ -128,35 +110,33 @@ const EditProfile = () => {
       formData.append('password', profile.password);
     }
 
-    axios.put(`${process.env.REACT_APP_API_URL}/api/profile`, formData, {
+    axios.put(`${process.env.REACT_APP_API_URL}/profile`, formData, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
     })
       .then(response => {
-        toast({
-          title: 'Profile updated successfully.',
-          status: 'success',
-          duration: 5000,
-          isClosable: true,
-        });
+        console.log('Profile updated successfully.');
       })
       .catch(error => {
-        toast({
-          title: 'Error updating profile.',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        });
+        console.error('Error updating profile:', error);
       });
   };
+
+  // Check if there's an image in local storage on initial load
+  useEffect(() => {
+    const storedImage = localStorage.getItem('profileImage');
+    if (storedImage) {
+      setImagePreview(storedImage);
+    }
+  }, []);
 
   return (
     <Container mt={10}>
       <Box p={5} borderWidth="1px" borderRadius="lg" shadow="md" position="relative">
         <Box position="relative" textAlign="center">
           <Box position="relative" display="inline-block">
-            <Avatar size="2xl" src={imagePreview || 'http://bootdey.com/img/Content/avatar/avatar1.png'} />
+            <Avatar size="2xl" src={imagePreview} />
             <Box
               position="absolute"
               top="0"
