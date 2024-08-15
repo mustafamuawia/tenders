@@ -22,4 +22,10 @@ class Item extends Model
         'note',
         'status',
     ];
+
+    public function rfq_details():BelongsToMany
+    {
+        return $this->belongsToMany(Item::class, 'rfq_details', 'Item_id')->using(RequireProduct::class)
+                    ->withPivot('qty','unit_id','unit_price');
+    }
 }
