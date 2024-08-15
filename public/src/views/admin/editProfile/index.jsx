@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import {
   Box,
   Button,
@@ -12,39 +13,57 @@ import {
   IconButton,
   Container,
   Text,
-} from '@chakra-ui/react';
-import { ViewIcon, ViewOffIcon, EditIcon } from '@chakra-ui/icons';
-import axios from 'axios';
+} from "@chakra-ui/react";
+import { ViewIcon, ViewOffIcon, EditIcon } from "@chakra-ui/icons";
 
-const EditProfile = () => {
+export function EditProfile() {
   const [profile, setProfile] = useState({
-    name: '',
-    email: '',
-    password: '',
+    name: "",
+    email: "",
+    currentPassword: "",
+    newPassword: "",
   });
-  const [passwordConfirmation, setPasswordConfirmation] = useState('');
-  const [imagePreview, setImagePreview] = useState(localStorage.getItem('profileImage') || 'http://bootdey.com/img/Content/avatar/avatar1.png');
-  const [showPassword, setShowPassword] = useState(false);
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const [imagePreview, setImagePreview] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
 
   useEffect(() => {
-    // Fetch user profile data
-    axios.get(`${process.env.REACT_APP_API_URL}/profile`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    })
-      .then(response => {
-        setProfile(response.data);
-        if (response.data.image_url) {
-          const fullImageUrl = response.data.image_url.replace(/\\/, ''); // Correctly format URL
-          setImagePreview(fullImageUrl);
-          localStorage.setItem('profileImage', fullImageUrl); // Save to local storage
+    const fetchUserData = async () => {
+      try {
+        const userId = localStorage.getItem('userId');
+        if (userId) {
+          const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/${userId}`, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          });
+          const userData = response.data;
+          // const imageUrl = userData.profileImage ? `${process.env.REACT_APP_API_URL}/storage/${userData.profileImage}` : 'http://bootdey.com/img/Content/avatar/avatar1.png';
+          // console.log(imageUrl);
+          setProfile({
+            name: userData.name || "",
+            email: userData.email || "",
+            currentPassword: "",
+            newPassword: ""
+          });
+          // setImagePreview(imageUrl);
+          // localStorage.setItem('profileImage', imageUrl);
         }
-      })
-      .catch(error => {
-        console.error('Error fetching profile data:', error);
-      });
+      } catch (error) {
+        console.error("There was an error fetching the user data!", error);
+        setProfile({
+          name: "Error loading",
+          email: "Error loading",
+          currentPassword: "",
+          newPassword: ""
+        });
+        setImagePreview('http://bootdey.com/img/Content/avatar/avatar1.png');
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   const handleChange = (e) => {
@@ -58,10 +77,8 @@ const EditProfile = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Temporarily preview the new image
       setImagePreview(URL.createObjectURL(file));
 
-      // Create FormData object for the file upload
       const formData = new FormData();
       formData.append('image', file);
 
@@ -72,13 +89,10 @@ const EditProfile = () => {
       })
         .then(response => {
           if (response.data.success) {
-            const fullImageUrl = response.data.image_url.replace(/\\/, ''); // Correctly format URL
-            
-            // Update both local storage and state to ensure persistence
+            const fullImageUrl = response.data.image_url.replace(/\\/, '');
+            console.log(fullImageUrl);
             localStorage.setItem('profileImage', fullImageUrl);
             setImagePreview(fullImageUrl);
-
-            // Trigger a global event that SidebarBrand can listen to
             const event = new Event('profileImageUpdated');
             window.dispatchEvent(event);
           } else {
@@ -95,41 +109,38 @@ const EditProfile = () => {
     setPasswordConfirmation(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (profile.password !== passwordConfirmation) {
-      console.error('Password and confirmation do not match.');
+    if (profile.newPassword !== passwordConfirmation) {
+      console.error('New password and confirmation do not match.');
       return;
     }
 
-    const formData = new FormData();
-    formData.append('name', profile.name);
-    formData.append('email', profile.email);
-    if (profile.password) {
-      formData.append('password', profile.password);
-    }
-
-    axios.put(`${process.env.REACT_APP_API_URL}/profile`, formData, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+    try {
+      const userId = localStorage.getItem('userId');
+      const formData = new FormData();
+      formData.append('name', profile.name);
+      formData.append('email', profile.email);
+      if (profile.newPassword) {
+        formData.append('newPassword', profile.newPassword);
+        formData.append('passwordConfirmation', passwordConfirmation);
       }
-    })
-      .then(response => {
-        console.log('Profile updated successfully.');
-      })
-      .catch(error => {
-        console.error('Error updating profile:', error);
+      formData.append('currentPassword', profile.currentPassword);
+
+      await axios.put(`${process.env.REACT_APP_API_URL}/user/${userId}/update`, formData, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'multipart/form-data' // Ensure the correct content type is set
+        }
       });
+
+      console.log('Profile updated successfully.');
+    } catch (error) {
+      console.error('Error updating profile:', error.response ? error.response.data : error.message);
+    }
   };
 
-  // Check if there's an image in local storage on initial load
-  useEffect(() => {
-    const storedImage = localStorage.getItem('profileImage');
-    if (storedImage) {
-      setImagePreview(storedImage);
-    }
-  }, []);
 
   return (
     <Container mt={10}>
@@ -184,19 +195,37 @@ const EditProfile = () => {
               onChange={handleChange}
             />
           </FormControl>
-          <FormControl id="password">
-            <FormLabel>Password</FormLabel>
+          <FormControl id="currentPassword">
+            <FormLabel>Current Password</FormLabel>
             <InputGroup>
               <Input
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                value={profile.password}
+                type={showCurrentPassword ? 'text' : 'password'}
+                name="currentPassword"
+                value={profile.currentPassword}
                 onChange={handleChange}
               />
               <InputRightElement>
                 <IconButton
-                  icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
-                  onClick={() => setShowPassword(!showPassword)}
+                  icon={showCurrentPassword ? <ViewOffIcon /> : <ViewIcon />}
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  variant="ghost"
+                />
+              </InputRightElement>
+            </InputGroup>
+          </FormControl>
+          <FormControl id="newPassword">
+            <FormLabel>New Password</FormLabel>
+            <InputGroup>
+              <Input
+                type={showNewPassword ? 'text' : 'password'}
+                name="newPassword"
+                value={profile.newPassword}
+                onChange={handleChange}
+              />
+              <InputRightElement>
+                <IconButton
+                  icon={showNewPassword ? <ViewOffIcon /> : <ViewIcon />}
+                  onClick={() => setShowNewPassword(!showNewPassword)}
                   variant="ghost"
                 />
               </InputRightElement>
@@ -225,6 +254,6 @@ const EditProfile = () => {
       </Box>
     </Container>
   );
-};
+}
 
 export default EditProfile;

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 export default function AdminNavbar(props) {
-    const [scrolled, setScrolled] = useState(false);
+    const [ setScrolled] = useState(false);
     const [displayRouteName, setDisplayRouteName] = useState('');
     const [isMounted, setIsMounted] = useState(false); // Track if the component is fully mounted
     const location = useLocation();
@@ -29,7 +29,7 @@ export default function AdminNavbar(props) {
         };
     }, []);
 
-    const { secondary, message, brandText } = props;
+    const { secondary, message } = props;
 
     let mainText = useColorModeValue('navy.700', 'white');
     let navbarPosition = 'fixed';
