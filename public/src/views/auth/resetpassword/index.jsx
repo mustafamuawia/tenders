@@ -48,7 +48,7 @@ function ResetPassword() {
       });
       setMessage('Password has been successfully reset.');
       setError('');
-      setTimeout(() => history.push('/auth/sign-in'), 3000); // Redirect to sign-in after a short delay
+      setTimeout(() => history.push('/auth/sign-in'), 3000);
     } catch (error) {
       if (error.response && error.response.data) {
         setError(error.response.data.error || 'Failed to reset password');

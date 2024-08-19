@@ -43,8 +43,8 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::post('/user/profile-picture', [UserController::class, 'updateProfilePicture']);
 
+    Route::put('/user/{id}/update', [UserController::class, 'updateProfile']);
 
-    
     
        // Partner routes
     Route::get('/user/fetch', [UserController::class, 'getPartners'])->name('getPartners');

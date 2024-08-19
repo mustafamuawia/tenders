@@ -242,35 +242,38 @@ public function edit(Request $request, $id)
 
 
     public function updateProfilePicture(Request $request)
-    {
-        $request->validate([
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
-        ]);
+{
+    // Validate the incoming request
+    $request->validate([
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
+    ]);
 
-        $user = Auth::user();
+    $user = Auth::user();
 
-        if ($request->hasFile('image')) {
-            // Delete old profile picture if it exists
-            if ($user->image) {
-                Storage::disk('public')->delete($user->image);
-            }
-
-            // Store new profile picture
-            $imagePath = $request->file('image')->store('website/profile_pictures', 'public');
-            $user->image = $imagePath;
-            $user->save();
-
-            return response()->json([
-                'success' => true,
-                'image_url' => asset('storage/' . $user->image)
-            ]);
+    if ($request->hasFile('image')) {
+        // Delete the old profile picture if it exists
+        if ($user->image) {
+            Storage::disk('public')->delete($user->image);
         }
 
+        // Store the new profile picture
+        $imagePath = $request->file('image')->store('website/profile_pictures', 'public');
+        $user->image = $imagePath;
+        $user->save();
+
+        // Return the full URL to the image
         return response()->json([
-            'success' => false,
-            'message' => 'No profile picture uploaded.'
-        ], 400);
+            'success' => true,
+            'image_url' => asset(Storage::url($user->image)) // Ensure the correct URL is returned
+        ]);
     }
+
+    return response()->json([
+        'success' => false,
+        'message' => 'No profile picture uploaded.'
+    ], 400);
+}
+
 
 
     public function sendResetLinkEmail(Request $request)
@@ -313,4 +316,48 @@ public function edit(Request $request, $id)
 
         return response()->json(['error' => 'Failed to reset password.'], 400);
     }
+
+
+    public function updateProfile(Request $request, $id)
+    {
+        // Validate the incoming request data
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'currentPassword' => 'required_with:newPassword|string',
+            'newPassword' => 'nullable|string|min:8|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Find the user by ID
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['error' => 'User not found.'], 404);
+        }
+
+        // Update user profile details
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+
+        // Check if current password is provided and validate it
+        if ($request->filled('currentPassword') && !Hash::check($request->input('currentPassword'), $user->password)) {
+            return response()->json(['error' => 'Current password is incorrect.'], 403);
+        }
+
+        // Update the password if a new password is provided
+        if ($request->filled('newPassword')) {
+            $user->password = Hash::make($request->input('newPassword'));
+        }
+
+        // Save the updated user information
+        $user->save();
+
+        return response()->json(['success' => 'Profile updated successfully.']);
+    }
+
+
+    
 }

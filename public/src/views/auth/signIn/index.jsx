@@ -91,8 +91,10 @@ function SignIn() {
       }
     } catch (error) {
       if (error.response && error.response.data) {
+        // Handle API error responses
         setError(error.response.data.error || 'Invalid credentials');
       } else {
+        // Handle other errors
         setError('An unexpected error occurred');
       }
     }

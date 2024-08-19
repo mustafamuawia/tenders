@@ -1,39 +1,32 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-// Chakra imports
 import { Flex, useColorModeValue, Image, Text } from "@chakra-ui/react";
-
-
-
-// Custom components
 import { HSeparator } from "components/separator/Separator";
 
 export function SidebarBrand() {
-  // Chakra color mode
   const logoColor = useColorModeValue("navy.700", "white");
-  // Default image URL
-const defaultUserAvatar = "http://bootdey.com/img/Content/avatar/avatar1.png";
+  const defaultUserAvatar = "http://bootdey.com/img/Content/avatar/avatar1.png";
 
   const [user, setUser] = useState({
-    profileImage: defaultUserAvatar, // Default profile image
-    name: "Loading..." // Default name while loading
+    profileImage: localStorage.getItem('profileImage') || defaultUserAvatar,
+    name: "Loading..."
   });
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // Get the user ID from local storage
         const userId = localStorage.getItem('userId');
-
         if (userId) {
           const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/${userId}`);
           const userData = response.data;
-          // Use the profile image or fallback to default
           const imageUrl = userData.profileImage ? `${process.env.REACT_APP_API_URL}/storage/${userData.profileImage}` : defaultUserAvatar;
+          
+          // Update state and local storage
           setUser({
             profileImage: imageUrl,
             name: userData.name || "User"
           });
+          localStorage.setItem('profileImage', imageUrl);
         } else {
           setUser({
             profileImage: defaultUserAvatar,
@@ -49,20 +42,36 @@ const defaultUserAvatar = "http://bootdey.com/img/Content/avatar/avatar1.png";
       }
     };
 
+    // Initial fetch
     fetchUserData();
+
+    // Listen for profile image updates
+    const handleProfileImageUpdate = () => {
+      const updatedImage = localStorage.getItem('profileImage');
+      setUser(prevUser => ({
+        ...prevUser,
+        profileImage: updatedImage || defaultUserAvatar
+      }));
+    };
+
+    window.addEventListener('profileImageUpdated', handleProfileImageUpdate);
+
+    // Cleanup event listener on unmount
+    return () => {
+      window.removeEventListener('profileImageUpdated', handleProfileImageUpdate);
+    };
   }, []);
 
   return (
     <Flex align="center" direction="column">
       <Image
+        src={user.profileImage || defaultUserAvatar}
+        alt="Profile Image"
         borderRadius="full"
-        boxSize="70px"
-        src={user.profileImage} // Use the dynamically updated profile image
-        alt={user.name}
-        mb="12px"
-        fallbackSrc={defaultUserAvatar} // Fallback image
+        boxSize="150px"
+        mb={4}
       />
-      <Text color={logoColor} fontWeight="bold" mb="12px">
+      <Text fontSize="xl" fontWeight="bold" color={logoColor}>
         {user.name}
       </Text>
       <HSeparator mb="20px" />

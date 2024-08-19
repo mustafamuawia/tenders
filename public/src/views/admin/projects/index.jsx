@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   Box, Button, FormControl, FormLabel, Input, Select, Table, Thead, Tbody, Tr, Th, Td, Modal,
   ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure,
-  AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter,
+  AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter,Flex,
   Grid
 } from '@chakra-ui/react';
 import axios from 'axios';
@@ -15,6 +15,7 @@ const Projects = () => {
   const { isOpen: isAlertOpen, onOpen: openAlert, onClose: closeAlert } = useDisclosure();
   const cancelRef = useRef();
 
+  const [name, setName] = useState('');
   const [endUserCompanyName, setEndUserCompanyName] = useState('');
   const [endUserContactEmail, setEndUserContactEmail] = useState('');
   const [distributorContactName, setDistributorContactName] = useState('');
@@ -48,6 +49,7 @@ const Projects = () => {
 
   const handleAddProject = async () => {
     const newProject = {
+      name: name,
       end_user_company_name: endUserCompanyName,
       end_user_contact_email: endUserContactEmail,
       distributor_contact_name: distributorContactName,
@@ -82,6 +84,7 @@ const Projects = () => {
 
   const handleEditProject = async () => {
     const project = {
+      name: name,
       end_user_company_name: endUserCompanyName,
       end_user_contact_email: endUserContactEmail,
       distributor_contact_name: distributorContactName,
@@ -112,6 +115,7 @@ const Projects = () => {
   const openEditModal = (project) => {
     setIsEdit(true);
     setCurrentProject(project);
+    setName(project.name);
     setEndUserCompanyName(project.end_user_company_name);
     setEndUserContactEmail(project.end_user_contact_email);
     setDistributorContactName(project.distributor_contact_name);
@@ -133,6 +137,7 @@ const Projects = () => {
 
   const openAddModal = () => {
     setIsEdit(false);
+    setName('');
     setEndUserCompanyName('');
     setEndUserContactEmail('');
     setDistributorContactName('');
@@ -178,6 +183,7 @@ const Projects = () => {
       <Table variant="simple" mt="4">
         <Thead>
           <Tr>
+            <Th>Name</Th>
             <Th>End User Company Name</Th>
             <Th>End User Contact Email</Th>
             <Th>Distributor Contact Name</Th>
@@ -200,6 +206,7 @@ const Projects = () => {
         <Tbody>
           {projects.map((project) => (
             <Tr key={project.id}>
+              <Td>{renderTableCell(project.name)}</Td>
               <Td>{renderTableCell(project.end_user_company_name)}</Td>
               <Td>{renderTableCell(project.end_user_contact_email)}</Td>
               <Td>{renderTableCell(project.distributor_contact_name)}</Td>
@@ -216,119 +223,123 @@ const Projects = () => {
               <Td>{renderTableCell(project.estimated_implementation_start_date)}</Td>
               <Td>{renderTableCell(project.sector)}</Td>
               <Td>{renderTableCell(project.project_code)}</Td>
-              <Td display="flex" justifyContent="flex-start" gap="2">
+              <Td>
+               <Flex>
                 <Button colorScheme="yellow" size="sm" onClick={() => openEditModal(project)}>Edit</Button>
-                <Button colorScheme="red" size="sm" onClick={() => confirmDelete(project.id)}>Delete</Button>
+                <Button colorScheme="red" size="sm" ml="1" onClick={() => confirmDelete(project.id)}>Delete</Button>
+               </Flex>
               </Td>
             </Tr>
           ))}
         </Tbody>
       </Table>
 
-      {/* Add/Edit Modal */}
-      <Modal isOpen={isModalOpen} size={'xl'} onClose={closeModal}>
+      <Modal isOpen={isModalOpen} onClose={closeModal}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{isEdit ? 'Edit Project' : 'Add Project'}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Grid templateColumns="repeat(2, 1fr)" gap={4}>
-              <FormControl mb="4">
-                <FormLabel>End User Company Name</FormLabel>
-                <Input value={endUserCompanyName} onChange={(e) => setEndUserCompanyName(e.target.value)} />
-              </FormControl>
-              <FormControl mb="4">
-                <FormLabel>End User Contact Email</FormLabel>
-                <Input value={endUserContactEmail} onChange={(e) => setEndUserContactEmail(e.target.value)} />
-              </FormControl>
-              <FormControl mb="4">
-                <FormLabel>Distributor Contact Name</FormLabel>
-                <Input value={distributorContactName} onChange={(e) => setDistributorContactName(e.target.value)} />
-              </FormControl>
-              <FormControl mb="4">
-                <FormLabel>Estimated Revenue</FormLabel>
-                <Input type="number" value={estimatedRevenue} onChange={(e) => setEstimatedRevenue(e.target.value)} />
-              </FormControl>
-              <FormControl mb="4">
-                <FormLabel>Estimated Implementation Finish Date</FormLabel>
-                <Input type="date" value={estimatedImplementationFinishDate} onChange={(e) => setEstimatedImplementationFinishDate(e.target.value)} />
-              </FormControl>
-              <FormControl mb="4">
-                <FormLabel>Summary</FormLabel>
-                <Input value={summary} onChange={(e) => setSummary(e.target.value)} />
-              </FormControl>
-              <FormControl mb="4">
-                <FormLabel>End User Contact Name</FormLabel>
-                <Input value={endUserContactName} onChange={(e) => setEndUserContactName(e.target.value)} />
-              </FormControl>
-              <FormControl mb="4">
-                <FormLabel>End User Contact Phone</FormLabel>
-                <Input value={endUserContactPhone} onChange={(e) => setEndUserContactPhone(e.target.value)} />
-              </FormControl>
-              <FormControl mb="4">
-                <FormLabel>Project Status</FormLabel>
-                <Select value={projectStatus} onChange={(e) => setProjectStatus(e.target.value)}>
-                  <option value="Initial">Initial</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Completed">Completed</option>
-                </Select>
-              </FormControl>
-              <FormControl mb="4">
-                <FormLabel>Installation City</FormLabel>
-                <Input value={installationCity} onChange={(e) => setInstallationCity(e.target.value)} />
-              </FormControl>
-              <FormControl mb="4">
-                <FormLabel>Installation State</FormLabel>
-                <Input value={installationState} onChange={(e) => setInstallationState(e.target.value)} />
-              </FormControl>
-              <FormControl mb="4">
-                <FormLabel>Distributor Email</FormLabel>
-                <Input value={distributorEmail} onChange={(e) => setDistributorEmail(e.target.value)} />
-              </FormControl>
-              <FormControl mb="4">
-                <FormLabel>Estimated Business Purchasing Decision Date</FormLabel>
-                <Input type="date" value={estimatedBusinessPurchasingDecisionDate} onChange={(e) => setEstimatedBusinessPurchasingDecisionDate(e.target.value)} />
-              </FormControl>
-              <FormControl mb="4">
-                <FormLabel>Estimated Implementation Start Date</FormLabel>
-                <Input type="date" value={estimatedImplementationStartDate} onChange={(e) => setEstimatedImplementationStartDate(e.target.value)} />
-              </FormControl>
-              <FormControl mb="4">
-                <FormLabel>Sector</FormLabel>
-                <Select value={sector} onChange={(e) => setSector(e.target.value)}>
-                  <option value="Private">Private</option>
-                  <option value="Public">Public</option>
-                </Select>
-              </FormControl>
-              <FormControl mb="4">
-                <FormLabel>Project Code</FormLabel>
-                <Input value={projectCode} onChange={(e) => setProjectCode(e.target.value)} />
-              </FormControl>
-            </Grid>
-          </ModalBody>
+  <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+    <FormControl mb="4">
+      <FormLabel>Name</FormLabel>
+      <Input value={name} onChange={(e) => setName(e.target.value)} />
+    </FormControl>
+    <FormControl mb="4">
+      <FormLabel>End User Company Name</FormLabel>
+      <Input value={endUserCompanyName} onChange={(e) => setEndUserCompanyName(e.target.value)} />
+    </FormControl>
+    <FormControl mb="4">
+      <FormLabel>End User Contact Email</FormLabel>
+      <Input value={endUserContactEmail} onChange={(e) => setEndUserContactEmail(e.target.value)} />
+    </FormControl>
+    <FormControl mb="4">
+      <FormLabel>Distributor Contact Name</FormLabel>
+      <Input value={distributorContactName} onChange={(e) => setDistributorContactName(e.target.value)} />
+    </FormControl>
+    <FormControl mb="4">
+      <FormLabel>Estimated Revenue</FormLabel>
+      <Input type="number" value={estimatedRevenue} onChange={(e) => setEstimatedRevenue(e.target.value)} />
+    </FormControl>
+    <FormControl mb="4">
+      <FormLabel>Estimated Implementation Finish Date</FormLabel>
+      <Input type="date" value={estimatedImplementationFinishDate} onChange={(e) => setEstimatedImplementationFinishDate(e.target.value)} />
+    </FormControl>
+    <FormControl mb="4">
+      <FormLabel>Summary</FormLabel>
+      <Input value={summary} onChange={(e) => setSummary(e.target.value)} />
+    </FormControl>
+    <FormControl mb="4">
+      <FormLabel>End User Contact Name</FormLabel>
+      <Input value={endUserContactName} onChange={(e) => setEndUserContactName(e.target.value)} />
+    </FormControl>
+    <FormControl mb="4">
+      <FormLabel>End User Contact Phone</FormLabel>
+      <Input value={endUserContactPhone} onChange={(e) => setEndUserContactPhone(e.target.value)} />
+    </FormControl>
+    <FormControl mb="4">
+      <FormLabel>Project Status</FormLabel>
+      <Select value={projectStatus} onChange={(e) => setProjectStatus(e.target.value)}>
+        <option value="Initial">Initial</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Completed">Completed</option>
+      </Select>
+    </FormControl>
+    <FormControl mb="4">
+      <FormLabel>Installation City</FormLabel>
+      <Input value={installationCity} onChange={(e) => setInstallationCity(e.target.value)} />
+    </FormControl>
+    <FormControl mb="4">
+      <FormLabel>Installation State</FormLabel>
+      <Input value={installationState} onChange={(e) => setInstallationState(e.target.value)} />
+    </FormControl>
+    <FormControl mb="4">
+      <FormLabel>Distributor Email</FormLabel>
+      <Input value={distributorEmail} onChange={(e) => setDistributorEmail(e.target.value)} />
+    </FormControl>
+    <FormControl mb="4">
+      <FormLabel>Estimated Business Purchasing Decision Date</FormLabel>
+      <Input type="date" value={estimatedBusinessPurchasingDecisionDate} onChange={(e) => setEstimatedBusinessPurchasingDecisionDate(e.target.value)} />
+    </FormControl>
+    <FormControl mb="4">
+      <FormLabel>Estimated Implementation Start Date</FormLabel>
+      <Input type="date" value={estimatedImplementationStartDate} onChange={(e) => setEstimatedImplementationStartDate(e.target.value)} />
+    </FormControl>
+    <FormControl mb="4">
+      <FormLabel>Sector</FormLabel>
+      <Select value={sector} onChange={(e) => setSector(e.target.value)}>
+        <option value="Private">Private</option>
+        <option value="Public">Public</option>
+      </Select>
+    </FormControl>
+    <FormControl mb="4">
+      <FormLabel>Project Code</FormLabel>
+      <Input value={projectCode} onChange={(e) => setProjectCode(e.target.value)} />
+    </FormControl>
+  </Grid>
+</ModalBody>
+
+
           <ModalFooter>
             <Button colorScheme="teal" mr={3} onClick={isEdit ? handleEditProject : handleAddProject}>
-              {isEdit ? 'Save' : 'Add'}
+              {isEdit ? 'Update' : 'Save'}
             </Button>
             <Button variant="ghost" onClick={closeModal}>Cancel</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
-      {/* Alert Dialog */}
-      <AlertDialog
-        isOpen={isAlertOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={closeAlert}
-      >
+      <AlertDialog isOpen={isAlertOpen} leastDestructiveRef={cancelRef} onClose={closeAlert}>
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
               Delete Project
             </AlertDialogHeader>
+
             <AlertDialogBody>
-              Are you sure you want to delete this project? This action cannot be undone.
+              Are you sure? You can't undo this action afterwards.
             </AlertDialogBody>
+
             <AlertDialogFooter>
               <Button ref={cancelRef} onClick={closeAlert}>
                 Cancel
