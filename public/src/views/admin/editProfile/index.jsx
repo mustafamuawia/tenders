@@ -40,16 +40,16 @@ export function EditProfile() {
             }
           });
           const userData = response.data;
-          // const imageUrl = userData.profileImage ? `${process.env.REACT_APP_API_URL}/storage/${userData.profileImage}` : 'http://bootdey.com/img/Content/avatar/avatar1.png';
-          // console.log(imageUrl);
+          const imageUrl = userData.profileImage ? `${process.env.REACT_APP_API_URL}/storage/${userData.profileImage}` : 'http://bootdey.com/img/Content/avatar/avatar1.png';
+
           setProfile({
             name: userData.name || "",
             email: userData.email || "",
             currentPassword: "",
             newPassword: ""
           });
-          // setImagePreview(imageUrl);
-          // localStorage.setItem('profileImage', imageUrl);
+            setImagePreview(imageUrl);
+           localStorage.setItem('profileImage', imageUrl);
         }
       } catch (error) {
         console.error("There was an error fetching the user data!", error);
