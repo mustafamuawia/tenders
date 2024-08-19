@@ -16,6 +16,7 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'name'=>'required|string|max:255',
             'end_user_company_name' => 'required|string|max:255',
             'end_user_contact_email' => 'required|string|email|max:255',
             'distributor_contact_name' => 'required|string|max:255',
@@ -59,6 +60,7 @@ class ProjectController extends Controller
         }
 
         $validated = $request->validate([
+            'name'=>'required|string|max:255',
             'end_user_company_name' => 'required|string|max:255',
             'end_user_contact_email' => 'required|string|email|max:255',
             'distributor_contact_name' => 'required|string|max:255',

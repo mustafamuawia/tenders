@@ -17,14 +17,62 @@ import {
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import { DeleteIcon } from '@chakra-ui/icons';
+import axios from 'axios';
 
 function AddRFQ() {
   const [rfqRecords, setRfqRecords] = useState([]);
   const [randomNumber, setRandomNumber] = useState('');
+  const [clients, setClients] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [items, setItems] = useState([]);
+  const [units, setUnits] = useState([]);
+
 
   useEffect(() => {
     // Generate a random number between 1000 and 9999
     setRandomNumber(Math.floor(1000 + Math.random() * 9000));
+
+    // Fetch clients' data
+    const fetchClients = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/clients`);
+        setClients(response.data);
+      } catch (error) {
+        console.error('Error fetching clients:', error);
+      }
+    };
+
+    const fetchProjects = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/projects`);
+        setProjects(response.data);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      }
+    };
+
+    const fetchItems = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/items`);
+        setItems(response.data);
+      } catch (error) {
+        console.error('Error fetching items:', error);
+      }
+    };
+
+    const fetchUnits = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/units`);
+        setUnits(response.data);
+      } catch (error) {
+        console.error('Error fetching units:', error);
+      }
+    };
+
+    fetchClients();
+    fetchProjects();
+    fetchItems();
+    fetchUnits();
   }, []);
 
   const handleAddRecord = () => {
@@ -50,18 +98,22 @@ function AddRFQ() {
         <FormControl>
           <FormLabel fontWeight="bold">Client</FormLabel>
           <Select placeholder="Select client" size="md">
-            <option value="client1">Client 1</option>
-            <option value="client2">Client 2</option>
-            <option value="client3">Client 3</option>
+            {clients.map((client) => (
+              <option key={client.id} value={client.id}>
+                {client.client_name}
+              </option>
+            ))}
           </Select>
         </FormControl>
 
         <FormControl>
           <FormLabel fontWeight="bold">Project</FormLabel>
           <Select placeholder="Select project" size="md">
-            <option value="project1">Project 1</option>
-            <option value="project2">Project 2</option>
-            <option value="project3">Project 3</option>
+            {projects.map((project) => (
+              <option key={project.id} value={project.id}>
+                {project.name}
+              </option>
+            ))}
           </Select>
         </FormControl>
       </Grid>
@@ -97,9 +149,11 @@ function AddRFQ() {
             <FormControl>
               <FormLabel fontWeight="bold">Item</FormLabel>
               <Select placeholder="Select item" size="md">
-                <option value="item1">Item 1</option>
-                <option value="item2">Item 2</option>
-                <option value="item3">Item 3</option>
+                {items.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.item_name}
+                  </option>
+                ))}
               </Select>
             </FormControl>
 
@@ -135,13 +189,14 @@ function AddRFQ() {
                 </NumberInputStepper>
               </NumberInput>
             </FormControl>
-
             <FormControl>
               <FormLabel fontWeight="bold">Unit</FormLabel>
               <Select placeholder="Select unit" size="md">
-                <option value="unit1">Unit 1</option>
-                <option value="unit2">Unit 2</option>
-                <option value="unit3">Unit 3</option>
+                {units.map((unit) => (
+                  <option key={unit.id} value={unit.id}>
+                    {unit.unit_name}
+                  </option>
+                ))}
               </Select>
             </FormControl>
             <IconButton
