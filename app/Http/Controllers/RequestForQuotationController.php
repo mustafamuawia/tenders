@@ -25,14 +25,14 @@ class RequestForQuotationController extends Controller
     // items
     // units
     if (auth()->user()->role=='Admin')
-    $requests = request_for_quotation::with('unit_group')->with('client')->with('project')-> with('partner')->with('items')->get();
+    $requests = request_for_quotation::with('client')->with('project')-> with('partner')->with('items')->get();
 else
-    $requests = request_for_quotation::where('partner_id',auth()->user()->id)->with('unit_group')->with('client')->with('project')-> with('partner')->with('items')->get();
+    $requests = request_for_quotation::where('partner_id',auth()->user()->id)->with('client')->with('project')-> with('partner')->with('items')->get();
         return response()->json(['data'=>['requests' => $requests]], 200);   
    }
    /**
     * Show the form for creating a new resource.
-    *
+    *with('unit_group')->with('unit_group')->
     * @return \Illuminate\Http\Response
     */
    public function create()
