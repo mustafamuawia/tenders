@@ -22,6 +22,7 @@ import Items from "views/admin/items";
 import Clients from "views/admin/clients";
 import Projects from "views/admin/projects";
 import RFQ from "views/admin/rfq";
+import RFQManagement from "views/admin/rfqManagement";
 import UnitGroups from "views/admin/unitGroups";
 import Units from "views/admin/units";
 import EditProfile from "views/admin/editProfile";
@@ -110,6 +111,15 @@ const routes = [
     component: RFQ,
     roles: ["Admin", "Partner"], 
   },
+  {
+    name: "RFQ Management",
+    layout: "/admin",
+    path: "/rfq-management",
+    icon: <Icon as={MdBuild} width='20px' height='20px' color='inherit' />,
+    component: RFQManagement,
+    roles: ["Admin", "Partner"], 
+  },
+
   {
     name: "Unit Groups",
     layout: "/admin",
