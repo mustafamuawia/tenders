@@ -76,6 +76,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('unitgroups', UnitGroupController::class);
     Route::post('changeunitgroupstatus', [UnitGroupController::class, 'changeStatus']);
 
+    // RFQ
+    Route::apiResource('RFQ', RequestForQuotationController::class);
     // JWT routes
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
