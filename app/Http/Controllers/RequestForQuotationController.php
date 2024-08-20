@@ -20,8 +20,10 @@ class RequestForQuotationController extends Controller
     // partner
     // items
     // units
-    $requests = request_for_quotation::with('unit_group')->with('client')->with('project')->
-    with('partner')->with('items')->withget();
+    if (auth()->user()->role=='Admin')
+    $requests = request_for_quotation::with('unit_group')->with('client')->with('project')-> with('partner')->with('items')->get();
+else
+    $requests = request_for_quotation::where('partner_id',auth()->user()->id)->with('unit_group')->with('client')->with('project')-> with('partner')->with('items')->get();
         return response()->json(['data'=>['requests' => $requests]], 200);   
    }
    /**
