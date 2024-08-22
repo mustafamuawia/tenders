@@ -49,7 +49,8 @@ else
    public function store(Request $request)
    {
     try {
-        $rfqData = $request->only(['title','client_id', 'project_id', 'issue_date', 'expire_date',auth()->user()->id]);
+        $rfqData = $request->only(['title','client_id', 'project_id', 'issue_date', 'expire_date']);
+        $rfqData['partner_id'] = auth()->user()->id;
         $rfq = request_for_quotation::create($rfqData);
 
         $detailsData = $request->input('details');
