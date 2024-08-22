@@ -121,7 +121,7 @@ function AddRFQ() {
         })),
       });
       // Handle success
-      history.push('/some-route');  // Redirect or show a success message
+      history.push('/admin/rfq-management');  // Redirect or show a success message
     } catch (error) {
       console.error('Error saving RFQ:', error);
       // Handle error
