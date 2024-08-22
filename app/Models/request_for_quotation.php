@@ -23,10 +23,6 @@ class request_for_quotation extends Model
         'expire_date',
         'partner_id',
         'status',
-        'deleted_at',
-        'created_at',
-        'updated_at',
-        'status'
     ];
 
     public function client()

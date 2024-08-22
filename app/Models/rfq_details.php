@@ -19,6 +19,7 @@ class rfq_details extends Pivot
         'rfq_id',
         'item_id',
         'qty',
+        'admin_qty',
         'unit_id',
         'unit_price'
     ];

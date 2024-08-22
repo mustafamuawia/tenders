@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\request_for_quotation;
 use App\Http\Requests\Storerequest_for_quotationRequest;
 use App\Http\Requests\Updaterequest_for_quotationRequest;
+use App\Models\rfq_details;
 use App\Models\Unit;
 use App\Models\Unitgroup;
 use Illuminate\Http\Request;
@@ -32,7 +33,7 @@ else
    }
    /**
     * Show the form for creating a new resource.
-    *with('unit_group')->with('unit_group')->
+    *
     * @return \Illuminate\Http\Response
     */
    public function create()
@@ -48,16 +49,19 @@ else
    public function store(Request $request)
    {
     try {
-        $unit=Unit::create($request->all());
+        $rfqData = $request->only(['title','client_id', 'project_id', 'issue_date', 'expire_date',auth()->user()->id]);
+        $rfq = request_for_quotation::create($rfqData);
 
-        $units = Unit::with('unit_group')->get();
-        $unitgroups = Unitgroup::all();
+        $detailsData = $request->input('details');
+        foreach ($detailsData as $detail) {
+            $detail['rfq_id'] = $rfq->id;
+            rfq_details::create($detail);
+        }
 
-        return view('units' ,['units' => $units,'unitgroups'=>$unitgroups]);
+        return response()->json($rfq->load('details'), 201);
+       
     } catch(\Exception $exception) {
-        // throw new HttpException(400, "Invalid data - {$exception->getMessage}");
-        $units = Unit::with('unit_group')->get();
-        return view('units' ,['units' => $units,'error'=>$exception->getMessage()]);
+       
     }
    }
    /**
@@ -68,16 +72,7 @@ else
     */
    public function show($id)
    {
-    if(is_numeric($id))
-    {
-        $unit = Unit::find($id);
-        return view('user' ,['unit' => $unit]);
-    }
-    else
-    {
-        $units = Unit::with('unit_group')->get();
-        return view('units' ,['units' => $units]);
-    }
+   
    }
    /**
     * Show the form for editing the specified resource.
@@ -85,12 +80,6 @@ else
     * @param  int  $id
     * @return \Illuminate\Http\Response
     */
-   public function edit($id)
-   {
-    $unit = Unit::find($id);
-    $unitgroups = Unitgroup::all();
-    return view('units' ,['unit' => $unit,'unitgroups'=>$unitgroups]);
-   }
    /**
     * Update the specified resource in storage.
     *
@@ -100,23 +89,17 @@ else
     */
    public function update(Request $request, $id)
    {
-    
-    try {
-        $unit = Unit::find($id);
-    $unit->unit_name=$request->unit_name;
-    $unit->eq=$request->unit_name;
-    $unit->unit_group_id=$request->unit_name;
-    $unit->status=$request->unit_name;
-$unit->save();
-        $units = Unit::with('unit_group')->get();
-        $unitgroups = Unitgroup::all();
+    $rfq = request_for_quotation::findOrFail($id);
+    $rfq->update($request->only(['client_id', 'project_id', 'issue_date']));
 
-        return view('units' ,['units' => $units,'unitgroups'=>$unitgroups]);
-    } catch(\Exception $exception) {
-        // throw new HttpException(400, "Invalid data - {$exception->getMessage}");
-        $units = Unit::with('unit_group')->get();
-        return view('units' ,['units' => $units,'error'=>$exception->getMessage()]);
+    $rfq->details()->delete();
+    $detailsData = $request->input('details');
+    foreach ($detailsData as $detail) {
+        $detail['rfq_id'] = $rfq->id;
+        rfq_details::create($detail);
     }
+
+    return response()->json($rfq->load('details'));
    }
    /**
     * Remove the specified resource from storage.
@@ -126,9 +109,7 @@ $unit->save();
     */
    public function destroy($id)
    {
-    $unit= Unit::findOrFail($id);
-    $unit->delete();
-    return response()->json(['تمت العملية بنجاح'], 200);
+
    }
 
    public function change_status(Request $request)

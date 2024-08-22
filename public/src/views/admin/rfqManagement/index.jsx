@@ -15,33 +15,22 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
-  ModalCloseButton,
-  FormControl,
-  FormLabel,
-  Input,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  Select,
+  ModalFooter,
+  Button as ModalButton,
   useDisclosure,
 } from '@chakra-ui/react';
-import { EditIcon, DeleteIcon, ViewIcon } from '@chakra-ui/icons';
+import { EditIcon, DeleteIcon, ViewIcon, AddIcon } from '@chakra-ui/icons';
 import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 
 function RFQManagement() {
   const [rfqs, setRfqs] = useState([]);
-  const [clients, setClients] = useState([]);
-  const [projects, setProjects] = useState([]);
-  const [items, setItems] = useState([]);
-  const [units, setUnits] = useState([]);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
   const [selectedRfq, setSelectedRfq] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  
+  const history = useHistory(); 
 
   useEffect(() => {
     const fetchRfqs = async () => {
@@ -58,92 +47,40 @@ function RFQManagement() {
       }
     };
 
-    const fetchClients = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/clients`);
-        setClients(response.data);
-      } catch (error) {
-        console.error('Error fetching clients:', error);
-      }
-    };
-
-    const fetchProjects = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/projects`);
-        setProjects(response.data);
-      } catch (error) {
-        console.error('Error fetching projects:', error);
-      }
-    };
-
-    const fetchItems = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/items`);
-        setItems(response.data);
-      } catch (error) {
-        console.error('Error fetching items:', error);
-      }
-    };
-
-    const fetchUnits = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/units`);
-        setUnits(response.data);
-      } catch (error) {
-        console.error('Error fetching units:', error);
-      }
-    };
-
     fetchRfqs();
-    fetchClients();
-    fetchProjects();
-    fetchItems();
-    fetchUnits();
   }, []);
 
   const handleView = (rfq) => {
     setIsEditMode(false);
     setSelectedRfq(rfq);
-    onOpen();
+    history.push(`/admin/add-rfq/${rfq.id}/view`, { mode: 'view', rfq });
   };
-
+  
   const handleEdit = (rfq) => {
     setIsEditMode(true);
     setSelectedRfq(rfq);
-    onOpen();
+    history.push(`/admin/add-rfq/${rfq.id}/edit`, { mode: 'edit', rfq });
+  };
+  const handleAdd = () => {
+    history.push('/admin/add-rfq'); // Redirect to the Add RFQ page
   };
 
-  const handleDelete = (rfq) => {
+  const handleDelete = async () => {
+    if (selectedRfq) {
+      try {
+        await axios.delete(`${process.env.REACT_APP_API_URL}/rfqs/${selectedRfq.id}`);
+        setRfqs(rfqs.filter(existingRfq => existingRfq.id !== selectedRfq.id));
+      } catch (error) {
+        console.error('Error deleting RFQ:', error);
+      } finally {
+        onClose();
+      }
+    }
+  };
+
+  const openDeleteModal = (rfq) => {
     setSelectedRfq(rfq);
-    onDeleteOpen();
-  };
-
-  const confirmDelete = async () => {
-    try {
-      await axios.delete(`${process.env.REACT_APP_API_URL}/rfqs/${selectedRfq.id}`);
-      setRfqs(rfqs.filter(rfq => rfq.id !== selectedRfq.id));
-      onDeleteClose();
-    } catch (error) {
-      console.error('Error deleting RFQ:', error);
-    }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setSelectedRfq(prevState => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const handleSave = async () => {
-    try {
-      await axios.put(`${process.env.REACT_APP_API_URL}/rfqs/${selectedRfq.id}`, selectedRfq);
-      setRfqs(rfqs.map(rfq => (rfq.id === selectedRfq.id ? selectedRfq : rfq)));
-      onClose();
-    } catch (error) {
-      console.error('Error updating RFQ:', error);
-    }
+    onOpen();
   };
 
   return (
@@ -153,6 +90,11 @@ function RFQManagement() {
       </Heading>
 
       <Stack spacing={4}>
+        {/* Add RFQ Button */}
+        <Button colorScheme="teal" onClick={handleAdd} leftIcon={<AddIcon />} mb={4}>
+          Add RFQ
+        </Button>
+
         <Table variant="striped" colorScheme="teal">
           <Thead>
             <Tr>
@@ -190,7 +132,7 @@ function RFQManagement() {
                       aria-label="Delete RFQ"
                       icon={<DeleteIcon />}
                       colorScheme="red"
-                      onClick={() => handleDelete(rfq)}
+                      onClick={() => openDeleteModal(rfq)}
                     />
                   </Td>
                 </Tr>
@@ -202,178 +144,26 @@ function RFQManagement() {
             )}
           </Tbody>
         </Table>
-
-        {/* View/Edit Modal */}
-        <Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>{isEditMode ? 'Edit RFQ' : 'View RFQ'}</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <FormControl mb={4}>
-                <FormLabel>Title</FormLabel>
-                <Input
-                  name="title"
-                  value={selectedRfq?.title || ''}
-                  onChange={handleInputChange}
-                  isDisabled={!isEditMode}
-                />
-              </FormControl>
-              <FormControl mb={4}>
-                <FormLabel>Client</FormLabel>
-                <Select
-                  name="client_id"
-                  value={selectedRfq?.client?.id || ''}
-                  onChange={handleInputChange}
-                  isDisabled={!isEditMode}
-                >
-                  {clients.map(client => (
-                    <option key={client.id} value={client.id}>
-                      {client.client_name}
-                    </option>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl mb={4}>
-                <FormLabel>Project</FormLabel>
-                <Select
-                  name="project_id"
-                  value={selectedRfq?.project?.id || ''}
-                  onChange={handleInputChange}
-                  isDisabled={!isEditMode}
-                >
-                  {projects.map(project => (
-                    <option key={project.id} value={project.id}>
-                      {project.name}
-                    </option>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl mb={4}>
-                <FormLabel>Issue Date</FormLabel>
-                <Input
-                  name="issue_date"
-                  type="date"
-                  value={selectedRfq?.issue_date || ''}
-                  onChange={handleInputChange}
-                  isDisabled={!isEditMode}
-                />
-              </FormControl>
-              <FormControl mb={4}>
-                <FormLabel>Expire Date</FormLabel>
-                <Input
-                  name="expire_date"
-                  type="date"
-                  value={selectedRfq?.expire_date || ''}
-                  onChange={handleInputChange}
-                  isDisabled={!isEditMode}
-                />
-              </FormControl>
-
-              {/* RFQ Details */}
-              <Heading as="h2" size="md" mt={6} mb={4}>
-                RFQ Details
-              </Heading>
-
-              <FormControl mb={4}>
-                <FormLabel>Items</FormLabel>
-                <Select
-                  name="item"
-                  value={selectedRfq?.item || ''}
-                  onChange={handleInputChange}
-                  isDisabled={!isEditMode}
-                >
-                   {items.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.item_name}
-                  </option>
-                ))}
-                </Select>
-              </FormControl>
-
-              <FormControl mb={4}>
-                <FormLabel>Unit</FormLabel>
-                <Select
-                  name="unit"
-                  value={selectedRfq?.unit || ''}
-                  onChange={handleInputChange}
-                  isDisabled={!isEditMode}
-                >
-             {units.map((unit) => (
-                  <option key={unit.id} value={unit.id}>
-                    {unit.unit_name}
-                  </option>
-                ))}
-                </Select>
-              </FormControl>
-
-              <FormControl mb={4}>
-                <FormLabel>Quantity</FormLabel>
-                <NumberInput
-                  name="quantity"
-                  value={selectedRfq?.quantity || 0}
-                  onChange={(valueString) => handleInputChange({ target: { name: 'quantity', value: valueString } })}
-                  isDisabled={!isEditMode}
-                  min={0}
-                >
-                  <NumberInputField />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
-              </FormControl>
-
-              <FormControl mb={4}>
-                <FormLabel>Price</FormLabel>
-                <NumberInput
-                  name="price"
-                  value={selectedRfq?.price || 0}
-                  onChange={(valueString) => handleInputChange({ target: { name: 'price', value: valueString } })}
-                  isDisabled={!isEditMode}
-                  min={0}
-                >
-                  <NumberInputField />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
-              </FormControl>
-            </ModalBody>
-            <ModalFooter>
-              {isEditMode ? (
-                <Button colorScheme="teal" mr={3} onClick={handleSave}>
-                  Save
-                </Button>
-              ) : null}
-              <Button variant="ghost" onClick={onClose}>
-                Close
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-
-        {/* Delete Confirmation Modal */}
-        <Modal isOpen={isDeleteOpen} onClose={onDeleteClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Delete RFQ</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              Are you sure you want to delete this item? This action cannot be undone.
-            </ModalBody>
-            <ModalFooter>
-              <Button colorScheme="red" mr={3} onClick={confirmDelete}>
-                Delete
-              </Button>
-              <Button variant="ghost" onClick={onDeleteClose}>
-                Cancel
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
       </Stack>
+
+      {/* Delete Confirmation Modal */}
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Confirm Deletion</ModalHeader>
+          <ModalBody>
+            Are you sure you want to delete this RFQ? This action cannot be undone.
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="gray" mr={3} onClick={onClose}>
+              Cancel
+            </Button>
+            <ModalButton colorScheme="red" onClick={handleDelete}>
+              Delete
+            </ModalButton>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 }
