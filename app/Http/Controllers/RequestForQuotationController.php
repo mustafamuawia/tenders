@@ -31,21 +31,6 @@ else
     $requests = request_for_quotation::where('partner_id',auth()->user()->id)->with('client')->with('project')-> with('partner')->with('items')->get();
         return response()->json(['data'=>['requests' => $requests]], 200);   
    }
-   /**
-    * Show the form for creating a new resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
-   public function create()
-   {
-       //
-   }
-   /**
-    * Store a newly created resource in storage.
-    *
-    * @param  \Illuminate\Http\Request  $request
-    * @return \Illuminate\Http\Response
-    */
     public function store(Request $request)
     {
      try {
