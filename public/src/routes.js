@@ -68,7 +68,6 @@ const routes = [
     path: "/users",
     icon: <Icon as={MdGroup} width='20px' height='20px' color='inherit' />,
     component: Users,
-
   },
   {
     name: "Partners",
@@ -76,7 +75,6 @@ const routes = [
     path: "/partners",
     icon: <Icon as={MdPersonAdd} width='20px' height='20px' color='inherit' />,
     component: Partners,
-
   },
   {
     name: "Items",
@@ -84,7 +82,6 @@ const routes = [
     path: "/items",
     icon: <Icon as={MdList} width='20px' height='20px' color='inherit' />,
     component: Items,
-
   },
   {
     name: "Clients",
@@ -92,7 +89,6 @@ const routes = [
     path: "/clients",
     icon: <Icon as={MdPeople} width='20px' height='20px' color='inherit' />,
     component: Clients,
- 
   },
   {
     name: "Projects",
@@ -113,7 +109,6 @@ const routes = [
     icon: <Icon as={MdBuild} width='20px' height='20px' color='inherit' />,
     component: RFQManagement,
   },
-
   {
     name: "Unit Groups",
     layout: "/admin",
@@ -137,14 +132,27 @@ const routes = [
   },
 ];
 
-
-const getRoutesForRole = (role) => {
-  return routes.filter((route) => route.roles && route.roles.includes(role));
+const getUserRole = () => {
+  const role = localStorage.getItem('role');
+  return role  
 };
 
+// Get user role
+const role = getUserRole();
 
-const sidebarRoutes = routes.filter(route => route.name); 
+console.log(role);
 
+const getRoutesForRole = (role) => {
+  if (role === 'Admin') {
+    return routes; 
+  } else {
+    return routes.filter(route => 
+      ['Dashboard','clients', 'projects', 'rfq-management', 'edit-profile'].includes(route.path.split('/')[1])
+    );
+  }
+};
+
+const sidebarRoutes = getRoutesForRole(role).filter(route => route.name); 
 
 export { routes, sidebarRoutes, getRoutesForRole };
 export default routes;

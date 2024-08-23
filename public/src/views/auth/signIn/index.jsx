@@ -83,6 +83,7 @@ function SignIn() {
 
       if (response.data.access_token) {
         localStorage.setItem('token', response.data.access_token);
+        localStorage.setItem('role', response.data.user.role);
         localStorage.setItem('userId', response.data.user.id);
         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`;
         navigate.push('/admin/dashboard'); 
