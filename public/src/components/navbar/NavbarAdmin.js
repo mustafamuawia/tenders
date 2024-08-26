@@ -2,26 +2,51 @@ import { Box, Flex, Text, useColorModeValue } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import axios from 'axios';
 
 export default function AdminNavbar(props) {
     const [scrolled, setScrolled] = useState(false);
     const [displayRouteName, setDisplayRouteName] = useState('');
-    const [isMounted, setIsMounted] = useState(false); // Track if the component is fully mounted
+    const [isMounted, setIsMounted] = useState(false);
+    const [rolePrefix, setRolePrefix] = useState(''); // State for role prefix
     const location = useLocation();
 
     useEffect(() => {
-        // Update displayRouteName when location changes
+        // Fetch user role
+        const fetchUserRole = async () => {
+            try {
+                const userId = localStorage.getItem('userId');
+                if (userId) {
+                    const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/${userId}`);
+                    const userRole = response.data.role;
+
+                    // Set the role prefix based on the user's role
+                    if (userRole === 'Admin') {
+                        setRolePrefix('Admin /');
+                    } else if (userRole === 'Partner') {
+                        setRolePrefix('Partner /');
+                    } else {
+                        setRolePrefix('User /'); // Default prefix for other roles
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching user role:', error);
+            }
+        };
+
+        fetchUserRole();
+    }, []);
+
+    useEffect(() => {
         if (isMounted) {
             const routeName = location.pathname.split('/').pop();
             const capitalizeFirstLetter = str => str.charAt(0).toUpperCase() + str.slice(1);
-            setDisplayRouteName(`Admin / ${capitalizeFirstLetter(routeName.replace('-', ' '))}`);
+            setDisplayRouteName(`${rolePrefix} ${capitalizeFirstLetter(routeName.replace('-', ' '))}`);
         }
-    }, [location, isMounted]);
+    }, [location, isMounted, rolePrefix]);
 
     useEffect(() => {
-        // Mark component as mounted
         setIsMounted(true);
-
         window.addEventListener('scroll', changeNavbar);
 
         return () => {
@@ -29,76 +54,41 @@ export default function AdminNavbar(props) {
         };
     }, []);
 
-    const { secondary, message, brandText } = props;
+    const { secondary, message } = props;
 
     let mainText = useColorModeValue('navy.700', 'white');
-    let navbarPosition = 'fixed';
     let navbarBg = useColorModeValue('rgba(244, 247, 254, 0.2)', 'rgba(11,20,55,0.5)');
-    let navbarShadow = 'none';
-    let navbarBorder = 'transparent';
-    let secondaryMargin = '0px';
-    let paddingX = '15px';
-    let gap = '0px';
 
     const changeNavbar = () => {
-        if (window.scrollY > 1) {
-            setScrolled(true);
-        } else {
-            setScrolled(false);
-        }
+        setScrolled(window.scrollY > 1);
     };
 
     return (
         <Box
-            position={navbarPosition}
-            boxShadow={navbarShadow}
+            position="fixed"
+            boxShadow="none"
             bg={navbarBg}
-            borderColor={navbarBorder}
-            alignItems={{ xl: 'center' }}
-            display={secondary ? 'block' : 'flex'}
-            minH='75px'
-            justifyContent={{ xl: 'center' }}
-            mx='auto'
-            mt={secondaryMargin}
-            pb='8px'
-            right={{ base: '12px', md: '30px', lg: '30px', xl: '30px' }}
-            px={{
-                sm: paddingX,
-                md: '10px'
-            }}
-            pt='8px'
-            top={{ base: '12px', md: '16px', lg: '20px', xl: '20px' }}
-            w={{
-                base: 'calc(100vw - 6%)',
-                md: 'calc(100vw - 8%)',
-                lg: 'calc(100vw - 6%)',
-                xl: 'calc(100vw - 350px)',
-                '2xl': 'calc(100vw - 365px)'
-            }}>
-            <Flex
-                w='100%'
-                flexDirection={{
-                    sm: 'column',
-                    md: 'row'
-                }}
-                alignItems={{ xl: 'center' }}
-                mb={gap}
-                justifyContent={{ xl: 'flex-start' }}>
-                <Box mb={{ sm: '8px', md: '0px' }}>
-                </Box>
-                <Box w={{ sm: '100%', md: 'unset' }}>
-                    <Text 
-                        fontSize='2xl' 
-                        fontWeight='bold' 
-                        color={mainText} 
-                        textAlign='left'>
+            borderColor="transparent"
+            alignItems="center"
+            display="flex"
+            minH="75px"
+            justifyContent="center"
+            mx="auto"
+            mt="0px"
+            pb="8px"
+            right="30px"
+            px="15px"
+            pt="8px"
+            top="20px"
+            w="calc(100vw - 350px)">
+            <Flex w="100%" flexDirection="row" alignItems="center" mb="0px" justifyContent="flex-start">
+                <Box mb="0px">
+                    <Text fontSize="2xl" fontWeight="bold" color={mainText} textAlign="left">
                         {displayRouteName}
                     </Text>
                 </Box>
             </Flex>
-            {secondary ? (
-                <Text color='white'>{message}</Text>
-            ) : null}
+            {secondary ? <Text color="white">{message}</Text> : null}
         </Box>
     );
 }
@@ -108,5 +98,5 @@ AdminNavbar.propTypes = {
     variant: PropTypes.string,
     secondary: PropTypes.bool,
     fixed: PropTypes.bool,
-    onOpen: PropTypes.func
+    onOpen: PropTypes.func,
 };
