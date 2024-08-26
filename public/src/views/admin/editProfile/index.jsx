@@ -17,6 +17,8 @@ import {
 import { ViewIcon, ViewOffIcon, EditIcon } from "@chakra-ui/icons";
 
 export function EditProfile() {
+  const defaultUserAvatar = "D:/projects/tender/public/src/assets/img/avatars/505-5058560_person-placeholder-image-free-hd-png-download.png";
+
   const [profile, setProfile] = useState({
     name: "",
     email: "",
@@ -24,7 +26,7 @@ export function EditProfile() {
     newPassword: "",
   });
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
-  const [imagePreview, setImagePreview] = useState("");
+  const [imagePreview, setImagePreview] = useState(defaultUserAvatar);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
@@ -40,7 +42,7 @@ export function EditProfile() {
             }
           });
           const userData = response.data;
-          const imageUrl = userData.profileImage ? `${process.env.REACT_APP_API_URL}/storage/${userData.profileImage}` : 'http://bootdey.com/img/Content/avatar/avatar1.png';
+          const imageUrl = userData.profileImage ? `${process.env.REACT_APP_API_URL}/storage/${userData.profileImage}` : defaultUserAvatar;
 
           setProfile({
             name: userData.name || "",
@@ -48,8 +50,8 @@ export function EditProfile() {
             currentPassword: "",
             newPassword: ""
           });
-            setImagePreview(imageUrl);
-           localStorage.setItem('profileImage', imageUrl);
+          setImagePreview(imageUrl);
+          localStorage.setItem('profileImage', imageUrl);
         }
       } catch (error) {
         console.error("There was an error fetching the user data!", error);
@@ -59,7 +61,7 @@ export function EditProfile() {
           currentPassword: "",
           newPassword: ""
         });
-        setImagePreview('http://bootdey.com/img/Content/avatar/avatar1.png');
+        setImagePreview(defaultUserAvatar);
       }
     };
 
@@ -140,7 +142,6 @@ export function EditProfile() {
       console.error('Error updating profile:', error.response ? error.response.data : error.message);
     }
   };
-
 
   return (
     <Container mt={10}>
