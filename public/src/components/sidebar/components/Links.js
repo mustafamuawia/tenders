@@ -21,9 +21,13 @@ export function SidebarLinks(props) {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No access token found');
       
-      await axios.post(`${process.env.REACT_APP_API_URL}/logout`);
+      await axios.post(`${process.env.REACT_APP_API_URL}/logout`, {}, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       
-      localStorage.removeItem('token');
+      localStorage.clear();
       setTimeout(() => {
         history.push('/login');
       }, 1000); // Delay of 1 second
@@ -31,8 +35,6 @@ export function SidebarLinks(props) {
       console.error('Logout failed', error.response ? error.response.data : error.message);
     }
   };
-  
-  
 
   // Verifies if routeName is the one active (in browser input)
   const activeRoute = (routeName) => {
@@ -140,6 +142,8 @@ export function SidebarLinks(props) {
           </NavLink>
         );
       }
+      // Ensure a default return value for cases not covered by previous conditions
+      return null;
     });
   };
 

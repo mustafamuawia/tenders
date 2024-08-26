@@ -17,10 +17,9 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Button as ModalButton,
   useDisclosure,
 } from '@chakra-ui/react';
-import { EditIcon, DeleteIcon, ViewIcon, AddIcon } from '@chakra-ui/icons';
+import { EditIcon, DeleteIcon, ViewIcon } from '@chakra-ui/icons';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 
@@ -91,8 +90,20 @@ function RFQManagement() {
 
       <Stack spacing={4}>
         {/* Add RFQ Button */}
-        <Button colorScheme="teal" onClick={handleAdd} leftIcon={<AddIcon />} mb={4}>
-          Add RFQ
+        <Button 
+          colorScheme="teal" 
+          onClick={handleAdd} 
+          mb={4} 
+          borderRadius="full" 
+          height="56px" 
+          width="250px"
+          fontWeight="bold"
+          fontSize="md"
+          boxShadow="md"
+          textAlign="center"
+          variant="solid"
+        >
+          + Add RFQ
         </Button>
 
         <Table variant="striped" colorScheme="teal">
@@ -158,9 +169,9 @@ function RFQManagement() {
             <Button colorScheme="gray" mr={3} onClick={onClose}>
               Cancel
             </Button>
-            <ModalButton colorScheme="red" onClick={handleDelete}>
+            <Button colorScheme="red" onClick={handleDelete}>
               Delete
-            </ModalButton>
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

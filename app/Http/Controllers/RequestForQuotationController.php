@@ -31,40 +31,25 @@ else
     $requests = request_for_quotation::where('partner_id',auth()->user()->id)->with('client')->with('project')-> with('partner')->with('items')->get();
         return response()->json(['data'=>['requests' => $requests]], 200);   
    }
-   /**
-    * Show the form for creating a new resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
-   public function create()
-   {
-       //
-   }
-   /**
-    * Store a newly created resource in storage.
-    *
-    * @param  \Illuminate\Http\Request  $request
-    * @return \Illuminate\Http\Response
-    */
-   public function store(Request $request)
-   {
-    try {
-        $rfqData = $request->only(['title','client_id', 'project_id', 'issue_date', 'expire_date']);
-        $rfqData['partner_id'] = auth()->user()->id;
-        $rfq = request_for_quotation::create($rfqData);
-
-        $detailsData = $request->input('details');
-        foreach ($detailsData as $detail) {
-            $detail['rfq_id'] = $rfq->id;
-            rfq_details::create($detail);
-        }
-
-        return response()->json($rfq->load('details'), 201);
-       
-    } catch(\Exception $exception) {
-       
+    public function store(Request $request)
+    {
+     try {
+         $rfqData = $request->only(['title','client_id', 'project_id', 'issue_date', 'expire_date','status']);
+         $rfqData['partner_id'] = auth()->user()->id;
+         $rfq = request_for_quotation::create($rfqData);
+ 
+         $detailsData = $request->input('details');
+         foreach ($detailsData as $detail) {
+             $detail['rfq_id'] = $rfq->id;
+             rfq_details::create($detail);
+         }
+ 
+         return response()->json($rfq->load('details'), 201);
+        
+     } catch(\Exception $exception) {
+        return response()->json(['error' => $exception->getMessage()], 500);
+     }
     }
-   }
    /**
     * Display the specified resource.
     *

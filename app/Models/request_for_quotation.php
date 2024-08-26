@@ -14,6 +14,8 @@ class request_for_quotation extends Model
 {
     use HasFactory;
 
+    protected $table = 'request_for_quotations';
+
     protected $fillable = [
         'id',
         'title',
@@ -48,6 +50,11 @@ class request_for_quotation extends Model
     public function units()
     {
         return $this->belongsToMany(Unit::class,'rfq_details','rfq_id','unit_id');
+    }
+
+    public function details()
+    {
+        return $this->hasMany(rfq_details::class, 'rfq_id');
     }
 
 
