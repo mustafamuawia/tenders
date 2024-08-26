@@ -93,11 +93,19 @@ else
     * @param  int  $id
     * @return \Illuminate\Http\Response
     */
-   public function destroy($id)
-   {
-
-   }
-
+    public function destroy($id)
+    {
+        try {
+            $rfq = request_for_quotation::findOrFail($id);
+            $rfq->details()->delete(); 
+            $rfq->delete(); 
+    
+            return response()->json(['message' => 'RFQ deleted successfully'], 200);
+        } catch (\Exception $exception) {
+            return response()->json(['error' => 'Failed to delete RFQ: ' . $exception->getMessage()], 500);
+        }
+    }
+    
    public function change_status(Request $request)
    {
     $id = $request->id;

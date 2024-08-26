@@ -26,7 +26,7 @@ import { useHistory } from 'react-router-dom';
 function RFQManagement() {
   const [rfqs, setRfqs] = useState([]);
   const [selectedRfq, setSelectedRfq] = useState(null);
-  const [isEditMode, setIsEditMode] = useState(false);
+  const [setIsEditMode] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   
   const history = useHistory(); 
@@ -67,7 +67,7 @@ function RFQManagement() {
   const handleDelete = async () => {
     if (selectedRfq) {
       try {
-        await axios.delete(`${process.env.REACT_APP_API_URL}/rfqs/${selectedRfq.id}`);
+        await axios.delete(`${process.env.REACT_APP_API_URL}/RFQ/${selectedRfq.id}`);
         setRfqs(rfqs.filter(existingRfq => existingRfq.id !== selectedRfq.id));
       } catch (error) {
         console.error('Error deleting RFQ:', error);
@@ -76,6 +76,7 @@ function RFQManagement() {
       }
     }
   };
+  
 
   const openDeleteModal = (rfq) => {
     setSelectedRfq(rfq);
