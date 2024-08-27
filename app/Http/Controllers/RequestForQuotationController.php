@@ -58,7 +58,8 @@ else
     */
    public function show($id)
    {
-   
+    
+    return response()->json(request_for_quotation::where('id', $id)->with('details')->with('client')->with('project')-> with('partner')->with('items')->get());
    }
    /**
     * Show the form for editing the specified resource.

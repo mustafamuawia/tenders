@@ -13,7 +13,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RequestForQuotationController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\UnitGroupController;
-
+use App\Http\Controllers\QuotationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -78,6 +78,11 @@ Route::middleware(['auth:api'])->group(function () {
 
     // RFQ
     Route::apiResource('RFQ', RequestForQuotationController::class);
+    // Route::get('RFQ/show/{id}', RequestForQuotationController::class,'');
+
+    //Quotaion
+    Route::apiResource('Quotation', QuotationController::class);
+
     // JWT routes
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
