@@ -18,8 +18,10 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
+  Flex,
 } from '@chakra-ui/react';
 import { EditIcon, DeleteIcon, ViewIcon } from '@chakra-ui/icons';
+import { FaFileInvoiceDollar } from 'react-icons/fa'; // Import the desired icon
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 
@@ -60,6 +62,11 @@ function RFQManagement() {
     setSelectedRfq(rfq);
     history.push(`/admin/add-rfq/${rfq.id}/edit`, { mode: 'edit', rfq });
   };
+
+  const handleQuotation = (rfq) => {
+    history.push(`/admin/quotation`);
+  };
+
   const handleAdd = () => {
     history.push('/admin/add-rfq'); // Redirect to the Add RFQ page
   };
@@ -85,7 +92,7 @@ function RFQManagement() {
 
   return (
     <Box p={4} maxWidth="100%" mx="auto" mt={16} borderRadius="lg" boxShadow="xl" bg="white">
-      <Heading as="h1" size="xl" mb={6}>
+      <Heading as="h1" size="xl" mb={6} textAlign="center">
         RFQ Management
       </Heading>
 
@@ -97,17 +104,18 @@ function RFQManagement() {
           mb={4} 
           borderRadius="full" 
           height="56px" 
-          width="250px"
+          width={{ base: '100%', sm: '250px' }} // Responsive width
           fontWeight="bold"
           fontSize="md"
           boxShadow="md"
           textAlign="center"
           variant="solid"
+          mx={{ base: 'auto', sm: '0' }} // Center button on small screens
         >
           + Add RFQ
         </Button>
 
-        <Table variant="striped" colorScheme="teal">
+        <Table variant="striped" colorScheme="teal" size={{ base: 'sm', md: 'md' }}>
           <Thead>
             <Tr>
               <Th>Title</Th>
@@ -115,6 +123,7 @@ function RFQManagement() {
               <Th>Project</Th>
               <Th>Issue Date</Th>
               <Th>Expire Date</Th>
+              <Th>Quotation</Th> {/* New Quotation column */}
               <Th>Actions</Th>
             </Tr>
           </Thead>
@@ -129,29 +138,41 @@ function RFQManagement() {
                   <Td>{rfq.expire_date}</Td>
                   <Td>
                     <IconButton
-                      aria-label="View RFQ"
-                      icon={<ViewIcon />}
-                      onClick={() => handleView(rfq)}
-                      mr={2}
+                      aria-label="Quotation"
+                      icon={<FaFileInvoiceDollar />}
+                      onClick={() => handleQuotation(rfq)}
+                      colorScheme="blue"
+                       size="sm"
                     />
-                    <IconButton
-                      aria-label="Edit RFQ"
-                      icon={<EditIcon />}
-                      onClick={() => handleEdit(rfq)}
-                      mr={2}
-                    />
-                    <IconButton
-                      aria-label="Delete RFQ"
-                      icon={<DeleteIcon />}
-                      colorScheme="red"
-                      onClick={() => openDeleteModal(rfq)}
-                    />
+                  </Td>
+                  <Td>
+                    <Flex gap={2}>
+                      <IconButton
+                        aria-label="View RFQ"
+                        icon={<ViewIcon />}
+                        onClick={() => handleView(rfq)}
+                        size="sm"
+                      />
+                      <IconButton
+                        aria-label="Edit RFQ"
+                        icon={<EditIcon />}
+                        onClick={() => handleEdit(rfq)}
+                        size="sm"
+                      />
+                      <IconButton
+                        aria-label="Delete RFQ"
+                        icon={<DeleteIcon />}
+                        colorScheme="red"
+                        onClick={() => openDeleteModal(rfq)}
+                        size="sm"
+                      />
+                    </Flex>
                   </Td>
                 </Tr>
               ))
             ) : (
               <Tr>
-                <Td colSpan="6">No RFQs available</Td>
+                <Td colSpan="7">No RFQs available</Td>
               </Tr>
             )}
           </Tbody>

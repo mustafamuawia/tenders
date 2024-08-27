@@ -22,10 +22,12 @@ import Items from "views/admin/items";
 import Clients from "views/admin/clients";
 import Projects from "views/admin/projects";
 import AddRFQ from "views/admin/rfq";
+import Quotation from "views/admin/quotation";
 import RFQManagement from "views/admin/rfqManagement";
 import UnitGroups from "views/admin/unitGroups";
 import Units from "views/admin/units";
 import EditProfile from "views/admin/editProfile";
+
 
 // Auth Imports
 import SignInCentered from "views/auth/signIn";
@@ -105,6 +107,11 @@ const routes = [
     layout: "/admin",
     path: "/add-rfq",
     component: AddRFQ,
+  },
+  {
+    layout: "/admin",
+    path: "/quotation",
+    component: Quotation,
   },
   {
     name: "RFQ Management",
