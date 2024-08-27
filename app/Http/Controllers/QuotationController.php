@@ -14,72 +14,94 @@ class QuotationController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+        if (auth()->user()->role=='Admin')
+    $requests = Quotation::with('client')->with('partner')->with('items')->get();
+else
+    $requests = Quotation::where('partner_id',auth()->user()->id)->with('items')->get();
+        return response()->json(['data'=>['requests' => $requests]], 200);   
+   }
     public function store(Request $request)
     {
-        //
+     try {
+         $quotationData = $request->only(['title', 'rfq_id', 'note','expire_date','status']);
+         $quotationData['user_id'] = auth()->user()->id;
+         $quotation = Quotation_details::create($quotationData);
+ 
+         $detailsData = $request->input('details');
+         foreach ($detailsData as $detail) {
+             $detail['quotation_id'] = $quotation->id;
+             quotation_details::create($detail);
+         }
+ 
+         return response()->json($quotation->load('details'), 201);
+        
+     } catch(\Exception $exception) {
+        return response()->json(['error' => $exception->getMessage()], 500);
+     }
+    }
+   /**
+    * Display the specified resource.
+    *
+    * @param  int  $id
+    * @return \Illuminate\Http\Response
+    */
+   public function show($id)
+   {
+    
+    return response()->json(Quotation::where('id', $id)->with('details')->with('items')->get());
+   }
+   /**
+    * Show the form for editing the specified resource.
+    *
+    * @param  int  $id
+    * @return \Illuminate\Http\Response
+    */
+   /**
+    * Update the specified resource in storage.
+    *
+    * @param  \Illuminate\Http\Request  $request
+    * @param  int  $id
+    * @return \Illuminate\Http\Response
+    */
+   public function update(Request $request, $id)
+   {
+    $quotation = Quotation::findOrFail($id);
+    $quotation->update($request->only(['title', 'expire_date','status']));
+
+    $quotation->details()->delete();
+    $detailsData = $request->input('details');
+    foreach ($detailsData as $detail) {
+        $detail['quotation_id'] = $quotation->id;
+        quotation_details::create($detail);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Quotation  $quotation
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Quotation $quotation)
+    return response()->json($quotation->load('details'));
+   }
+   /**
+    * Remove the specified resource from storage.
+    *
+    * @param  int  $id
+    * @return \Illuminate\Http\Response
+    */
+    public function destroy($id)
     {
-        //
+        try {
+            $quotation = Quotation::findOrFail($id);
+            $quotation->details()->delete(); 
+            $quotation->delete(); 
+    
+            return response()->json(['message' => 'RFQ deleted successfully'], 200);
+        } catch (\Exception $exception) {
+            return response()->json(['error' => 'Failed to delete RFQ: ' . $exception->getMessage()], 500);
+        }
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Quotation  $quotation
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Quotation $quotation)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Quotation  $quotation
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Quotation $quotation)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Quotation  $quotation
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Quotation $quotation)
-    {
-        //
-    }
+    
+   public function change_status(Request $request)
+   {
+    $id = $request->id;
+    $unit = Quotation::findOrFail($id);
+    $unit->status=$request->status;
+    $unit->save();
+    return response()->json(['success'], 200);
+   }
 }

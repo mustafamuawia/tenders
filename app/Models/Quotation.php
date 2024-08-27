@@ -22,10 +22,12 @@ class Quotation extends Model
         'status',
     ];
 
-    public function project()
+    
+    public function partner()
     {
-        return $this->belongsTo(Project::class);
-    }   
+        return $this->belongsTo(Partner::class,'partner_id');
+    }
+    
     public function items()
     {
         return $this->belongsToMany(Item::class,'quotation_details','quotation_id','item_id');

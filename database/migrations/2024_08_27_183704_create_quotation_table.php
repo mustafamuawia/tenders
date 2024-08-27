@@ -16,6 +16,7 @@ class CreateQuotationTable extends Migration
             Schema::create('quotations', function (Blueprint $table) {
                 $table->increments('id');
                 $table->unsignedBigInteger('rfq_id');
+                $table->unsignedBigInteger('partner_id');
                 $table->date('expire_date');
                 $table->softDeletes();
                 $table->timestamps();
