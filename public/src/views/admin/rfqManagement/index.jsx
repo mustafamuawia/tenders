@@ -21,16 +21,14 @@ import {
   Flex,
 } from '@chakra-ui/react';
 import { EditIcon, DeleteIcon, ViewIcon } from '@chakra-ui/icons';
-import { FaFileInvoiceDollar } from 'react-icons/fa'; // Import the desired icon
+import { FaFileInvoiceDollar } from 'react-icons/fa';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 
 function RFQManagement() {
   const [rfqs, setRfqs] = useState([]);
   const [selectedRfq, setSelectedRfq] = useState(null);
-  const [setIsEditMode] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  
   const history = useHistory(); 
 
   useEffect(() => {
@@ -51,16 +49,19 @@ function RFQManagement() {
     fetchRfqs();
   }, []);
 
+  // Function to calculate expire date as one month from issue date
+  const calculateExpireDate = (issueDate) => {
+    const date = new Date(issueDate);
+    date.setMonth(date.getMonth() + 1); // Add one month to issue date
+    return date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+  };
+
   const handleView = (rfq) => {
-    setIsEditMode(false);
-    setSelectedRfq(rfq);
-    history.push(`/admin/add-rfq/${rfq.id}/view`, { mode: 'view', rfq });
+    history.push(`/admin/view-rfq/${rfq.id}/view`);
   };
   
   const handleEdit = (rfq) => {
-    setIsEditMode(true);
-    setSelectedRfq(rfq);
-    history.push(`/admin/add-rfq/${rfq.id}/edit`, { mode: 'edit', rfq });
+    history.push(`/admin/edit-rfq/${rfq.id}/edit`);
   };
 
   const handleQuotation = (rfq) => {
@@ -68,7 +69,7 @@ function RFQManagement() {
   };
 
   const handleAdd = () => {
-    history.push('/admin/add-rfq'); // Redirect to the Add RFQ page
+    history.push('/admin/add-rfq');
   };
 
   const handleDelete = async () => {
@@ -84,7 +85,6 @@ function RFQManagement() {
     }
   };
   
-
   const openDeleteModal = (rfq) => {
     setSelectedRfq(rfq);
     onOpen();
@@ -123,7 +123,7 @@ function RFQManagement() {
               <Th>Project</Th>
               <Th>Issue Date</Th>
               <Th>Expire Date</Th>
-              <Th>Quotation</Th> {/* New Quotation column */}
+              <Th>Quotation</Th>
               <Th>Actions</Th>
             </Tr>
           </Thead>
@@ -135,14 +135,14 @@ function RFQManagement() {
                   <Td>{rfq.client.client_name}</Td>
                   <Td>{rfq.project.name}</Td>
                   <Td>{rfq.issue_date}</Td>
-                  <Td>{rfq.expire_date}</Td>
+                  <Td>{calculateExpireDate(rfq.issue_date)}</Td> {/* Updated expire date */}
                   <Td>
                     <IconButton
                       aria-label="Quotation"
                       icon={<FaFileInvoiceDollar />}
                       onClick={() => handleQuotation(rfq)}
                       colorScheme="blue"
-                       size="sm"
+                      size="sm"
                     />
                   </Td>
                   <Td>

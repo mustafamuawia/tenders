@@ -24,9 +24,9 @@ class rfq_details extends Pivot
         'unit_price'
     ];
 
-    public function base_product()
+    public function item()
     {
-        return $this->belongsTo(Item::class, 'item_id');
+        return $this->belongsTo(Item::class);
     }
 
     public function unit()

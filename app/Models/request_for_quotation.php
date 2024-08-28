@@ -22,9 +22,9 @@ class request_for_quotation extends Model
         'client_id',
         'project_id',
         'issue_date',
-        'expire_date',
         'partner_id',
         'status',
+        'note',
     ];
 
     public function client()

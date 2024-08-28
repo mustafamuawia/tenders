@@ -18,23 +18,43 @@ class RequestForQuotationController extends Controller
     *
     * @return \Illuminate\Http\Response
     */
-   public function index()
-   {
-    // client
-    // project
-    // partner
-    // items
-    // units
-    if (auth()->user()->role=='Admin')
-    $requests = request_for_quotation::with('client')->with('project')-> with('partner')->with('items')->get();
-else
-    $requests = request_for_quotation::where('partner_id',auth()->user()->id)->with('client')->with('project')-> with('partner')->with('items')->get();
-        return response()->json(['data'=>['requests' => $requests]], 200);   
-   }
+    public function index()
+    {
+        try {
+            // Check user role and fetch RFQs accordingly
+            if (auth()->user()->role == 'Admin') {
+                // Fetch all RFQs with clients, projects, and partners
+                $requests = request_for_quotation::with([
+                    'client',
+                    'project',
+                    'partner',
+                    'details.item', // Fetch related items in details
+                    'details.unit'  // Fetch related units in details
+                ])->get();
+            } else {
+                // Fetch RFQs for the authenticated partner with additional details
+                $requests = request_for_quotation::where('partner_id', auth()->user()->id)->with([
+                    'client',
+                    'project',
+                    'partner',
+                    'details.item', // Fetch related items in details
+                    'details.unit'  // Fetch related units in details
+                ])->get();
+            }
+    
+            // Return the fetched data in the response
+            return response()->json(['data' => ['requests' => $requests]], 200);
+    
+        } catch (\Exception $exception) {
+            // Handle any errors and return a 500 response
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+    
     public function store(Request $request)
     {
      try {
-         $rfqData = $request->only(['title','client_id', 'project_id', 'issue_date', 'expire_date','status']);
+         $rfqData = $request->only(['title','client_id', 'project_id', 'issue_date','status','note']);
          $rfqData['partner_id'] = auth()->user()->id;
          $rfq = request_for_quotation::create($rfqData);
  
@@ -74,20 +94,49 @@ else
     * @param  int  $id
     * @return \Illuminate\Http\Response
     */
-   public function update(Request $request, $id)
-   {
-    $rfq = request_for_quotation::findOrFail($id);
-    $rfq->update($request->only(['client_id', 'project_id', 'issue_date']));
-
-    $rfq->details()->delete();
-    $detailsData = $request->input('details');
-    foreach ($detailsData as $detail) {
-        $detail['rfq_id'] = $rfq->id;
-        rfq_details::create($detail);
+    public function update(Request $request, $id)
+    {
+        try {
+            // Fetch the RFQ by its ID
+            $rfq = request_for_quotation::findOrFail($id);
+    
+            // Update the main RFQ fields
+            $rfqData = $request->only(['title', 'client_id', 'project_id', 'issue_date', 'note']);
+            $rfqData['partner_id'] = auth()->user()->id; 
+    
+            $rfq->update($rfqData);
+    
+            // Update the RFQ details
+            $detailsData = $request->input('details');
+    
+            // Detach existing details that are not in the request
+            $existingDetailIds = $rfq->details->pluck('id')->toArray();
+            $newDetailIds = array_column($detailsData, 'id');
+    
+            $detailsToDelete = array_diff($existingDetailIds, $newDetailIds);
+            rfq_details::whereIn('id', $detailsToDelete)->delete();
+    
+            // Update existing details or create new ones
+            foreach ($detailsData as $detail) {
+                if (isset($detail['id']) && in_array($detail['id'], $existingDetailIds)) {
+                    // Update existing detail
+                    rfq_details::where('id', $detail['id'])->update($detail);
+                } else {
+                    // Create new detail
+                    $detail['rfq_id'] = $rfq->id;
+                    rfq_details::create($detail);
+                }
+            }
+    
+            // Return the updated RFQ with its details
+            return response()->json($rfq->load('details'), 200);
+    
+        } catch (\Exception $exception) {
+            // Return an error response if something goes wrong
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
-
-    return response()->json($rfq->load('details'));
-   }
+    
    /**
     * Remove the specified resource from storage.
     *

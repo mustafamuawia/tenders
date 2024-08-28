@@ -15,16 +15,16 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
 } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { DeleteIcon } from '@chakra-ui/icons';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import axios from 'axios';
 
-function AddRFQ() {
+function EditRFQ() {
+  const { id } = useParams(); 
   const history = useHistory();
 
   const [rfqRecords, setRfqRecords] = useState([]);
-  const [randomNumber, setRandomNumber] = useState('');
   const [clients, setClients] = useState([]);
   const [projects, setProjects] = useState([]);
   const [items, setItems] = useState([]);
@@ -33,52 +33,85 @@ function AddRFQ() {
   const [selectedClientId, setSelectedClientId] = useState('');
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [issueDate, setIssueDate] = useState('');
-  const [expireDate, setExpireDate] = useState('');
   const [note, setNote] = useState('');
 
+  // Memoized fetchRFQData function using useCallback
+  const fetchRFQData = useCallback(async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/RFQ/${id}`);
+      let rfqArray = response.data;
+  
+      // Filter out empty entries
+      rfqArray = rfqArray.filter(item => item !== null && item !== undefined && Object.keys(item).length !== 0);
+  
+      if (rfqArray.length > 0) {
+        const rfq = rfqArray[0]; // Assuming you want the first valid entry
+    
+        setSelectedClientId(rfq.client_id || '');
+        setSelectedProjectId(rfq.project_id || '');
+        setIssueDate(rfq.issue_date || '');
+        setNote(rfq.note || '');
+    
+        const mappedDetails = (rfq.details || []).map(detail => ({
+          item: detail.item_id || '',
+          qty: detail.qty || 0,
+          unit: detail.unit_id || ''
+        }));
+    
+        setRfqRecords(mappedDetails);
+      } else {
+        console.error('No valid RFQ data found');
+      }
+    } catch (error) {
+      console.error('Error fetching RFQ data:', error);
+    }
+  }, [id]);
+  
+  
+  
   useEffect(() => {
-    setRandomNumber(Math.floor(1000 + Math.random() * 9000));
+    const fetchClients = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/clients`);
+        setClients(response.data);
+      } catch (error) {
+        console.error('Error fetching clients:', error);
+      }
+    };
+
+    const fetchProjects = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/projects`);
+        setProjects(response.data);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      }
+    };
+
+    const fetchItems = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/items`);
+        setItems(response.data);
+      } catch (error) {
+        console.error('Error fetching items:', error);
+      }
+    };
+
+    const fetchUnits = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/units`);
+        setUnits(response.data);
+      } catch (error) {
+        console.error('Error fetching units:', error);
+      }
+    };
+
     fetchClients();
     fetchProjects();
     fetchItems();
     fetchUnits();
-  }, []);
-
-  const fetchClients = async () => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/clients`);
-      setClients(response.data);
-    } catch (error) {
-      console.error('Error fetching clients:', error);
-    }
-  };
-
-  const fetchProjects = async () => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/projects`);
-      setProjects(response.data);
-    } catch (error) {
-      console.error('Error fetching projects:', error);
-    }
-  };
-
-  const fetchItems = async () => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/items`);
-      setItems(response.data);
-    } catch (error) {
-      console.error('Error fetching items:', error);
-    }
-  };
-
-  const fetchUnits = async () => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/units`);
-      setUnits(response.data);
-    } catch (error) {
-      console.error('Error fetching units:', error);
-    }
-  };
+    fetchRFQData(); 
+  }, [fetchRFQData]);
 
   const handleAddRecord = () => {
     setRfqRecords([...rfqRecords, { item: '', qty: 0, unit: '' }]);
@@ -90,14 +123,12 @@ function AddRFQ() {
 
   const handleSave = async () => {
     try {
-      await axios.post(`${process.env.REACT_APP_API_URL}/RFQ`, {
-        title: `RFQ-${randomNumber}`,
+      await axios.put(`${process.env.REACT_APP_API_URL}/RFQ/${id}`, {
         client_id: selectedClientId,
         project_id: selectedProjectId,
         issue_date: issueDate,
-        expire_date: expireDate,
         note: note,
-        details: rfqRecords.map(record => ({
+        details: rfqRecords.map((record) => ({
           item_id: record.item,
           qty: record.qty,
           unit_id: record.unit,
@@ -109,18 +140,19 @@ function AddRFQ() {
     }
   };
 
+  console.log(selectedClientId)
+
+  console.log(issueDate)
+
+
+
   return (
     <Box p={4} maxWidth="100%" mx="auto" mt={16} borderRadius="lg" boxShadow="xl" bg="white">
       <Box as="h2" fontSize="3xl" fontWeight="bold" mb={6}>
-        Add RFQ
+        Edit RFQ
       </Box>
 
-      <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4} mt={6}>
-        <FormControl>
-          <FormLabel fontWeight="bold">Title</FormLabel>
-          <Input value={`RFQ-${randomNumber}`} isReadOnly={true} size="md" />
-        </FormControl>
-
+      <Grid templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }} gap={4} mt={6}>
         <FormControl>
           <FormLabel fontWeight="bold">Client</FormLabel>
           <Select
@@ -136,9 +168,7 @@ function AddRFQ() {
             ))}
           </Select>
         </FormControl>
-      </Grid>
 
-      <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4} mt={6}>
         <FormControl>
           <FormLabel fontWeight="bold">Project</FormLabel>
           <Select
@@ -265,7 +295,7 @@ function AddRFQ() {
             Add Record
           </Button>
           <Button onClick={handleSave} colorScheme="blue">
-            Save
+            Save Changes
           </Button>
         </HStack>
       </Box>
@@ -273,4 +303,4 @@ function AddRFQ() {
   );
 }
 
-export default AddRFQ;
+export default EditRFQ;

@@ -13,8 +13,6 @@ import {
   useColorModeValue,
   useColorMode,
   IconButton,
-  Grid,
-  GridItem,
 } from '@chakra-ui/react';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import DefaultAuth from 'layouts/auth/Default';
@@ -79,7 +77,7 @@ function Register() {
       >
         <Flex
           direction="column"
-          w={{ base: '100%', md: '600px' }}
+          w={{ base: '100%', md: '420px' }}
           p={8}
           background={useColorModeValue('white', 'gray.800')}
           borderRadius="15px"
@@ -87,6 +85,8 @@ function Register() {
           textAlign="center"
           mb={8}
           mt={4}
+          maxH="80vh"
+          overflowY="auto" // Ensure scrollability of the card content
         >
           <Flex justify="space-between" w="100%" mb="16px">
             <NavLink to="/auth/sign-in">
@@ -98,140 +98,124 @@ function Register() {
               />
             </NavLink>
           </Flex>
-          <Heading color={textColor} fontSize="28px" mb="10px">
+          <Heading color={textColor} fontSize="36px" mb="10px">
             Create an Account
           </Heading>
-          <Text mb="20px" color={textColorSecondary} fontWeight="400" fontSize="md">
+          <Text mb="36px" color={textColorSecondary} fontWeight="400" fontSize="md">
             Fill out the form below to create an account!
           </Text>
           <Box>
             <FormControl>
-              <Grid templateColumns="repeat(2, 1fr)" gap={6}>
-                <GridItem>
-                  <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="left">
-                    Contact Name
-                  </FormLabel>
-                  <Input
-                    isRequired={true}
-                    variant="auth"
-                    fontSize="sm"
-                    type="text"
-                    placeholder="John Doe"
-                    mb="24px"
-                    fontWeight="500"
-                    size="lg"
-                    value={contactName}
-                    onChange={(e) => setContactName(e.target.value)}
-                    color={inputTextColor}
-                  />
-                </GridItem>
-                <GridItem>
-                  <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="left">
-                    Company Name
-                  </FormLabel>
-                  <Input
-                    isRequired={true}
-                    variant="auth"
-                    fontSize="sm"
-                    type="text"
-                    placeholder="Company Name"
-                    mb="24px"
-                    fontWeight="500"
-                    size="lg"
-                    value={companyName}
-                    onChange={(e) => setCompanyName(e.target.value)}
-                    color={inputTextColor}
-                  />
-                </GridItem>
-                <GridItem>
-                  <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="left">
-                    Company Email
-                  </FormLabel>
-                  <Input
-                    isRequired={true}
-                    variant="auth"
-                    fontSize="sm"
-                    type="email"
-                    placeholder="company@mail.com"
-                    mb="24px"
-                    fontWeight="500"
-                    size="lg"
-                    value={companyEmail}
-                    onChange={(e) => setCompanyEmail(e.target.value)}
-                    color={inputTextColor}
-                  />
-                </GridItem>
-                <GridItem>
-                  <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="left">
-                    Company Phone
-                  </FormLabel>
-                  <Input
-                    isRequired={true}
-                    variant="auth"
-                    fontSize="sm"
-                    type="text"
-                    placeholder="(123) 456-7890"
-                    mb="24px"
-                    fontWeight="500"
-                    size="lg"
-                    value={companyPhone}
-                    onChange={(e) => setCompanyPhone(e.target.value)}
-                    color={inputTextColor}
-                  />
-                </GridItem>
-                <GridItem>
-                  <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="left">
-                    Email
-                  </FormLabel>
-                  <Input
-                    isRequired={true}
-                    variant="auth"
-                    fontSize="sm"
-                    type="email"
-                    placeholder="mail@company.com"
-                    mb="24px"
-                    fontWeight="500"
-                    size="lg"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    color={inputTextColor}
-                  />
-                </GridItem>
-                <GridItem>
-                  <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="left">
-                    Password
-                  </FormLabel>
-                  <Input
-                    isRequired={true}
-                    fontSize="sm"
-                    placeholder="At least 8 characters"
-                    mb="24px"
-                    size="lg"
-                    type="password"
-                    variant="auth"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    color={inputTextColor}
-                  />
-                </GridItem>
-                <GridItem>
-                  <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="left">
-                    Confirm Password
-                  </FormLabel>
-                  <Input
-                    isRequired={true}
-                    fontSize="sm"
-                    placeholder="At least 8 characters"
-                    mb="24px"
-                    size="lg"
-                    type="password"
-                    variant="auth"
-                    value={passwordConfirm}
-                    onChange={(e) => setPasswordConfirm(e.target.value)}
-                    color={inputTextColor}
-                  />
-                </GridItem>
-              </Grid>
+              <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="left">
+                Contact Name
+              </FormLabel>
+              <Input
+                isRequired={true}
+                variant="auth"
+                fontSize="sm"
+                type="text"
+                placeholder="John Doe"
+                mb="24px"
+                fontWeight="500"
+                size="lg"
+                value={contactName}
+                onChange={(e) => setContactName(e.target.value)}
+                color={inputTextColor}
+              />
+              <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="left">
+                Company Name
+              </FormLabel>
+              <Input
+                isRequired={true}
+                variant="auth"
+                fontSize="sm"
+                type="text"
+                placeholder="Company Name"
+                mb="24px"
+                fontWeight="500"
+                size="lg"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                color={inputTextColor}
+              />
+              <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="left">
+                Company Email
+              </FormLabel>
+              <Input
+                isRequired={true}
+                variant="auth"
+                fontSize="sm"
+                type="email"
+                placeholder="company@mail.com"
+                mb="24px"
+                fontWeight="500"
+                size="lg"
+                value={companyEmail}
+                onChange={(e) => setCompanyEmail(e.target.value)}
+                color={inputTextColor}
+              />
+              <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="left">
+                Company Phone
+              </FormLabel>
+              <Input
+                isRequired={true}
+                variant="auth"
+                fontSize="sm"
+                type="text"
+                placeholder="(123) 456-7890"
+                mb="24px"
+                fontWeight="500"
+                size="lg"
+                value={companyPhone}
+                onChange={(e) => setCompanyPhone(e.target.value)}
+                color={inputTextColor}
+              />
+              <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="left">
+                Email
+              </FormLabel>
+              <Input
+                isRequired={true}
+                variant="auth"
+                fontSize="sm"
+                type="email"
+                placeholder="mail@company.com"
+                mb="24px"
+                fontWeight="500"
+                size="lg"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                color={inputTextColor}
+              />
+              <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="left">
+                Password
+              </FormLabel>
+              <Input
+                isRequired={true}
+                fontSize="sm"
+                placeholder="At least 8 characters"
+                mb="24px"
+                size="lg"
+                type="password"
+                variant="auth"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                color={inputTextColor}
+              />
+              <FormLabel fontSize="sm" fontWeight="500" color={labelColor} mb="8px" textAlign="left">
+                Confirm Password
+              </FormLabel>
+              <Input
+                isRequired={true}
+                fontSize="sm"
+                placeholder="At least 8 characters"
+                mb="24px"
+                size="lg"
+                type="password"
+                variant="auth"
+                value={passwordConfirm}
+                onChange={(e) => setPasswordConfirm(e.target.value)}
+                color={inputTextColor}
+              />
               {error && (
                 <Text color="red.500" mb="24px">
                   {error}
@@ -243,6 +227,8 @@ function Register() {
             </FormControl>
           </Box>
         </Flex>
+        <Box as="footer" textAlign="center" mt={8}>
+        </Box>
       </Flex>
     </DefaultAuth>
   );

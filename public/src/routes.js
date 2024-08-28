@@ -22,6 +22,8 @@ import Items from "views/admin/items";
 import Clients from "views/admin/clients";
 import Projects from "views/admin/projects";
 import AddRFQ from "views/admin/rfq";
+import EditRFQ from "views/admin/edit-rfq";
+import ViewRFQ from "views/admin/view-rfq";
 import Quotation from "views/admin/quotation";
 import RFQManagement from "views/admin/rfqManagement";
 import UnitGroups from "views/admin/unitGroups";
@@ -112,6 +114,16 @@ const routes = [
     layout: "/admin",
     path: "/quotation",
     component: Quotation,
+  },
+  {
+    layout: "/admin",
+    path: "/edit-rfq/:id",
+    component: EditRFQ,
+  },
+  {
+    layout: "/admin",
+    path: "/view-rfq/:id",
+    component: ViewRFQ,
   },
   {
     name: "RFQ Management",
