@@ -64,8 +64,8 @@ function RFQManagement() {
     history.push(`/admin/edit-rfq/${rfq.id}/edit`);
   };
 
-  const handleQuotation = (rfq) => {
-    history.push(`/admin/quotation`);
+  const handleQuotation = (rfq, quotationId) => {
+    history.push(`/admin/quotation/${rfq.id}/Details`);
   };
 
   const handleAdd = () => {

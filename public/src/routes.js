@@ -112,7 +112,7 @@ const routes = [
   },
   {
     layout: "/admin",
-    path: "/quotation",
+    path: "/quotation/:id",
     component: Quotation,
   },
   {
