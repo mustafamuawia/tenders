@@ -16,30 +16,33 @@ import {
 import { useState, useEffect, useCallback } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { addMonths, format } from 'date-fns';
 
-function Quotation() {
+function EditQuotation() {
   const history = useHistory();
-  const { id } = useParams();
-
+  const { id } = useParams(); // Quotation ID
+  
   const [quotationRecords, setQuotationRecords] = useState([]);
-  const [randomNumber, setRandomNumber] = useState('');
   const [items, setItems] = useState([]);
   const [units, setUnits] = useState([]);
   const [expireDate, setExpireDate] = useState('');
-  const [issueDate, setIssueDate] = useState('');  
   const [note, setNote] = useState('');
   const [address, setAddress] = useState('');
+  
+  // State to hold RFQ data
+  const [rfqData, setRfqData] = useState(null);
 
   useEffect(() => {
-    setRandomNumber(Math.floor(1000 + Math.random() * 9000));
     fetchData();
   }, [id]);
 
   const fetchData = useCallback(async () => {
     try {
-      const [rfqResponse, itemsResponse, unitsResponse] = await Promise.all([
-        axios.get(`${process.env.REACT_APP_API_URL}/RFQ/${id}`),
+      // Fetch RFQ data using RFQ ID
+      const rfqResponse = await axios.get(`${process.env.REACT_APP_API_URL}/RFQ/${id}`);
+      setRfqData(rfqResponse.data);
+
+      const [quotationResponse, itemsResponse, unitsResponse] = await Promise.all([
+        axios.get(`${process.env.REACT_APP_API_URL}/quotations/${id}`),
         axios.get(`${process.env.REACT_APP_API_URL}/items`),
         axios.get(`${process.env.REACT_APP_API_URL}/units`)
       ]);
@@ -47,46 +50,38 @@ function Quotation() {
       setItems(itemsResponse.data || []);
       setUnits(unitsResponse.data || []);
 
-      let rfqArray = rfqResponse.data;
-      rfqArray = rfqArray.filter(item => item !== null && item !== undefined && Object.keys(item).length !== 0);
+      const quotation = quotationResponse.data;
 
-      if (rfqArray.length > 0) {
-        const rfq = rfqArray[0];
+      if (quotation) {
+        setExpireDate(quotation.expire_date || '');
+        setNote(quotation.note || '');
+        setAddress(quotation.address || '');
 
-        const fetchedIssueDate = rfq.issue_date || '';
-        setIssueDate(fetchedIssueDate);
-
-        if (fetchedIssueDate) {
-          const expireDate = addMonths(new Date(fetchedIssueDate), 1);
-          setExpireDate(format(expireDate, 'yyyy-MM-dd'));
-        }
-
-        const mappedDetails = (rfq.details || []).map(detail => ({
-          item: detail.item_id || '', // item_id is included here but will be excluded later in the update request
+        const mappedDetails = (quotation.details || []).map(detail => ({
+          item: detail.item_id || '', // item_id should not be included in the update request
           qty: detail.qty || 0,
           unit: detail.unit_id || '',
-          availableQty: detail.available_qty || 0, // changed from admin_qty to available_qty
+          adminQty: detail.admin_qty || 0,
           price: detail.unit_price || 0,
         }));
 
         setQuotationRecords(mappedDetails);
       } else {
-        console.error('No valid RFQ data found');
+        console.error('No valid Quotation data found');
       }
     } catch (error) {
-      console.error('Error fetching RFQ data:', error);
+      console.error('Error fetching Quotation data:', error);
     }
   }, [id]);
 
   const handleSave = async () => {
     try {
       const filteredRecords = quotationRecords.map(record => ({
-        available_qty: record.availableQty, // changed from admin_qty to available_qty
+        admin_qty: record.adminQty,
         unit_price: record.price,
       }));
 
-      await axios.post(`${process.env.REACT_APP_API_URL}/Quotation`, {
-        title: `Quotation-${randomNumber}`,
+      await axios.put(`${process.env.REACT_APP_API_URL}/quotations/${id}`, {
         expire_date: expireDate,
         note: note,
         address: address,
@@ -101,13 +96,8 @@ function Quotation() {
   return (
     <Box p={4} maxWidth="100%" mx="auto" mt={16} borderRadius="lg" boxShadow="xl" bg="white">
       <Box as="h2" fontSize="3xl" fontWeight="bold" mb={6}>
-        Quotation
+        Edit Quotation
       </Box>
-
-      <FormControl>
-        <FormLabel fontWeight="bold">Title</FormLabel>
-        <Input value={`Quotation-${randomNumber}`} isReadOnly size="md" />
-      </FormControl>
 
       <Grid templateColumns="1fr" gap={4} mt={6}>
         <FormControl>
@@ -185,14 +175,14 @@ function Quotation() {
             </FormControl>
 
             <FormControl>
-              <FormLabel fontWeight="bold">Available Qty</FormLabel>
+              <FormLabel fontWeight="bold">Admin Qty</FormLabel>
               <NumberInput
                 min={0}
                 size="md"
-                value={record.availableQty}
+                value={record.adminQty}
                 onChange={(value) => {
                   const updatedRecords = [...quotationRecords];
-                  updatedRecords[index].availableQty = Number(value);
+                  updatedRecords[index].adminQty = Number(value);
                   setQuotationRecords(updatedRecords);
                 }}
               >
@@ -246,10 +236,10 @@ function Quotation() {
       ))}
 
       <Button colorScheme="blue" mt={6} onClick={handleSave}>
-        Save Quotation
+        Save Changes
       </Button>
     </Box>
   );
 }
 
-export default Quotation;
+export default EditQuotation;

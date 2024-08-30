@@ -29,7 +29,7 @@ function RFQManagement() {
   const [rfqs, setRfqs] = useState([]);
   const [selectedRfq, setSelectedRfq] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const history = useHistory(); 
+  const history = useHistory();
 
   useEffect(() => {
     const fetchRfqs = async () => {
@@ -59,13 +59,17 @@ function RFQManagement() {
   const handleView = (rfq) => {
     history.push(`/admin/view-rfq/${rfq.id}/view`);
   };
-  
+
   const handleEdit = (rfq) => {
     history.push(`/admin/edit-rfq/${rfq.id}/edit`);
   };
 
-  const handleQuotation = (rfq, quotationId) => {
+  const handleQuotation = (rfq) => {
     history.push(`/admin/quotation/${rfq.id}/Details`);
+  };
+
+  const handleEditQuotation = (rfq) => {
+    history.push(`/admin/edit-quot/${rfq.id}/edit`);
   };
 
   const handleAdd = () => {
@@ -84,7 +88,7 @@ function RFQManagement() {
       }
     }
   };
-  
+
   const openDeleteModal = (rfq) => {
     setSelectedRfq(rfq);
     onOpen();
@@ -98,12 +102,12 @@ function RFQManagement() {
 
       <Stack spacing={4}>
         {/* Add RFQ Button */}
-        <Button 
-          colorScheme="teal" 
-          onClick={handleAdd} 
-          mb={4} 
-          borderRadius="full" 
-          height="56px" 
+        <Button
+          colorScheme="teal"
+          onClick={handleAdd}
+          mb={4}
+          borderRadius="full"
+          height="56px"
           width={{ base: '100%', sm: '250px' }} // Responsive width
           fontWeight="bold"
           fontSize="md"
@@ -129,7 +133,7 @@ function RFQManagement() {
           </Thead>
           <Tbody>
             {rfqs.length > 0 ? (
-              rfqs.map(rfq => (
+              rfqs.map((rfq) => (
                 <Tr key={rfq.id}>
                   <Td>{rfq.title}</Td>
                   <Td>{rfq.client.client_name}</Td>
@@ -137,13 +141,22 @@ function RFQManagement() {
                   <Td>{rfq.issue_date}</Td>
                   <Td>{calculateExpireDate(rfq.issue_date)}</Td> {/* Updated expire date */}
                   <Td>
-                    <IconButton
-                      aria-label="Quotation"
-                      icon={<FaFileInvoiceDollar />}
-                      onClick={() => handleQuotation(rfq)}
-                      colorScheme="blue"
-                      size="sm"
-                    />
+                    <Flex gap={2}>
+                      <IconButton
+                        aria-label="Quotation"
+                        icon={<FaFileInvoiceDollar />}
+                        onClick={() => handleQuotation(rfq)}
+                        colorScheme="blue"
+                        size="sm"
+                      />
+                      <IconButton
+                        aria-label="Edit Quotation"
+                        icon={<EditIcon />}
+                        onClick={() => handleEditQuotation(rfq)}
+                        colorScheme="yellow"
+                        size="sm"
+                      />
+                    </Flex>
                   </Td>
                   <Td>
                     <Flex gap={2}>

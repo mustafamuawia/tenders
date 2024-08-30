@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Quotation;
+use App\Models\Quotation_details;
 use Illuminate\Http\Request;
 
 class QuotationController extends Controller
@@ -20,24 +21,25 @@ else
     $requests = Quotation::where('partner_id',auth()->user()->id)->with('items')->get();
         return response()->json(['data'=>['requests' => $requests]], 200);   
    }
-    public function store(Request $request)
+   public function store(Request $request)
     {
-     try {
-         $quotationData = $request->only(['title', 'rfq_id', 'note','expire_date','status']);
-         $quotationData['user_id'] = auth()->user()->id;
-         $quotation = Quotation_details::create($quotationData);
- 
-         $detailsData = $request->input('details');
-         foreach ($detailsData as $detail) {
-             $detail['quotation_id'] = $quotation->id;
-             quotation_details::create($detail);
-         }
- 
-         return response()->json($quotation->load('details'), 201);
-        
-     } catch(\Exception $exception) {
-        return response()->json(['error' => $exception->getMessage()], 500);
-     }
+        try {
+            // Create a new quotation
+            $quotationData = $request->only(['title', 'note', 'expire_date', 'address']);
+            $quotationData['user_id'] = auth()->user()->id;
+            $quotation = Quotation::create($quotationData);
+
+            // Insert details for the quotation
+            $detailsData = $request->input('details');
+            foreach ($detailsData as $detail) {
+                $detail['quotation_id'] = $quotation->id;
+                Quotation_details::create($detail);
+            }
+
+            return response()->json($quotation->load('details'), 201);
+        } catch (\Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
    /**
     * Display the specified resource.

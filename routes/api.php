@@ -80,11 +80,10 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('RFQ', RequestForQuotationController::class);
     // Route::get('RFQ/show/{id}', RequestForQuotationController::class,'');
 
-    Route::put('/quotations/{id}', [QuotationController::class, 'update']);
-
-
-    //Quotaion Route::apiResource('Quotation', QuotationController::class);
+    Route::apiResource('Quotation', QuotationController::class);
    
+
+    //Quotaion 
 
     // JWT routes
     Route::post('logout', [AuthController::class, 'logout']);

@@ -15,9 +15,8 @@ class Quotation extends Model
         'id',
         'title',
         'note',
-        'rfq_id',
-        'issue_date',
         'expire_date',
+        'address',
         'user_id',
         'status',
     ];

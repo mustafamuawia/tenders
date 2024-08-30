@@ -15,7 +15,7 @@ class CreateQuotationDetailsTable extends Migration
     {
         Schema::create('quotation_details', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('quotation_id');
+            $table->unsignedBigInteger('quotation_id');
             $table->integer('item_id');
             $table->decimal('rfq_qty', 18, 2);
             $table->decimal('available_qty', 18, 2);

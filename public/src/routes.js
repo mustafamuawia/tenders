@@ -25,6 +25,7 @@ import AddRFQ from "views/admin/rfq";
 import EditRFQ from "views/admin/edit-rfq";
 import ViewRFQ from "views/admin/view-rfq";
 import Quotation from "views/admin/quotation";
+import EditQuotation from "views/admin/edit-quot";
 import RFQManagement from "views/admin/rfqManagement";
 import UnitGroups from "views/admin/unitGroups";
 import Units from "views/admin/units";
@@ -114,6 +115,11 @@ const routes = [
     layout: "/admin",
     path: "/quotation/:id",
     component: Quotation,
+  },
+  {
+    layout: "/admin",
+    path: "/edit-quot/:id",
+    component: EditQuotation,
   },
   {
     layout: "/admin",

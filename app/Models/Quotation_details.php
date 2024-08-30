@@ -16,15 +16,12 @@ class Quotation_details extends Pivot
     protected $table = 'Quotation_details';
 
     protected $fillable = [
-        'rfq_id',
-        'item_id',
-        'rfq_qty',
+        'quotation_id',
         'available_qty',
-        'unit_id',
         'unit_price'
     ];
 
-    public function base_product()
+    public function item()
     {
         return $this->belongsTo(Item::class, 'item_id');
     }
@@ -32,5 +29,6 @@ class Quotation_details extends Pivot
     public function unit()
     {
         return $this->belongsTo(Unit::class, 'unit_id');
-    }   
+    }  
+    
 }
