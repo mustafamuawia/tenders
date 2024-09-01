@@ -73,7 +73,7 @@
             var n, o = document.getElementsByTagName("head")[0],
               i = document.createElement("script");
             i.charset = "utf-8", i.timeout = 120, s.nc && i.setAttribute("nonce", s.nc), i.src = s.p + "build/static/js/" + ({} [u] || u) + "." + {
-              1: "88d67160"
+              1: "484718f6"
             } [u] + ".chunk.js", n = function(e) {
               i.onerror = i.onload = null, clearTimeout(a);
               var t = f[u];
@@ -139,7 +139,7 @@
     }([])
   </script>
   {{-- <script src="http://192.168.64.2/Tenders/build/static/js/2.2711fbbe.chunk.js"></script> --}}
-  <script src="{{url('public/build/static/js/main.88d67160.js')}}"></script>
+  <script src="{{url('public/build/static/js/main.484718f6.js')}}"></script>
 </body>
 
 </html>
