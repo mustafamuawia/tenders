@@ -84,7 +84,6 @@ export default function AdminNavbar(props) {
             <Flex w="100%" flexDirection="row" alignItems="center" mb="0px" justifyContent="flex-start">
                 <Box mb="0px">
                     <Text fontSize="2xl" fontWeight="bold" color={mainText} textAlign="left">
-                        {displayRouteName}
                     </Text>
                 </Box>
             </Flex>
