@@ -36,19 +36,30 @@ function RFQManagement() {
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/RFQ`);
         if (response.data && Array.isArray(response.data.data.requests)) {
-          setRfqs(response.data.data.requests);
+          const rfqs = response.data.data.requests.map(rfq => {
+            // Provide default objects for missing client or project data
+            if (!rfq.client_id) {
+              rfq.client = { client_name: 'No client info' };
+            }
+            if (!rfq.project_id) {
+              rfq.project = { name: 'No project info' }; // Default project object
+            }
+            return rfq;
+          });
+          setRfqs(rfqs);
         } else {
           console.error('Unexpected data format:', response.data);
           setRfqs([]);
         }
       } catch (error) {
+        console.error('Error loading RFQs:', error);
         setRfqs([]);
       }
     };
-
+  
     fetchRfqs();
   }, []);
-
+  
   // Function to calculate expire date as one month from issue date
   const calculateExpireDate = (issueDate) => {
     const date = new Date(issueDate);
@@ -136,7 +147,7 @@ function RFQManagement() {
               rfqs.map((rfq) => (
                 <Tr key={rfq.id}>
                   <Td>{rfq.title}</Td>
-                  <Td>{rfq.client.client_name}</Td>
+                  <Td>{rfq.client ? rfq.client.client_name : 'No client info'}</Td>
                   <Td>{rfq.project.name}</Td>
                   <Td>{rfq.issue_date}</Td>
                   <Td>{calculateExpireDate(rfq.issue_date)}</Td> {/* Updated expire date */}
