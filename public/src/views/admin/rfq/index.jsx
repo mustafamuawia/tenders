@@ -118,7 +118,7 @@ function AddRFQ() {
       <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4} mt={6}>
         <FormControl>
           <FormLabel fontWeight="bold">Title</FormLabel>
-          <Input value={`RFQ-${randomNumber}`} isReadOnly={true} size="md" />
+          <Input value={`RFQ-${randomNumber}`}  size="md" />
         </FormControl>
 
         <FormControl>
