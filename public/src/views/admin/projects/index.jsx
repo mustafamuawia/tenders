@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   Box, Button, FormControl, FormLabel, Input, Select, Table, Thead, Tbody, Tr, Th, Td, Modal,
   ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure,
-  AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter,Flex,
+  AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter,Flex,Textarea,
   Grid
 } from '@chakra-ui/react';
 import axios from 'axios';
@@ -234,50 +234,50 @@ const Projects = () => {
         </Tbody>
       </Table>
 
-      <Modal isOpen={isModalOpen} onClose={closeModal}>
+      <Modal isOpen={isModalOpen} onClose={closeModal}size="4xl">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{isEdit ? 'Edit Project' : 'Add Project'}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-  <Grid templateColumns="repeat(2, 1fr)" gap={4}>
-    <FormControl mb="4">
+  <Grid templateColumns="repeat(6, 1fr)" gap={4}>
+    <FormControl mb="4" gridColumn="span 2">
       <FormLabel>Name</FormLabel>
       <Input value={name} onChange={(e) => setName(e.target.value)} />
     </FormControl>
-    <FormControl mb="4">
+    <FormControl mb="4" gridColumn="span 2">
       <FormLabel>End User Company Name</FormLabel>
       <Input value={endUserCompanyName} onChange={(e) => setEndUserCompanyName(e.target.value)} />
     </FormControl>
-    <FormControl mb="4">
+    <FormControl mb="4"gridColumn="span 2">
       <FormLabel>End User Contact Email</FormLabel>
       <Input value={endUserContactEmail} onChange={(e) => setEndUserContactEmail(e.target.value)} />
     </FormControl>
-    <FormControl mb="4">
+    <FormControl mb="4"gridColumn="span 2">
       <FormLabel>Distributor Contact Name</FormLabel>
       <Input value={distributorContactName} onChange={(e) => setDistributorContactName(e.target.value)} />
     </FormControl>
-    <FormControl mb="4">
+    <FormControl mb="4"gridColumn="span 4">
       <FormLabel>Estimated Revenue</FormLabel>
       <Input type="number" value={estimatedRevenue} onChange={(e) => setEstimatedRevenue(e.target.value)} />
     </FormControl>
-    <FormControl mb="4">
+    <FormControl mb="4"gridColumn="span 3">
       <FormLabel>Estimated Implementation Finish Date</FormLabel>
       <Input type="date" value={estimatedImplementationFinishDate} onChange={(e) => setEstimatedImplementationFinishDate(e.target.value)} />
     </FormControl>
-    <FormControl mb="4">
+    <FormControl mb="4"gridColumn="span 3">
       <FormLabel>Summary</FormLabel>
-      <Input value={summary} onChange={(e) => setSummary(e.target.value)} />
+      <Textarea value={summary} onChange={(e) => setSummary(e.target.value)} />
     </FormControl>
-    <FormControl mb="4">
+    <FormControl mb="4"gridColumn="span 2">
       <FormLabel>End User Contact Name</FormLabel>
       <Input value={endUserContactName} onChange={(e) => setEndUserContactName(e.target.value)} />
     </FormControl>
-    <FormControl mb="4">
+    <FormControl mb="4"gridColumn="span 2">
       <FormLabel>End User Contact Phone</FormLabel>
       <Input value={endUserContactPhone} onChange={(e) => setEndUserContactPhone(e.target.value)} />
     </FormControl>
-    <FormControl mb="4">
+    <FormControl mb="4"gridColumn="span 2">
       <FormLabel>Project Status</FormLabel>
       <Select value={projectStatus} onChange={(e) => setProjectStatus(e.target.value)}>
         <option value="Initial">Initial</option>
@@ -285,41 +285,39 @@ const Projects = () => {
         <option value="Completed">Completed</option>
       </Select>
     </FormControl>
-    <FormControl mb="4">
+    <FormControl mb="4"gridColumn="span 2">
       <FormLabel>Installation City</FormLabel>
       <Input value={installationCity} onChange={(e) => setInstallationCity(e.target.value)} />
     </FormControl>
-    <FormControl mb="4">
+    <FormControl mb="4"gridColumn="span 2">
       <FormLabel>Installation State</FormLabel>
       <Input value={installationState} onChange={(e) => setInstallationState(e.target.value)} />
     </FormControl>
-    <FormControl mb="4">
+    <FormControl mb="4"gridColumn="span 2">
       <FormLabel>Distributor Email</FormLabel>
       <Input value={distributorEmail} onChange={(e) => setDistributorEmail(e.target.value)} />
     </FormControl>
-    <FormControl mb="4">
+    <FormControl mb="4"gridColumn="span 3">
       <FormLabel>Estimated Business Purchasing Decision Date</FormLabel>
       <Input type="date" value={estimatedBusinessPurchasingDecisionDate} onChange={(e) => setEstimatedBusinessPurchasingDecisionDate(e.target.value)} />
     </FormControl>
-    <FormControl mb="4">
+    <FormControl mb="4"gridColumn="span 3">
       <FormLabel>Estimated Implementation Start Date</FormLabel>
       <Input type="date" value={estimatedImplementationStartDate} onChange={(e) => setEstimatedImplementationStartDate(e.target.value)} />
     </FormControl>
-    <FormControl mb="4">
+    <FormControl mb="4"gridColumn="span 2">
       <FormLabel>Sector</FormLabel>
       <Select value={sector} onChange={(e) => setSector(e.target.value)}>
         <option value="Private">Private</option>
         <option value="Public">Public</option>
       </Select>
     </FormControl>
-    <FormControl mb="4">
+    <FormControl mb="4"gridColumn="span 2">
       <FormLabel>Project Code</FormLabel>
       <Input value={projectCode} onChange={(e) => setProjectCode(e.target.value)} />
     </FormControl>
   </Grid>
 </ModalBody>
-
-
           <ModalFooter>
             <Button colorScheme="teal" mr={3} onClick={isEdit ? handleEditProject : handleAddProject}>
               {isEdit ? 'Update' : 'Save'}
