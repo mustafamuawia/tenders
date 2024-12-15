@@ -25,34 +25,34 @@ import { FaFileInvoiceDollar } from 'react-icons/fa';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 
-function RFQManagement() {
-  const [rfqs, setRfqs] = useState([]);
-  const [selectedRfq, setSelectedRfq] = useState(null);
+function Quotations() {
+  const [quotations, setQuotations] = useState([]);
+  const [selectedQuotation, setSelectedQuotation] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const history = useHistory();
   const [userData, setUserData] =useState([]);
 
   useEffect(() => {
-    const fetchRfqs = async () => {
+    const fetchQuotations = async () => {
       try {
         const userId = localStorage.getItem('userId');
         if (userId) {
           const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/${userId}`);
           setUserData(response.data)
         }
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/RFQ`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/Quotations`);
         if (response.data && Array.isArray(response.data.data.requests)) {
-          setRfqs(response.data.data.requests);
+          setQuotations(response.data.data.requests);
         } else {
           console.error('Unexpected data format:', response.data);
-          setRfqs([]);
+          setQuotations([]);
         }
       } catch (error) {
-        setRfqs([]);
+        setQuotations([]);
       }
     };
 
-    fetchRfqs();
+    fetchQuotations();
   }, []);
 
   // Function to calculate expire date as one month from issue date
@@ -62,48 +62,48 @@ function RFQManagement() {
     return date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
   };
 
-  const handleView = (rfq) => {
-    history.push(`/admin/view-rfq/${rfq.id}/view`);
+  const handleView = (Quotation) => {
+    history.push(`/admin/view-Quotation/${Quotation.id}/view`);
   };
 
-  const handleEdit = (rfq) => {
-    history.push(`/admin/edit-rfq/${rfq.id}/edit`);
+  const handleEdit = (Quotation) => {
+    history.push(`/admin/edit-Quotation/${Quotation.id}/edit`);
   };
 
-  const handleQuotation = (rfq) => {
-    history.push(`/admin/quotation/${rfq.id}/Details`);
+  const handleQuotation = (Quotation) => {
+    history.push(`/admin/quotation/${Quotation.id}/Details`);
   };
 
-  const handleEditQuotation = (rfq) => {
-    history.push(`/admin/edit-quot/${rfq.id}/edit`);
+  const handleEditQuotation = (Quotation) => {
+    history.push(`/admin/edit-quot/${Quotation.id}/edit`);
   };
 
   const handleAdd = () => {
-    history.push('/admin/add-rfq');
+    history.push('/admin/add-Quotation');
   };
 
   const handleDelete = async () => {
-    if (selectedRfq) {
+    if (selectedQuotation) {
       try {
-        await axios.delete(`${process.env.REACT_APP_API_URL}/RFQ/${selectedRfq.id}`);
-        setRfqs(rfqs.filter(existingRfq => existingRfq.id !== selectedRfq.id));
+        await axios.delete(`${process.env.REACT_APP_API_URL}/Quotation/${selectedQuotation.id}`);
+        setQuotations(Quotations.filter(existingQuotation => existingQuotation.id !== selectedQuotation.id));
       } catch (error) {
-        console.error('Error deleting RFQ:', error);
+        console.error('Error deleting Quotation:', error);
       } finally {
         onClose();
       }
     }
   };
 
-  const openDeleteModal = (rfq) => {
-    setSelectedRfq(rfq);
+  const openDeleteModal = (Quotation) => {
+    setSelectedQuotation(Quotation);
     onOpen();
   };
 
   return (
     <Box p={4} maxWidth="100%" mx="auto" mt={16} borderRadius="lg" boxShadow="xl" bg="white">
       <Heading as="h1" size="xl" mb={6} textAlign="center">
-        RFQ Management
+        Quotation Management
       </Heading>
 
       <Stack spacing={4}>
@@ -124,7 +124,7 @@ function RFQManagement() {
           variant="solid"
           mx={{ base: 'auto', sm: '0' }} // Center button on small screens
         >
-          + Add RFQ
+          + Add Quotation
         </Button>
         )
         }
@@ -133,6 +133,7 @@ function RFQManagement() {
             <Tr>
               <Th>Title</Th>
               <Th>Partner</Th>
+              <Th>RFQ</Th>
               <Th>Client</Th>
               <Th>Project</Th>
               <Th>Issue Date</Th>
@@ -142,28 +143,28 @@ function RFQManagement() {
             </Tr>
           </Thead>
           <Tbody>
-            {rfqs.length > 0 ? (
-              rfqs.map((rfq) => (
-                <Tr key={rfq.id}>
-                  <Td>{rfq.title}</Td>
-                  <Td>{rfq.partner.CompanyName}</Td>
-                  <Td>{rfq.client.client_name}</Td>
-                  <Td>{rfq.project.name}</Td>
-                  <Td>{rfq.issue_date}</Td>
-                  <Td>{calculateExpireDate(rfq.issue_date)}</Td> {/* Updated expire date */}
+            {Quotations.length > 0 ? (
+              Quotations.map((Quotation) => (
+                <Tr key={Quotation.id}>
+                  <Td>{Quotation.title}</Td>
+                  <Td>{Quotation.partner.CompanyName}</Td>
+                  <Td>{Quotation.client.client_name}</Td>
+                  <Td>{Quotation.project.name}</Td>
+                  <Td>{Quotation.issue_date}</Td>
+                  <Td>{calculateExpireDate(Quotation.issue_date)}</Td> {/* Updated expire date */}
                   <Td>
                     <Flex gap={2}>
                       <IconButton
                         aria-label="Quotation"
                         icon={<FaFileInvoiceDollar />}
-                        onClick={() => handleQuotation(rfq)}
+                        onClick={() => handleQuotation(Quotation)}
                         colorScheme="blue"
                         size="sm"
                       />
                       <IconButton
                         aria-label="Edit Quotation"
                         icon={<EditIcon />}
-                        onClick={() => handleEditQuotation(rfq)}
+                        onClick={() => handleEditQuotation(Quotation)}
                         colorScheme="yellow"
                         size="sm"
                       />
@@ -172,22 +173,22 @@ function RFQManagement() {
                   <Td>
                     <Flex gap={2}>
                       <IconButton
-                        aria-label="View RFQ"
+                        aria-label="View Quotation"
                         icon={<ViewIcon />}
-                        onClick={() => handleView(rfq)}
+                        onClick={() => handleView(Quotation)}
                         size="sm"
                       />
                       <IconButton
-                        aria-label="Edit RFQ"
+                        aria-label="Edit Quotation"
                         icon={<EditIcon />}
-                        onClick={() => handleEdit(rfq)}
+                        onClick={() => handleEdit(Quotation)}
                         size="sm"
                       />
                       <IconButton
-                        aria-label="Delete RFQ"
+                        aria-label="Delete Quotation"
                         icon={<DeleteIcon />}
                         colorScheme="red"
-                        onClick={() => openDeleteModal(rfq)}
+                        onClick={() => openDeleteModal(Quotation)}
                         size="sm"
                       />
                     </Flex>
@@ -196,7 +197,7 @@ function RFQManagement() {
               ))
             ) : (
               <Tr>
-                <Td colSpan="7">No RFQs available</Td>
+                <Td colSpan="7">No Quotations available</Td>
               </Tr>
             )}
           </Tbody>
@@ -209,7 +210,7 @@ function RFQManagement() {
         <ModalContent>
           <ModalHeader>Confirm Deletion</ModalHeader>
           <ModalBody>
-            Are you sure you want to delete this RFQ? This action cannot be undone.
+            Are you sure you want to delete this Quotation? This action cannot be undone.
           </ModalBody>
           <ModalFooter>
             <Button colorScheme="gray" mr={3} onClick={onClose}>
@@ -225,4 +226,4 @@ function RFQManagement() {
   );
 }
 
-export default RFQManagement;
+export default Quotations;

@@ -14,10 +14,13 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
+  Spinner,
+  Text
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import { DeleteIcon } from '@chakra-ui/icons';
 import { useHistory } from 'react-router-dom';
+import loader from 'views/admin/loader'
 import axios from 'axios';
 
 function AddRFQ() {
@@ -29,12 +32,14 @@ function AddRFQ() {
   const [projects, setProjects] = useState([]);
   const [items, setItems] = useState([]);
   const [units, setUnits] = useState([]);
-
+  const [files, setFiles] = useState([]);
   const [selectedClientId, setSelectedClientId] = useState('');
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [issueDate, setIssueDate] = useState('');
   const [expireDate, setExpireDate] = useState('');
   const [note, setNote] = useState('');
+  const [loading, setLoading] = useState(false);
+
 
   useEffect(() => {
     setRandomNumber(Math.floor(1000 + Math.random() * 9000));
@@ -44,6 +49,13 @@ function AddRFQ() {
     fetchUnits();
   }, []);
 
+  const handleFileChange = (e) => {
+    if (e.target.files) {
+      const selectedFiles = [...e.target.files];
+  setFiles(selectedFiles); // Update the state
+ 
+    }
+  };
   const fetchClients = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/clients`);
@@ -89,6 +101,7 @@ function AddRFQ() {
   };
 
   const handleSave = async () => {
+    setLoading(true);
     try {
       await axios.post(`${process.env.REACT_APP_API_URL}/RFQ`, {
         title: `RFQ-${randomNumber}`,
@@ -97,19 +110,27 @@ function AddRFQ() {
         issue_date: issueDate,
         expire_date: expireDate,
         note: note,
-        details: rfqRecords.map(record => ({
-          item_id: record.item,
-          qty: record.qty,
-          unit_id: record.unit,
-        })),
+        files: files
+        // details: rfqRecords.map(record => ({
+        //   item_id: record.item,
+        //   qty: record.qty,
+        //   unit_id: record.unit,
+        // })),
+      },
+      {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
       history.push('/admin/rfq-management');
     } catch (error) {
       console.error('Error saving RFQ:', error);
     }
+    finally {
+      setLoading(false);
+    }
   };
 
   return (
+    
     <Box p={4} maxWidth="100%" mx="auto" mt={16} borderRadius="lg" boxShadow="xl" bg="white">
       <Box as="h2" fontSize="3xl" fontWeight="bold" mb={6}>
         Add RFQ
@@ -175,6 +196,19 @@ function AddRFQ() {
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />
+        </FormControl>
+      </Grid>
+
+      <Grid templateColumns="1fr" gap={4} mt={6}>
+        <FormControl>
+          <FormLabel fontWeight="bold">File(s)</FormLabel>
+          <Input
+           type="file"
+           multiple 
+           accept=".pdf, .doc, .docx, .jpg, .jpeg, .png, .tiff, .gif, .xls, .xlsx, .csv"
+           onChange={handleFileChange}
+            size="md" />
+
         </FormControl>
       </Grid>
 
@@ -261,14 +295,40 @@ function AddRFQ() {
 
       <Box mt={8}>
         <HStack spacing={4} justifyContent="flex-start">
-          <Button onClick={handleAddRecord} colorScheme="teal">
+          {/* <Button onClick={handleAddRecord} colorScheme="teal">
             Add Record
-          </Button>
+          </Button> */}
           <Button onClick={handleSave} colorScheme="blue">
             Save
           </Button>
         </HStack>
       </Box>
+       {/* Floated Loader */}
+       {loading && (
+        <Box
+          position="absolute"
+          top="0"
+          left="0"
+          width="100%"
+          height="100%"
+          bg="rgba(0, 0, 0, 0.5)" // Semi-transparent background
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          zIndex="10"
+        >
+          <Spinner
+            size="xl"
+            thickness="4px"
+            speed="0.65s"
+            color="white"
+            emptyColor="gray.300"
+          />
+          <Text mt={4} fontSize="lg" color="white" ml={4}>
+            Loading...
+          </Text>
+        </Box>
+      )}
     </Box>
   );
 }

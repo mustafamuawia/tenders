@@ -183,9 +183,9 @@ const Partners = () => {
               <Td>{renderTableCell(partner.Phone)}</Td>
               <Td>{renderTableCell(partner.email)}</Td>
               <Td>
-                <Box color={partner.status === 'Activated' ? 'green.500' : 'red.500'}>
+                {/* <Box color={partner.status === 'Activated' ? 'green.500' : 'red.500'}>
                   {partner.status}
-                </Box>
+                </Box> */}
                 <Switch
                   isChecked={partner.status === 'Activated'}
                   onChange={() => handleStatusChange(partner.id, partner.status)}

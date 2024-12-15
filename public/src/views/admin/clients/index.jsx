@@ -158,9 +158,6 @@ const Clients = () => {
               <Td>{renderTableCell(client.state)}</Td>
               <Td>{renderTableCell(client.city)}</Td>
               <Td>
-                <Box color={client.status === 'Activated' ? 'green.500' : 'red.500'}>
-                  {client.status}
-                </Box>
                 <Switch
                   isChecked={client.status === 'Activated'}
                   onChange={() => handleStatusChange(client.id, client.status)}

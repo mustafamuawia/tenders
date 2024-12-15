@@ -12,7 +12,9 @@ import {
   MdBusiness,
   MdControlPoint,
   MdPersonAdd,
+  MdOutlineLibraryBooks
 } from "react-icons/md";
+
 
 // Admin Imports
 import MainDashboard from "views/admin/dashboard";
@@ -24,12 +26,13 @@ import Projects from "views/admin/projects";
 import AddRFQ from "views/admin/rfq";
 import EditRFQ from "views/admin/edit-rfq";
 import ViewRFQ from "views/admin/view-rfq";
-import Quotation from "views/admin/quotation";
 import EditQuotation from "views/admin/edit-quot";
 import RFQManagement from "views/admin/rfqManagement";
 import UnitGroups from "views/admin/unitGroups";
 import Units from "views/admin/units";
 import EditProfile from "views/admin/editProfile";
+import Quotation from "views/admin/quotation";
+import Quotations from "views/admin/quotation/quotations";
 
 
 // Auth Imports
@@ -83,14 +86,14 @@ const routes = [
     component: Partners,
 
   },
-  {
-    name: "Items",
-    layout: "/admin",
-    path: "/items",
-    icon: <Icon as={MdList} width='20px' height='20px' color='inherit' />,
-    component: Items,
+  // {
+  //   name: "Items",
+  //   layout: "/admin",
+  //   path: "/items",
+  //   icon: <Icon as={MdList} width='20px' height='20px' color='inherit' />,
+  //   component: Items,
 
-  },
+  // },
   {
     name: "Clients",
     layout: "/admin",
@@ -138,21 +141,34 @@ const routes = [
     icon: <Icon as={MdBuild} width='20px' height='20px' color='inherit' />,
     component: RFQManagement,
   },
+  {
+    // name: "Quotsation",
+    layout: "/admin",
+    path: "/quotation",
+    component: Quotations,
+  },
+  {
+    name: "Quotations",
+    layout: "/admin",
+    path: "/quotations",
+    icon: <Icon as={MdOutlineLibraryBooks} width='20px' height='20px' color='inherit' />,
+    component: Quotations,
+  },
 
-  {
-    name: "Unit Groups",
-    layout: "/admin",
-    path: "/unit-groups",
-    icon: <Icon as={MdBusiness} width='20px' height='20px' color='inherit' />,
-    component: UnitGroups,
-  },
-  {
-    name: "Units",
-    layout: "/admin",
-    path: "/units",
-    icon: <Icon as={MdControlPoint} width='20px' height='20px' color='inherit' />,
-    component: Units,
-  },
+  // {
+  //   name: "Unit Groups",
+  //   layout: "/admin",
+  //   path: "/unit-groups",
+  //   icon: <Icon as={MdBusiness} width='20px' height='20px' color='inherit' />,
+  //   component: UnitGroups,
+  // },
+  // {
+  //   name: "Units",
+  //   layout: "/admin",
+  //   path: "/units",
+  //   icon: <Icon as={MdControlPoint} width='20px' height='20px' color='inherit' />,
+  //   component: Units,
+  // },
   {
     name: "Edit Profile",
     layout: "/admin",

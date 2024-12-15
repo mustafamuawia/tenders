@@ -234,7 +234,7 @@ const Projects = () => {
         </Tbody>
       </Table>
 
-      <Modal isOpen={isModalOpen} onClose={closeModal}>
+      <Modal isOpen={isModalOpen} size={'full'} onClose={closeModal}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{isEdit ? 'Edit Project' : 'Add Project'}</ModalHeader>

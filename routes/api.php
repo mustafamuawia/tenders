@@ -48,6 +48,8 @@ Route::middleware(['auth:api'])->group(function () {
     
        // Partner routes
     Route::get('/user/fetch', [UserController::class, 'getPartners'])->name('getPartners');
+    Route::post('/partner/changestatus', [UserController::class, 'changestatus']);
+
     Route::put('/user/edit/{id}', [UserController::class, 'edit']);
     Route::delete('/user/delete/{id}', [UserController::class, 'delete']);
     Route::get('/user/getadmin', [UserController::class, 'getusers'])->name('getadmin');

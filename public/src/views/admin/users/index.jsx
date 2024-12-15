@@ -164,10 +164,7 @@ const Users = () => {
               <Td>{renderTableCell(user.email)}</Td>
               <Td>{renderTableCell(user.role)}</Td>
               <Td>
-                <Box color={user.status === 'Activated' ? 'green.500' : 'red.500'}>
-                  {user.status}
-                </Box>
-                <Switch
+               <Switch
                   isChecked={user.status === 'Activated'}
                   onChange={() => handleStatusChange(user.id, user.status)}
                 />

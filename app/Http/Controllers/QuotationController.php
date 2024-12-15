@@ -16,9 +16,9 @@ class QuotationController extends Controller
     public function index()
     {
         if (auth()->user()->role=='Admin')
-    $requests = Quotation::with('client')->with('partner')->with('items')->get();
-else
-    $requests = Quotation::where('partner_id',auth()->user()->id)->with('items')->get();
+        $requests = Quotation::with('client')->with('partner')->with('items')->get();
+        else
+        $requests = Quotation::where('partner_id',auth()->user()->id)->with('items')->get();
         return response()->json(['data'=>['requests' => $requests]], 200);   
    }
    public function store(Request $request)
@@ -30,12 +30,36 @@ else
             $quotation = Quotation::create($quotationData);
 
             // Insert details for the quotation
-            $detailsData = $request->input('details');
-            foreach ($detailsData as $detail) {
-                $detail['quotation_id'] = $quotation->id;
-                Quotation_details::create($detail);
-            }
+            // $detailsData = $request->input('details');
+                // foreach ($detailsData as $detail) {
+                //     $detail['quotation_id'] = $quotation->id;
+                //     // Quotation_details::create($detail);
+                // }
+            $uploadFolder = 'public/uploads';
 
+            // Ensure the folder exists
+            if (!Storage::exists($uploadFolder)) {
+                Storage::makeDirectory($uploadFolder); // Create the folder in the storage/app/public directory
+            }
+            $files=[];
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $file) {
+                    $filename = $file->getClientOriginalName();
+                   
+    
+                    
+                    $path = $file->store('uploads', 'public');
+                    $fileRecord = File::create([
+                        'file_name' => $file->getClientOriginalName(),
+                        'file_path' => $path,
+                        'file_type' => $file->getClientMimeType(),
+                        'file_size' => $file->getSize(),
+                        'related_to' => 'quotation',
+                        'related_id' => $quotation->id
+                    ]);
+    
+                }
+            }
             return response()->json($quotation->load('details'), 201);
         } catch (\Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
@@ -50,7 +74,7 @@ else
    public function show($id)
    {
     
-    return response()->json(Quotation::where('id', $id)->with('details')->with('items')->get());
+    return response()->json(Quotation::where('id', $id)->with('files')->with('items')->get());
    }
    /**
     * Show the form for editing the specified resource.

@@ -175,9 +175,6 @@ const Items = () => {
               <Td>{renderTableCell(item.origin_country)}</Td>
               <Td>{renderTableCell(item.note)}</Td>
               <Td>
-                <Box color={item.status === 'Activated' ? 'green.500' : 'red.500'}>
-                  {item.status}
-                </Box>
                 <Switch
                   isChecked={item.status === 'Activated'}
                   onChange={() => handleStatusChange(item.id, item.status)}

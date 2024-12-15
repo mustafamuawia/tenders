@@ -8,8 +8,10 @@ use App\Http\Requests\Updaterequest_for_quotationRequest;
 use App\Models\rfq_details;
 use App\Models\Unit;
 use App\Models\Unitgroup;
+use App\Models\File;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Support\Facades\Storage;
 
 class RequestForQuotationController extends Controller
 {
@@ -53,18 +55,44 @@ class RequestForQuotationController extends Controller
     
     public function store(Request $request)
     {
+        
      try {
          $rfqData = $request->only(['title','client_id', 'project_id', 'issue_date','status','note']);
          $rfqData['partner_id'] = auth()->user()->id;
          $rfq = request_for_quotation::create($rfqData);
  
-         $detailsData = $request->input('details');
-         foreach ($detailsData as $detail) {
-             $detail['rfq_id'] = $rfq->id;
-             rfq_details::create($detail);
-         }
+        //  $detailsData = $request->input('details');
+        //  foreach ($detailsData as $detail) {
+        //      $detail['rfq_id'] = $rfq->id;
+        //      rfq_details::create($detail);
+        //  }
+        $uploadFolder = 'public/uploads';
+
+        // Ensure the folder exists
+        if (!Storage::exists($uploadFolder)) {
+            Storage::makeDirectory($uploadFolder); // Create the folder in the storage/app/public directory
+        }
+        $files=[];
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $filename = $file->getClientOriginalName();
+               
+
+                
+                $path = $file->store('uploads', 'public');
+                $fileRecord = File::create([
+                    'file_name' => $file->getClientOriginalName(),
+                    'file_path' => $path,
+                    'file_type' => $file->getClientMimeType(),
+                    'file_size' => $file->getSize(),
+                    'related_to' => 'rfq',
+                    'related_id' => $rfq->id
+                ]);
+
+            }
+        }
  
-         return response()->json($rfq->load('details'), 201);
+        //  return response()->json($rfq->load('details'), 201);
         
      } catch(\Exception $exception) {
         return response()->json(['error' => $exception->getMessage()], 500);
