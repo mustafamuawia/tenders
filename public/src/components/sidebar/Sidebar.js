@@ -50,7 +50,7 @@ function Sidebar() {
         if (userRole === "Admin") {
           return true; // Admins can see all routes
         } else {
-          return ["Clients", "RFQ Management", "Edit Profile", "Projects"].includes(route.name);
+          return ["Clients", "RFQ Management", "Edit Profile", "Projects","Quotations"].includes(route.name);
         }
       });
       setFilteredRoutes(routes);
