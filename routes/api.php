@@ -14,6 +14,7 @@ use App\Http\Controllers\RequestForQuotationController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\UnitGroupController;
 use App\Http\Controllers\QuotationController;
+use App\Http\Controllers\FileController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -82,8 +83,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('RFQ', RequestForQuotationController::class);
     // Route::get('RFQ/show/{id}', RequestForQuotationController::class,'');
 
-    Route::apiResource('Quotation', QuotationController::class);
-   
+    Route::apiResource('Quotations', QuotationController::class);
+    Route::get('/download/{id}', [FileController::class, 'download']);
+
 
     //Quotaion 
 

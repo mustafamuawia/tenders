@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Quotation;
 use App\Models\Quotation_details;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use App\Models\File;
 
 class QuotationController extends Controller
 {
@@ -16,16 +18,16 @@ class QuotationController extends Controller
     public function index()
     {
         if (auth()->user()->role=='Admin')
-        $requests = Quotation::with('client')->with('partner')->with('items')->get();
+        $requests = Quotation::with('rfq')->with('files')->get();
         else
-        $requests = Quotation::where('partner_id',auth()->user()->id)->with('items')->get();
-        return response()->json(['data'=>['requests' => $requests]], 200);   
+        $requests = Quotation::where('partner_id',auth()->user()->id)->with('rfq')->with('files')->get();
+        return response()->json(['data' => $requests], 200);   
    }
    public function store(Request $request)
     {
         try {
             // Create a new quotation
-            $quotationData = $request->only(['title', 'note', 'expire_date', 'address']);
+            $quotationData = $request->only(['title', 'note', 'expire_date', 'address','rfq_id']);
             $quotationData['user_id'] = auth()->user()->id;
             $quotation = Quotation::create($quotationData);
 

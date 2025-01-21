@@ -34,12 +34,12 @@ class request_for_quotation extends Model
 
     public function project()
     {
-        return $this->belongsTo(Project::class);
+        return $this->belongsTo(Project::class, 'project_id');
     }   
 
     public function partner()
     {
-        return $this->belongsTo(Partner::class, 'partner_id');
+        return $this->belongsTo(Partner::class, 'partner_id','UserId');
     }
 
     public function items()
@@ -57,5 +57,13 @@ class request_for_quotation extends Model
         return $this->hasMany(rfq_details::class, 'rfq_id');
     }
 
+    public function files()
+    {
+        return $this->hasMany(File::class, 'related_id')->where('related_to', 'rfq');
+    }
 
+    public function quotation()
+    {
+        return $this->hasOne(Quotation::class,'rfq_id');
+    }
 }

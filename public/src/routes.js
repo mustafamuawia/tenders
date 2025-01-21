@@ -144,8 +144,8 @@ const routes = [
   {
     // name: "Quotsation",
     layout: "/admin",
-    path: "/quotation",
-    component: Quotations,
+    path: "/quotation/:rfq_id/RFQ",
+    component: Quotation,
   },
   {
     name: "Quotations",

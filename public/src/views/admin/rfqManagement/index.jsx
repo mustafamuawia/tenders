@@ -20,7 +20,7 @@ import {
   useDisclosure,
   Flex,
 } from '@chakra-ui/react';
-import { EditIcon, DeleteIcon, ViewIcon } from '@chakra-ui/icons';
+import { EditIcon, DeleteIcon, ViewIcon,AddIcon } from '@chakra-ui/icons';
 import { FaFileInvoiceDollar } from 'react-icons/fa';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
@@ -71,7 +71,7 @@ function RFQManagement() {
   };
 
   const handleQuotation = (rfq) => {
-    history.push(`/admin/quotation/${rfq.id}/Details`);
+    history.push(`quotation/${rfq.id}/RFQ`);
   };
 
   const handleEditQuotation = (rfq) => {
@@ -99,6 +99,28 @@ function RFQManagement() {
     setSelectedRfq(rfq);
     onOpen();
   };
+
+  const handleDownload = 
+    async (file) => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/download/${file.id}`,
+          {
+             responseType: 'blob', // Important for downloading files
+          }
+        );
+        console.log(response)
+        // Create a URL for the blob and trigger the download
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', file.file_name); // Set the downloaded file's name
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } catch (error) {
+        console.error('Error downloading file:', error);
+      }
+  }
 
   return (
     <Box p={4} maxWidth="100%" mx="auto" mt={16} borderRadius="lg" boxShadow="xl" bg="white">
@@ -135,6 +157,7 @@ function RFQManagement() {
               <Th>Partner</Th>
               <Th>Client</Th>
               <Th>Project</Th>
+              <Th>Files</Th>
               <Th>Issue Date</Th>
               <Th>Expire Date</Th>
               <Th>Quotation</Th>
@@ -146,28 +169,52 @@ function RFQManagement() {
               rfqs.map((rfq) => (
                 <Tr key={rfq.id}>
                   <Td>{rfq.title}</Td>
-                  <Td>{rfq.partner.CompanyName}</Td>
+                  <Td>{rfq.partner && rfq.partner.CompanyName}</Td>
                   <Td>{rfq.client.client_name}</Td>
                   <Td>{rfq.project.name}</Td>
-                  <Td>{rfq.issue_date}</Td>
+<Td> {rfq.files.map((file, index) => (
+    <a
+      key={index}
+      href={`${process.env.REACT_APP_API_URL}/download/${file.id}`}
+      onClick={(e) => {
+        e.preventDefault();
+        handleDownload(file);
+      }}
+      style={{ marginRight: '10px' }}
+    >
+      {file.file_name}
+    </a>
+  ))}</Td>                  <Td>{rfq.issue_date}</Td>
                   <Td>{calculateExpireDate(rfq.issue_date)}</Td> {/* Updated expire date */}
                   <Td>
+                  {(userData.role !== 'Partner')&&
+        (
                     <Flex gap={2}>
+                      {rfq.quotation?rfq.quotation.title:
                       <IconButton
+                      aria-label="Quotation"
+                      icon={<AddIcon />}
+                      onClick={() => handleQuotation(rfq)}
+                      colorScheme="blue"
+                      size="sm"
+                    />
+                      }
+                      {/* <IconButton
                         aria-label="Quotation"
                         icon={<FaFileInvoiceDollar />}
                         onClick={() => handleQuotation(rfq)}
                         colorScheme="blue"
                         size="sm"
-                      />
-                      <IconButton
+                      /> */}
+                      {/* <IconButton
                         aria-label="Edit Quotation"
                         icon={<EditIcon />}
                         onClick={() => handleEditQuotation(rfq)}
                         colorScheme="yellow"
                         size="sm"
-                      />
+                      /> */}
                     </Flex>
+        )}
                   </Td>
                   <Td>
                     <Flex gap={2}>

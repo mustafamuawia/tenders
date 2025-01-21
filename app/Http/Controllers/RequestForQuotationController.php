@@ -29,18 +29,22 @@ class RequestForQuotationController extends Controller
                 $requests = request_for_quotation::with([
                     'client',
                     'project',
-                    'partner',
+                    'partner.user',
                     'details.item', // Fetch related items in details
-                    'details.unit'  // Fetch related units in details
+                    'details.unit',  // Fetch related units in details
+                    'quotation',
+                    'files'
                 ])->get();
             } else {
                 // Fetch RFQs for the authenticated partner with additional details
                 $requests = request_for_quotation::where('partner_id', auth()->user()->id)->with([
                     'client',
                     'project',
-                    'partner',
+                    'partner.user',
                     'details.item', // Fetch related items in details
-                    'details.unit'  // Fetch related units in details
+                    'details.unit',  // Fetch related units in details
+                    'quotation',
+                    'files'
                 ])->get();
             }
     

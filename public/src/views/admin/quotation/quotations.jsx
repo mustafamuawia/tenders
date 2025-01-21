@@ -41,12 +41,9 @@ function Quotations() {
           setUserData(response.data)
         }
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/Quotations`);
-        if (response.data && Array.isArray(response.data.data.requests)) {
-          setQuotations(response.data.data.requests);
-        } else {
-          console.error('Unexpected data format:', response.data);
-          setQuotations([]);
-        }
+        console.log(response.data.data);
+          setQuotations(response.data.data);
+        
       } catch (error) {
         setQuotations([]);
       }
@@ -59,7 +56,7 @@ function Quotations() {
   const calculateExpireDate = (issueDate) => {
     const date = new Date(issueDate);
     date.setMonth(date.getMonth() + 1); // Add one month to issue date
-    return date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    return date.getDate(); // Format as YYYY-MM-DD
   };
 
   const handleView = (Quotation) => {
@@ -79,14 +76,14 @@ function Quotations() {
   };
 
   const handleAdd = () => {
-    history.push('/admin/add-Quotation');
+    history.push('/admin/add-quotation');
   };
 
   const handleDelete = async () => {
     if (selectedQuotation) {
       try {
         await axios.delete(`${process.env.REACT_APP_API_URL}/Quotation/${selectedQuotation.id}`);
-        setQuotations(Quotations.filter(existingQuotation => existingQuotation.id !== selectedQuotation.id));
+        setQuotations(quotations.filter(existingQuotation => existingQuotation.id !== selectedQuotation.id));
       } catch (error) {
         console.error('Error deleting Quotation:', error);
       } finally {
@@ -99,77 +96,65 @@ function Quotations() {
     setSelectedQuotation(Quotation);
     onOpen();
   };
+  const handleDownload = 
+    async (file) => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/download/${file.id}`,
+          {
+             responseType: 'blob', // Important for downloading files
+          }
+        );
+    console.log(response)
+        // Create a URL for the blob and trigger the download
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', file.file_name); // Set the downloaded file's name
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } catch (error) {
+        console.error('Error downloading file:', error);
+      }
+  }
 
   return (
     <Box p={4} maxWidth="100%" mx="auto" mt={16} borderRadius="lg" boxShadow="xl" bg="white">
       <Heading as="h1" size="xl" mb={6} textAlign="center">
-        Quotation Management
+        Quotations
       </Heading>
 
       <Stack spacing={4}>
-        {(userData.role !== 'Admin')&&
-        (  
-        
-        <Button
-          colorScheme="teal"
-          onClick={handleAdd}
-          mb={4}
-          borderRadius="full"
-          height="56px"
-          width={{ base: '100%', sm: '250px' }} // Responsive width
-          fontWeight="bold"
-          fontSize="md"
-          boxShadow="md"
-          textAlign="center"
-          variant="solid"
-          mx={{ base: 'auto', sm: '0' }} // Center button on small screens
-        >
-          + Add Quotation
-        </Button>
-        )
-        }
-        <Table variant="striped" colorScheme="teal" size={{ base: 'sm', md: 'md' }}>
+        <Table variant="striped" colorScheme="teal" size={{ base: 'sm', md: 'md' }}> 
           <Thead>
             <Tr>
-              <Th>Title</Th>
-              <Th>Partner</Th>
+              <Th>Code</Th>
               <Th>RFQ</Th>
-              <Th>Client</Th>
-              <Th>Project</Th>
-              <Th>Issue Date</Th>
-              <Th>Expire Date</Th>
-              <Th>Quotation</Th>
+              <Th>Note</Th>
+              <Th>Files</Th>
               <Th>Actions</Th>
             </Tr>
           </Thead>
           <Tbody>
-            {Quotations.length > 0 ? (
-              Quotations.map((Quotation) => (
+            {quotations.length > 0 ? (
+              quotations.map((Quotation) => (
                 <Tr key={Quotation.id}>
                   <Td>{Quotation.title}</Td>
-                  <Td>{Quotation.partner.CompanyName}</Td>
-                  <Td>{Quotation.client.client_name}</Td>
-                  <Td>{Quotation.project.name}</Td>
-                  <Td>{Quotation.issue_date}</Td>
-                  <Td>{calculateExpireDate(Quotation.issue_date)}</Td> {/* Updated expire date */}
-                  <Td>
-                    <Flex gap={2}>
-                      <IconButton
-                        aria-label="Quotation"
-                        icon={<FaFileInvoiceDollar />}
-                        onClick={() => handleQuotation(Quotation)}
-                        colorScheme="blue"
-                        size="sm"
-                      />
-                      <IconButton
-                        aria-label="Edit Quotation"
-                        icon={<EditIcon />}
-                        onClick={() => handleEditQuotation(Quotation)}
-                        colorScheme="yellow"
-                        size="sm"
-                      />
-                    </Flex>
-                  </Td>
+                  <Td>{Quotation.note}</Td>
+                  <Td>{Quotation.rfq.title}</Td>
+                  <Td> {Quotation.files.map((file, index) => (
+                      <a
+                        key={index}
+                        href={`${process.env.REACT_APP_API_URL}/download/${file.id}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleDownload(file);
+                        }}
+                        style={{ marginRight: '10px' }}
+                      >
+                        {file.file_name}
+                      </a>
+                    ))}</Td>
                   <Td>
                     <Flex gap={2}>
                       <IconButton

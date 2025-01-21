@@ -18,6 +18,7 @@ class Quotation extends Model
         'expire_date',
         'address',
         'user_id',
+        'rfq_id',
         'status',
     ];
 
@@ -42,5 +43,13 @@ class Quotation extends Model
         return $this->hasMany(quotation_details::class, 'quotation_id');
     }
 
+    public function rfq()
+    {
+        return $this->belongsTo(request_for_quotation::class,'rfq_id');
+    }
 
+    public function files()
+    {
+        return $this->hasMany(File::class, 'related_id')->where('related_to', 'quotation');
+    }
 }
