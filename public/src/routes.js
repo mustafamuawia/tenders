@@ -178,9 +178,30 @@ const routes = [
   },
 ];
 
+<<<<<<< Updated upstream
+=======
+const getUserRole = () => {
+  const _role = localStorage.getItem('role');
+  return _role  
+};
+>>>>>>> Stashed changes
 
 
+<<<<<<< Updated upstream
 
+=======
+const getRoutesForRole = (role) => {
+  if (role === 'Admin') {
+    console.log(routes,role);
+    return routes; 
+  } else {
+    console.log(routes,role);
+    return routes.filter(route => 
+      ['Dashboard','clients', 'projects', 'rfq-management', 'edit-profile'].includes(route.path.split('/')[1])
+    );
+  }
+};
+>>>>>>> Stashed changes
 
 const sidebarRoutes = routes.filter(route => route.name); 
 
