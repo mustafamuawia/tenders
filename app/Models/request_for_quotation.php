@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\Project;
 use App\Models\Partner;
 use App\Models\Item;
+use App\Models\Unit;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,18 +14,17 @@ class request_for_quotation extends Model
 {
     use HasFactory;
 
+    protected $table = 'request_for_quotations';
+
     protected $fillable = [
         'id',
+        'title',
         'client_id',
         'project_id',
         'issue_date',
-        'expire_date',
         'partner_id',
         'status',
-        'deleted_at',
-        'created_at',
-        'updated_at',
-        'status'
+        'note',
     ];
 
     public function client()
@@ -34,12 +34,12 @@ class request_for_quotation extends Model
 
     public function project()
     {
-        return $this->belongsTo(Project::class);
+        return $this->belongsTo(Project::class, 'project_id');
     }   
 
     public function partner()
     {
-        return $this->belongsTo(Partner::class);
+        return $this->belongsTo(Partner::class, 'partner_id','UserId');
     }
 
     public function items()
@@ -49,8 +49,21 @@ class request_for_quotation extends Model
 
     public function units()
     {
-        return $this->belongsToMany(unit::class,'rfq_details','rfq_id','unit_id');
+        return $this->belongsToMany(Unit::class,'rfq_details','rfq_id','unit_id');
     }
 
+    public function details()
+    {
+        return $this->hasMany(rfq_details::class, 'rfq_id');
+    }
 
+    public function files()
+    {
+        return $this->hasMany(File::class, 'related_id')->where('related_to', 'rfq');
+    }
+
+    public function quotation()
+    {
+        return $this->hasOne(Quotation::class,'rfq_id');
+    }
 }

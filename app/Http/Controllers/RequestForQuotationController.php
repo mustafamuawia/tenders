@@ -5,6 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\request_for_quotation;
 use App\Http\Requests\Storerequest_for_quotationRequest;
 use App\Http\Requests\Updaterequest_for_quotationRequest;
+use App\Models\rfq_details;
+use App\Models\Unit;
+use App\Models\Unitgroup;
+use App\Models\File;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Support\Facades\Storage;
 
 class RequestForQuotationController extends Controller
 {
@@ -13,47 +20,88 @@ class RequestForQuotationController extends Controller
     *
     * @return \Illuminate\Http\Response
     */
-   public function index()
-   {
-    // client
-    // project
-    // partner
-    // items
-    // units
-    $requests = request_for_quotation::with('unit_group')->with('client')->with('project')->
-    with('partner')->with('items')->withget();
-        return response()->json(['data'=>['requests' => $requests]], 200);   
-   }
-   /**
-    * Show the form for creating a new resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
-   public function create()
-   {
-       //
-   }
-   /**
-    * Store a newly created resource in storage.
-    *
-    * @param  \Illuminate\Http\Request  $request
-    * @return \Illuminate\Http\Response
-    */
-   public function store(Request $request)
-   {
-    try {
-        $unit=Unit::create($request->all());
-
-        $units = Unit::with('unit_group')->get();
-        $unitgroups = Unitgroup::all();
-
-        return view('units' ,['units' => $units,'unitgroups'=>$unitgroups]);
-    } catch(\Exception $exception) {
-        // throw new HttpException(400, "Invalid data - {$exception->getMessage}");
-        $units = Unit::with('unit_group')->get();
-        return view('units' ,['units' => $units,'error'=>$exception->getMessage()]);
+    public function index()
+    {
+        try {
+            // Check user role and fetch RFQs accordingly
+            if (auth()->user()->role == 'Admin') {
+                // Fetch all RFQs with clients, projects, and partners
+                $requests = request_for_quotation::with([
+                    'client',
+                    'project',
+                    'partner.user',
+                    'details.item', // Fetch related items in details
+                    'details.unit',  // Fetch related units in details
+                    'quotation',
+                    'files'
+                ])->get();
+            } else {
+                // Fetch RFQs for the authenticated partner with additional details
+                $requests = request_for_quotation::where('partner_id', auth()->user()->id)->with([
+                    'client',
+                    'project',
+                    'partner.user',
+                    'details.item', // Fetch related items in details
+                    'details.unit',  // Fetch related units in details
+                    'quotation',
+                    'files'
+                ])->get();
+            }
+    
+            // Return the fetched data in the response
+            return response()->json(['data' => ['requests' => $requests]], 200);
+    
+        } catch (\Exception $exception) {
+            // Handle any errors and return a 500 response
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
-   }
+    
+    public function store(Request $request)
+    {
+        
+     try {
+         $rfqData = $request->only(['title','client_id', 'project_id', 'issue_date','status','note']);
+         $rfqData['partner_id'] = auth()->user()->id;
+         $rfq = request_for_quotation::create($rfqData);
+ 
+        //  $detailsData = $request->input('details');
+        //  foreach ($detailsData as $detail) {
+        //      $detail['rfq_id'] = $rfq->id;
+        //      rfq_details::create($detail);
+        //  }
+        $uploadFolder = 'public/uploads';
+
+        // Ensure the folder exists
+        if (!Storage::exists($uploadFolder)) {
+            Storage::makeDirectory($uploadFolder); // Create the folder in the storage/app/public directory
+        }
+        $files=[];
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $filename = $file->getClientOriginalName();
+               
+
+                
+                $path = $file->store('uploads', 'public');
+                $fileRecord = File::create([
+                    'file_name' => $file->getClientOriginalName(),
+                    'file_path' => $path,
+                    'file_type' => $file->getClientMimeType(),
+                    'file_size' => $file->getSize(),
+                    'related_to' => 'rfq',
+                    'related_id' => $rfq->id
+                ]);
+
+            }
+        }
+ 
+        //  return response()->json($rfq->load('details'), 201);
+        
+     } catch(\Exception $exception) {
+        return response()->json(['error' => $exception->getMessage()], 500);
+     }
+    }
    /**
     * Display the specified resource.
     *
@@ -62,16 +110,8 @@ class RequestForQuotationController extends Controller
     */
    public function show($id)
    {
-    if(is_numeric($id))
-    {
-        $unit = Unit::find($id);
-        return view('user' ,['unit' => $unit]);
-    }
-    else
-    {
-        $units = Unit::with('unit_group')->get();
-        return view('units' ,['units' => $units]);
-    }
+    
+    return response()->json(request_for_quotation::where('id', $id)->with('details')->with('client')->with('project')-> with('partner')->with('items')->get());
    }
    /**
     * Show the form for editing the specified resource.
@@ -79,12 +119,6 @@ class RequestForQuotationController extends Controller
     * @param  int  $id
     * @return \Illuminate\Http\Response
     */
-   public function edit($id)
-   {
-    $unit = Unit::find($id);
-    $unitgroups = Unitgroup::all();
-    return view('units' ,['unit' => $unit,'unitgroups'=>$unitgroups]);
-   }
    /**
     * Update the specified resource in storage.
     *
@@ -92,39 +126,68 @@ class RequestForQuotationController extends Controller
     * @param  int  $id
     * @return \Illuminate\Http\Response
     */
-   public function update(Request $request, $id)
-   {
+    public function update(Request $request, $id)
+    {
+        try {
+            // Fetch the RFQ by its ID
+            $rfq = request_for_quotation::findOrFail($id);
     
-    try {
-        $unit = Unit::find($id);
-    $unit->unit_name=$request->unit_name;
-    $unit->eq=$request->unit_name;
-    $unit->unit_group_id=$request->unit_name;
-    $unit->status=$request->unit_name;
-$unit->save();
-        $units = Unit::with('unit_group')->get();
-        $unitgroups = Unitgroup::all();
-
-        return view('units' ,['units' => $units,'unitgroups'=>$unitgroups]);
-    } catch(\Exception $exception) {
-        // throw new HttpException(400, "Invalid data - {$exception->getMessage}");
-        $units = Unit::with('unit_group')->get();
-        return view('units' ,['units' => $units,'error'=>$exception->getMessage()]);
+            // Update the main RFQ fields
+            $rfqData = $request->only(['title', 'client_id', 'project_id', 'issue_date', 'note']);
+            $rfqData['partner_id'] = auth()->user()->id; 
+    
+            $rfq->update($rfqData);
+    
+            // Update the RFQ details
+            $detailsData = $request->input('details');
+    
+            // Detach existing details that are not in the request
+            $existingDetailIds = $rfq->details->pluck('id')->toArray();
+            $newDetailIds = array_column($detailsData, 'id');
+    
+            $detailsToDelete = array_diff($existingDetailIds, $newDetailIds);
+            rfq_details::whereIn('id', $detailsToDelete)->delete();
+    
+            // Update existing details or create new ones
+            foreach ($detailsData as $detail) {
+                if (isset($detail['id']) && in_array($detail['id'], $existingDetailIds)) {
+                    // Update existing detail
+                    rfq_details::where('id', $detail['id'])->update($detail);
+                } else {
+                    // Create new detail
+                    $detail['rfq_id'] = $rfq->id;
+                    rfq_details::create($detail);
+                }
+            }
+    
+            // Return the updated RFQ with its details
+            return response()->json($rfq->load('details'), 200);
+    
+        } catch (\Exception $exception) {
+            // Return an error response if something goes wrong
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
-   }
+    
    /**
     * Remove the specified resource from storage.
     *
     * @param  int  $id
     * @return \Illuminate\Http\Response
     */
-   public function destroy($id)
-   {
-    $unit= Unit::findOrFail($id);
-    $unit->delete();
-    return response()->json(['تمت العملية بنجاح'], 200);
-   }
-
+    public function destroy($id)
+    {
+        try {
+            $rfq = request_for_quotation::findOrFail($id);
+            $rfq->details()->delete(); 
+            $rfq->delete(); 
+    
+            return response()->json(['message' => 'RFQ deleted successfully'], 200);
+        } catch (\Exception $exception) {
+            return response()->json(['error' => 'Failed to delete RFQ: ' . $exception->getMessage()], 500);
+        }
+    }
+    
    public function change_status(Request $request)
    {
     $id = $request->id;

@@ -123,7 +123,7 @@ export default function Dashboard(props) {
 						transitionProperty='top, bottom, width'
 						transitionTimingFunction='linear, linear, ease'>
 						<Portal>
-							<Box>
+							{/* <Box>
 								<Navbar
 									onOpen={onOpen}
 									logoText={'Horizon UI Dashboard PRO'}
@@ -133,7 +133,7 @@ export default function Dashboard(props) {
 									fixed={fixed}
 									{...rest}
 								/>
-							</Box>
+							</Box> */}
 						</Portal>
 
 						{getRoute() ? (

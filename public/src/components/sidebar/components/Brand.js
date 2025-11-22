@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Flex, useColorModeValue, Image, Text } from "@chakra-ui/react";
 import { HSeparator } from "components/separator/Separator";
+import placeholderImage from "assets/img/avatars/505-5058560_person-placeholder-image-free-hd-png-download.png"; 
 
 export function SidebarBrand() {
   const logoColor = useColorModeValue("navy.700", "white");
-  const defaultUserAvatar = "http://bootdey.com/img/Content/avatar/avatar1.png";
+
+  // Use the imported image as the default avatar
+  const defaultUserAvatar = placeholderImage;
 
   const [user, setUser] = useState({
     profileImage: localStorage.getItem('profileImage') || defaultUserAvatar,
@@ -68,7 +71,7 @@ export function SidebarBrand() {
         src={user.profileImage || defaultUserAvatar}
         alt="Profile Image"
         borderRadius="full"
-        boxSize="150px"
+        boxSize="100px"
         mb={4}
       />
       <Text fontSize="xl" fontWeight="bold" color={logoColor}>

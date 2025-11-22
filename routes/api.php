@@ -13,7 +13,8 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RequestForQuotationController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\UnitGroupController;
-
+use App\Http\Controllers\QuotationController;
+use App\Http\Controllers\FileController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -48,6 +49,8 @@ Route::middleware(['auth:api'])->group(function () {
     
        // Partner routes
     Route::get('/user/fetch', [UserController::class, 'getPartners'])->name('getPartners');
+    Route::post('/partner/changestatus', [UserController::class, 'changestatus']);
+
     Route::put('/user/edit/{id}', [UserController::class, 'edit']);
     Route::delete('/user/delete/{id}', [UserController::class, 'delete']);
     Route::get('/user/getadmin', [UserController::class, 'getusers'])->name('getadmin');
@@ -75,6 +78,16 @@ Route::middleware(['auth:api'])->group(function () {
     //Unit Groups routes
     Route::apiResource('unitgroups', UnitGroupController::class);
     Route::post('changeunitgroupstatus', [UnitGroupController::class, 'changeStatus']);
+
+    // RFQ
+    Route::apiResource('RFQ', RequestForQuotationController::class);
+    // Route::get('RFQ/show/{id}', RequestForQuotationController::class,'');
+
+    Route::apiResource('Quotations', QuotationController::class);
+    Route::get('/download/{id}', [FileController::class, 'download']);
+
+
+    //Quotaion 
 
     // JWT routes
     Route::post('logout', [AuthController::class, 'logout']);

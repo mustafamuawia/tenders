@@ -141,7 +141,7 @@ function SignIn() {
               variant="auth"
               fontSize="sm"
               type="email"
-              placeholder="mail@simmmple.com"
+              placeholder="email address"
               mb="24px"
               fontWeight="500"
               size="lg"
@@ -159,7 +159,7 @@ function SignIn() {
               <Input
                 isRequired
                 fontSize="sm"
-                placeholder="At least 8 characters"
+                placeholder="password"
                 mb="24px"
                 size="lg"
                 type={show ? 'text' : 'password'}

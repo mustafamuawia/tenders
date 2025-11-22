@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Flex,
@@ -19,31 +19,55 @@ import {
   renderView,
 } from "components/scrollbar/Scrollbar";
 import { Scrollbars } from "react-custom-scrollbars-2";
-import PropTypes from "prop-types";
-import { sidebarRoutes } from "routes"; // Import sidebarRoutes
-
-// Assets
 import { IoMenuOutline } from "react-icons/io5";
+import PropTypes from "prop-types";
+import { sidebarRoutes } from "routes";
+import axios from "axios";
 
-function Sidebar(props) {
-  const { routes } = props;
+function Sidebar() {
+  const [userRole, setUserRole] = useState(null);
+  const [filteredRoutes, setFilteredRoutes] = useState([]);
+  
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const userId = localStorage.getItem("userId");
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/${userId}`);
+        const { role } = response.data;
+        setUserRole(role);
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+      }
+    };
+
+    fetchUserRole();
+  }, []);
+
+  useEffect(() => {
+    if (userRole) {
+      // Filter routes based on user role
+      const routes = sidebarRoutes.filter(route => {
+        if (userRole === "Admin") {
+          return true; // Admins can see all routes
+        } else {
+          return ["Clients", "RFQ Management", "Edit Profile", "Projects","Quotations"].includes(route.name);
+        }
+      });
+      setFilteredRoutes(routes);
+    }
+  }, [userRole]);
 
   let variantChange = "0.2s linear";
   let shadow = useColorModeValue(
     "14px 17px 40px 4px rgba(112, 144, 176, 0.08)",
     "unset"
   );
-  // Chakra Color Mode
   let sidebarBg = useColorModeValue("white", "navy.800");
   let sidebarMargins = "0px";
-
-  // Hook for managing the mobile sidebar
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // SIDEBAR
   return (
     <>
-      {/* Mobile Menu Button */}
       <Button
         display={{ sm: "flex", xl: "none" }}
         position="fixed"
@@ -58,7 +82,6 @@ function Sidebar(props) {
         <IoMenuOutline size={20} />
       </Button>
 
-      {/* Sidebar for desktop */}
       <Box display={{ sm: "none", xl: "block" }} w="100%" position="fixed" minH="100%">
         <Box
           bg={sidebarBg}
@@ -76,12 +99,11 @@ function Sidebar(props) {
             renderThumbVertical={renderThumb}
             renderView={renderView}
           >
-            <Content routes={sidebarRoutes} /> {/* Use sidebarRoutes */}
+            <Content routes={filteredRoutes} />
           </Scrollbars>
         </Box>
       </Box>
 
-      {/* Sidebar for mobile */}
       <Drawer
         isOpen={isOpen}
         onClose={onClose}
@@ -103,7 +125,7 @@ function Sidebar(props) {
               renderThumbVertical={renderThumb}
               renderView={renderView}
             >
-              <Content routes={sidebarRoutes} /> {/* Use sidebarRoutes */}
+              <Content routes={filteredRoutes} />
             </Scrollbars>
           </DrawerBody>
         </DrawerContent>
@@ -112,66 +134,7 @@ function Sidebar(props) {
   );
 }
 
-// SidebarResponsive Component for smaller screens
-export function SidebarResponsive(props) {
-  let sidebarBackgroundColor = useColorModeValue("white", "navy.800");
-  let menuColor = useColorModeValue("gray.400", "white");
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const btnRef = React.useRef();
-
-  const { routes } = props;
-
-  return (
-    <Flex display={{ sm: "flex", xl: "none" }} alignItems="center">
-      <Flex ref={btnRef} w="max-content" h="max-content" onClick={onOpen}>
-        <Icon
-          as={IoMenuOutline}
-          color={menuColor}
-          my="auto"
-          w="20px"
-          h="20px"
-          me="10px"
-          _hover={{ cursor: "pointer" }}
-        />
-      </Flex>
-      <Drawer
-        isOpen={isOpen}
-        onClose={onClose}
-        placement={document.documentElement.dir === "rtl" ? "right" : "left"}
-        finalFocusRef={btnRef}
-      >
-        <DrawerOverlay />
-        <DrawerContent w="285px" maxW="285px" bg={sidebarBackgroundColor}>
-          <DrawerCloseButton
-            zIndex="3"
-            onClose={onClose}
-            _focus={{ boxShadow: "none" }}
-            _hover={{ boxShadow: "none" }}
-          />
-          <DrawerBody maxW="285px" px="0rem" pb="0">
-            <Scrollbars
-              autoHide
-              renderTrackVertical={renderTrack}
-              renderThumbVertical={renderThumb}
-              renderView={renderView}
-            >
-              <Content routes={sidebarRoutes} />
-            </Scrollbars>
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
-    </Flex>
-  );
-}
-
-// PROPS
 Sidebar.propTypes = {
-  logoText: PropTypes.string,
-  routes: PropTypes.arrayOf(PropTypes.object),
-  variant: PropTypes.string,
-};
-
-SidebarResponsive.propTypes = {
   routes: PropTypes.arrayOf(PropTypes.object),
 };
 

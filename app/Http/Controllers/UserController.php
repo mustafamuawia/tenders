@@ -101,11 +101,11 @@ class UserController extends Controller
 {
     // Fetch all partners with their associated user data
     $partners = Partner::with('user')->get();
-
+// return json_encode($partners);
     // Format the data to include necessary user information
     $formattedPartners = $partners->map(function($partner) {
         return [
-            'id' => $partner->id,
+            'id' => $partner->UserId,
             'CompanyEmail' => $partner->CompanyEmail,
             'CompanyName' => $partner->CompanyName,
             'Phone' => $partner->Phone,
