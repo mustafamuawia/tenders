@@ -10,7 +10,7 @@ class FileController extends Controller
 {
     $file = File::findOrFail($id); // Adjust model name if necessary
 
-    $filePath = storage_path('app\\public\\'.$file->file_path); // Adjust file path
+    $filePath = storage_path('app/public/'.$file->file_path); // Adjust file path
     // return response()->json([$filePath,file_exists($filePath)]);
     if (!file_exists($filePath)) {
         return response()->json(['error' => 'File not found'], 404);

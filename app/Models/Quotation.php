@@ -40,7 +40,7 @@ class Quotation extends Model
 
     public function details()
     {
-        return $this->hasMany(quotation_details::class, 'quotation_id');
+        return $this->hasMany(Quotation_details::class, 'quotation_id');
     }
 
     public function rfq()

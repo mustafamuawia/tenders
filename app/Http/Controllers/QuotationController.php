@@ -62,7 +62,7 @@ class QuotationController extends Controller
     
                 }
             }
-            return response()->json($quotation->load('details'), 201);
+            return response()->json($quotation, 201);
         } catch (\Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -76,7 +76,7 @@ class QuotationController extends Controller
    public function show($id)
    {
     
-    return response()->json(Quotation::where('id', $id)->with('files')->with('items')->get());
+    return response()->json(Quotation::where('id', $id)->with('files')->get());
    }
    /**
     * Show the form for editing the specified resource.
@@ -96,14 +96,43 @@ class QuotationController extends Controller
     $quotation = Quotation::findOrFail($id);
     $quotation->update($request->only(['title', 'expire_date','status']));
 
-    $quotation->details()->delete();
-    $detailsData = $request->input('details');
-    foreach ($detailsData as $detail) {
-        $detail['quotation_id'] = $quotation->id;
-        quotation_details::create($detail);
-    }
+     // Insert details for the quotation
+            // $detailsData = $request->input('details');
+                // foreach ($detailsData as $detail) {
+                //     $detail['quotation_id'] = $quotation->id;
+                //     // Quotation_details::create($detail);
+                // }
+                $uploadFolder = 'public/uploads';
 
-    return response()->json($quotation->load('details'));
+                // Ensure the folder exists
+                if (!Storage::exists($uploadFolder)) {
+                    Storage::makeDirectory($uploadFolder); // Create the folder in the storage/app/public directory
+                }
+                $files=[];
+                if ($request->hasFile('files')) {
+                    foreach ($request->file('files') as $file) {
+                        $filename = $file->getClientOriginalName();
+                       
+        
+                        
+                        $path = $file->store('uploads', 'public');
+                        $fileRecord = File::create([
+                            'file_name' => $file->getClientOriginalName(),
+                            'file_path' => $path,
+                            'file_type' => $file->getClientMimeType(),
+                            'file_size' => $file->getSize(),
+                            'related_to' => 'quotation',
+                            'related_id' => $quotation->id
+                        ]);
+        
+                    }
+                }// $detailsData = $request->input('details');
+    // foreach ($detailsData as $detail) {
+    //     $detail['quotation_id'] = $quotation->id;
+    //     quotation_details::create($detail);
+    // }
+
+    return response()->json($quotation);
    }
    /**
     * Remove the specified resource from storage.
