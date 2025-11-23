@@ -46,7 +46,7 @@
     <script src="{{ asset('js/bootstrap.min.js') }}"></script>
 
     <!-- React build JS -->
-    <script src="{{ asset('build/static/js/main.ffbaaf18.js') }}"></script>
+    <script src="{{ asset('build/static/js/main.a281dff3.js') }}"></script>
 
 </body>
 
