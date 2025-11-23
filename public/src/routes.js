@@ -178,18 +178,12 @@ const routes = [
   },
 ];
 
-<<<<<<< Updated upstream
-=======
 const getUserRole = () => {
   const _role = localStorage.getItem('role');
   return _role  
 };
->>>>>>> Stashed changes
 
 
-<<<<<<< Updated upstream
-
-=======
 const getRoutesForRole = (role) => {
   if (role === 'Admin') {
     console.log(routes,role);
@@ -201,7 +195,6 @@ const getRoutesForRole = (role) => {
     );
   }
 };
->>>>>>> Stashed changes
 
 const sidebarRoutes = routes.filter(route => route.name); 
 

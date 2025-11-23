@@ -218,12 +218,12 @@ function RFQManagement() {
                   </Td>
                   <Td>
                     <Flex gap={2}>
-                      <IconButton
+                      {/*<IconButton
                         aria-label="View RFQ"
                         icon={<ViewIcon />}
                         onClick={() => handleView(rfq)}
                         size="sm"
-                      />
+                      />*/}
                       <IconButton
                         aria-label="Edit RFQ"
                         icon={<EditIcon />}

@@ -157,12 +157,13 @@ function Quotations() {
                     ))}</Td>
                   <Td>
                     <Flex gap={2}>
-                      <IconButton
+                    {/* <IconButton
                         aria-label="View Quotation"
                         icon={<ViewIcon />}
                         onClick={() => handleView(Quotation)}
                         size="sm"
                       />
+                      */}
                       <IconButton
                         aria-label="Edit Quotation"
                         icon={<EditIcon />}
