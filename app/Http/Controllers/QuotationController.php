@@ -20,7 +20,11 @@ class QuotationController extends Controller
         if (auth()->user()->role=='Admin')
         $requests = Quotation::with('rfq')->with('files')->get();
         else
-        $requests = Quotation::where('partner_id',auth()->user()->id)->with('rfq')->with('files')->get();
+        $requests = Quotation::with(['rfq', 'files'])
+                    ->whereHas('rfq', function($q) {
+                    $q->where('partner_id', auth()->user()->id);
+                    })
+                    ->get();
         return response()->json(['data' => $requests], 200);   
    }
    public function store(Request $request)
