@@ -1,0 +1,32 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class AddPartnerIdToQuotationsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+{
+    Schema::table('quotations', function (Blueprint $table) {
+        if (!Schema::hasColumn('quotations', 'partner_id')) {
+            $table->unsignedBigInteger('partner_id')->nullable()->after('id');
+        }
+    });
+}
+
+public function down()
+{
+    Schema::table('quotations', function (Blueprint $table) {
+        if (Schema::hasColumn('quotations', 'partner_id')) {
+            $table->dropColumn('partner_id');
+        }
+    });
+}
+
+}
